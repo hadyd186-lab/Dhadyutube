@@ -72,7 +72,7 @@
   .watch-main{flex:2 1 420px; min-width:0;}
   .watch-side{flex:1 1 260px; min-width:0;}
   .player{width:100%; aspect-ratio:16/9; background:#000; border-radius:var(--r-l); overflow:hidden;}
-  .player video{width:100%; height:100%; display:block;}
+  .player video, .player iframe{width:100%; height:100%; display:block; border:none;}
   .watch-title{font-size:1.2rem; font-weight:700; margin-top:14px;}
   .watch-channel-row{display:flex; align-items:center; justify-content:space-between; margin-top:14px; padding-bottom:14px; border-bottom:1px solid var(--border); gap:10px; flex-wrap:wrap;}
   .watch-channel-left{display:flex; align-items:center; gap:10px; cursor:pointer;}
@@ -223,7 +223,7 @@
       <button class="btn btn-ghost backbtn" onclick="goHome()">← Retour</button>
       <div class="watch-wrap">
         <div class="watch-main">
-          <div class="player"><video id="playerVideo" controls playsinline></video></div>
+          <div class="player"><video id="playerVideo" controls playsinline></video><iframe id="playerEmbed" hidden allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>
           <div class="watch-title" id="watchTitle"></div>
           <div class="watch-channel-row">
             <div class="watch-channel-left" id="watchChannelName">
@@ -401,8 +401,7 @@ if(typeof firebase==='undefined'){
   throw new Error('Firebase SDK non chargé — voir le message affiché à la personne.');
 }
 </script>
-<script>
-/* ============ CONFIG — FIREBASE ============
+<script>/* ============ CONFIG — FIREBASE ============
    Authentification par email/mot de passe + Firestore pour tout ce qui est partagé (comptes,
    vidéos, likes, commentaires, empreintes, journal). Storage n'est pas activé (offre payante) :
    un fichier vidéo uploadé directement reste local à l'appareil qui l'a publié — voir openWatch.
@@ -425,6 +424,8 @@ const db = firebase.firestore();
 db.settings({ experimentalAutoDetectLongPolling: true, merge: true });
 const ADMIN_NAME = 'Moi'; // nom de chaîne du compte admin
 const ADMIN_EMAIL = 'mohamedhadylareweldiallo@gmail.com'; // seul compte avec ce droit dans les règles de sécurité Firestore
+const CLOUDINARY_CLOUD_NAME = 'pviit46x';
+const CLOUDINARY_UPLOAD_PRESET = 'Dhadyutube.com'; // préréglage "unsigned" créé dans Cloudinary — stocke les vidéos publiées en fichier
 
 /* ============ HELPERS ============ */
 function $(id){ return document.getElementById(id); }
@@ -829,9 +830,8 @@ function detachListeners(){
 }
 async function logBlock(entry){
   try{ await db.collection('blockLog').add({...entry, ts:Date.now()}); }catch(e){ console.error(e); }
-}
-
-/* Fichiers vidéo : stockés dans IndexedDB (trop gros pour localStorage) */
+  }
+  /* Fichiers vidéo : stockés dans IndexedDB (trop gros pour localStorage) */
 function openFilesDb(){
   return new Promise((res,rej)=>{
     const r=indexedDB.open('neuf_files',1);
@@ -946,6 +946,21 @@ function openChannel(key){
 }
 
 /* ============ WATCH ============ */
+/* Reconnaît un lien YouTube ou Google Drive et le change en adresse "intégrable" dans une iframe
+   (une page YouTube/Drive classique ne peut pas être lue par une balise <video>). Renvoie null pour
+   un lien direct vers un fichier vidéo (.mp4...), qui utilise la balise <video> normale. */
+function embedUrlFor(url){
+  if(!url) return null;
+  let m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/|youtube\.com\/embed\/)([\w-]{6,})/);
+  if(m) return 'https://www.youtube.com/embed/'+m[1];
+  m = url.match(/drive\.google\.com\/file\/d\/([\w-]+)/);
+  if(m) return 'https://drive.google.com/file/d/'+m[1]+'/preview';
+  return null;
+}
+function youtubeIdFor(url){
+  const m = (url||'').match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/|youtube\.com\/embed\/)([\w-]{6,})/);
+  return m ? m[1] : null;
+}
 async function openWatch(id){
   const v = videos.find(x=>x.id===id);
   if(!v) return;
@@ -954,13 +969,17 @@ async function openWatch(id){
   switchView('watch');
   renderWatchSkeleton(v);
   if(currentObjectUrl){ URL.revokeObjectURL(currentObjectUrl); currentObjectUrl=null; }
-  const player=$('playerVideo');
-  if(v.sourceType==='file'){
+  const player=$('playerVideo'), embed=$('playerEmbed');
+  embed.src=''; embed.hidden=true; player.hidden=false;
+  if(v.sourceType==='file' && v.url){
+    player.src = v.url; // hébergée sur Cloudinary : lisible par tout le monde, comme un lien
+  } else if(v.sourceType==='file'){
+    // Vidéo publiée avant le branchement de Cloudinary (ou envoi ayant échoué à l'époque) : repli local.
     try{
       const blob = await getFile(id);
       if(!blob){
         player.removeAttribute('src'); player.load();
-        showWatchNotice('📵 Cette vidéo a été publiée par fichier depuis un autre appareil. Sans espace de stockage partagé (Firebase Storage, non activé), seul cet appareil peut la lire. Demande à '+displayNameFor(v.authorId)+' de la republier avec un lien (Drive, YouTube non répertorié…) pour que tout le monde puisse la voir.');
+        showWatchNotice('📵 Cette vidéo a été publiée par fichier avant la mise en place du stockage en ligne, depuis un autre appareil — seul cet appareil peut la lire. Demande à '+displayNameFor(v.authorId)+' de la republier pour qu\'elle soit visible par toute la classe.');
         return;
       }
       if(currentWatchId!==id) return;
@@ -968,7 +987,9 @@ async function openWatch(id){
       player.src = currentObjectUrl;
     }catch(e){ console.error(e); showWatchNotice('Impossible de lire cette vidéo sur cet appareil.'); return; }
   } else {
-    player.src = v.url;
+    const embedUrl = embedUrlFor(v.url);
+    if(embedUrl){ player.hidden=true; embed.hidden=false; embed.src=embedUrl; }
+    else { player.src = v.url; }
   }
   hideWatchNotice();
   const dayKey=new Date().toISOString().slice(0,10);
@@ -979,7 +1000,11 @@ async function openWatch(id){
 }
 function showWatchNotice(msg){
   let n=$('watchNotice');
-  if(!n){ n=document.createElement('div'); n.id='watchNotice'; n.className='form-error'; n.style.margin='10px 0'; $('playerVideo').insertAdjacentElement('afterend', n); }
+  if(!n){
+    n=document.createElement('div'); n.id='watchNotice'; n.className='form-error'; n.style.margin='10px 0';
+    // en dehors de .player (qui coupe tout ce qui dépasse son cadre 16/9), sinon ce message reste invisible
+    document.querySelector('.player').insertAdjacentElement('afterend', n);
+  }
   n.textContent=msg; n.hidden=false;
 }
 function hideWatchNotice(){ const n=$('watchNotice'); if(n) n.hidden=true; }
@@ -1021,8 +1046,7 @@ function renderComments(v){
     +(canModerate ? '<button class="comment-del" title="Supprimer ce commentaire" onclick="deleteComment(\''+(c.id||c.ts)+'\')">🗑️</button>' : '')
     +'</div><div class="comment-text">'+esc(c.text)+'</div></div></div>'
   ).join('') : '<p class="muted small">Aucun commentaire pour l\'instant.</p>';
-}
-function sendComment(){
+  }function sendComment(){
   const input=$('commentInput'); const text=input.value.trim();
   if(!text) return;
   const v=videos.find(x=>x.id===currentWatchId); if(!v) return;
@@ -1179,14 +1203,23 @@ async function handleUpload(){
 
   setSubmitting(true, 'Analyse de la vidéo…');
   let tempUrl=null;
-  try{
-    let fileHash=null;
-    if(file){ fileHash = await hashFile(file); tempUrl = URL.createObjectURL(file); }
-
-    const analysis = await analyzeVideo(file?tempUrl:url, (i,n,m)=>setSubmitting(true,'Analyse de la vidéo… '+Math.round(i/n*100)+' %'+(m==='play'?' (film long : garde l\'onglet ouvert)':'')));
-    const thumb=analysis.thumb, durationSeconds=analysis.duration, visualHash=analysis.visualHash;
-    let audioHash=null;
-    if(file){ setSubmitting(true,'Analyse de la bande sonore…'); audioHash = await analyzeAudioFile(file); }
+  try{let fileHash=null, thumb=null, durationSeconds=null, visualHash=null, audioHash=null;
+    if(file){
+      fileHash = await hashFile(file); tempUrl = URL.createObjectURL(file);
+      const analysis = await analyzeVideo(tempUrl, (i,n,m)=>setSubmitting(true,'Analyse de la vidéo… '+Math.round(i/n*100)+' %'+(m==='play'?' (film long : garde l\'onglet ouvert)':'')));
+      thumb=analysis.thumb; durationSeconds=analysis.duration; visualHash=analysis.visualHash;
+      setSubmitting(true,'Analyse de la bande sonore…');
+      audioHash = await analyzeAudioFile(file);
+    } else if(embedUrlFor(url)){
+      // Lien YouTube/Drive : impossible d'en lire l'image ou le son (protection de ces sites), donc pas
+      // d'empreinte perceptuelle possible — seul un mot-clé/lien enregistré au Bouclier peut le reconnaître.
+      const ytId = youtubeIdFor(url);
+      if(ytId) thumb = 'https://img.youtube.com/vi/'+ytId+'/hqdefault.jpg';
+    } else {
+      // Lien direct vers un fichier vidéo (.mp4…) : on peut tenter la même analyse qu'un fichier.
+      const analysis = await analyzeVideo(url, (i,n,m)=>setSubmitting(true,'Analyse de la vidéo… '+Math.round(i/n*100)+' %'+(m==='play'?' (film long : garde l\'onglet ouvert)':'')));
+      thumb=analysis.thumb; durationSeconds=analysis.duration; visualHash=analysis.visualHash;
+    }
 
     const ctx = {title, desc, visibility, scheduledTime, url, file, fileHash, visualHash, audioHash, thumb, durationSeconds, tempUrl};
 
@@ -1242,16 +1275,44 @@ function renderBlockPanel(check){
 }
 function toggleBlockDetails(){ const d=$('blockDetails'); if(d) d.hidden=!d.hidden; }
 
+/* Envoie un fichier vers Cloudinary (préréglage "unsigned" — pas de clé secrète exposée côté client). */
+function uploadToCloudinary(file, onProgress){
+  return new Promise((resolve,reject)=>{
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://api.cloudinary.com/v1_1/'+CLOUDINARY_CLOUD_NAME+'/video/upload');
+    xhr.upload.onprogress = (e)=>{ if(e.lengthComputable && onProgress) onProgress(Math.round(e.loaded/e.total*100)); };
+    xhr.onload = ()=>{
+      let data=null; try{ data=JSON.parse(xhr.responseText); }catch(e){}
+      if(xhr.status>=200 && xhr.status<300 && data && data.secure_url) resolve(data);
+      else reject(new Error((data&&data.error&&data.error.message) || ('Échec de l\'envoi (code '+xhr.status+')')));
+    };
+    xhr.onerror = ()=>reject(new Error('Connexion à Cloudinary impossible — vérifie ta connexion internet.'));
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    xhr.send(fd);
+  });
+}
+
 /* Publie la vidéo (utilisé par le flux normal, la découpe réussie et le fair use). */
 async function proceedPublish(ctx, opts, note){
   opts = opts||{};
   setSubmitting(true, 'Publication…');
   const {title, desc, visibility, scheduledTime, url, file, fileHash, thumb, durationSeconds, tempUrl} = ctx;
   const id = newId();
-  let sourceType, finalUrl=null;
+  let sourceType, finalUrl=null, cloudPublicId=null, localOnly=false;
   if(file){
     sourceType='file';
-    await putFile(id, file); // Storage non activé : le fichier reste sur cet appareil, voir openWatch
+    try{
+      const up = await uploadToCloudinary(file, pct=>setSubmitting(true,'Envoi de la vidéo… '+pct+' %'));
+      finalUrl = up.secure_url; cloudPublicId = up.public_id;
+    }catch(e){
+      console.error(e);
+      // Cloudinary injoignable (réseau, préréglage mal configuré…) : on garde quand même une copie
+      // locale plutôt que de bloquer complètement la publication — visible seulement sur cet appareil.
+      await putFile(id, file);
+      localOnly=true;
+    }
     if(tempUrl) URL.revokeObjectURL(tempUrl);
   } else {
     sourceType='url'; finalUrl=url;
@@ -1259,14 +1320,14 @@ async function proceedPublish(ctx, opts, note){
   await db.collection('videos').doc(id).set({
     title, desc, authorId: myKey(), visibility,
     scheduledTime: visibility==='scheduled'?scheduledTime:null,
-    sourceType, url:finalUrl, fileName:file?file.name:null, fileHash:fileHash||null,
+    sourceType, url:finalUrl, cloudPublicId, fileName:file?file.name:null, fileHash:fileHash||null,
     thumb:thumb||null, durationSeconds:durationSeconds||null, views:0, likedBy:[], comments:[], viewLog:{},
     createdAt:Date.now(), overrideUsed:!!opts.overrideUsed, fairUseClaimed:!!opts.fairUseClaimed, cutApplied:!!opts.cutApplied
   });
   pendingUpload=null;
   closeUpload();
   goHome();
-  toast(note || (opts.overrideUsed ? 'Publié avec dérogation admin ✅' : (file ? 'Vidéo publiée ✅ (fichier visible sur cet appareil ; utilise un lien pour la partager à toute la classe)' : 'Vidéo publiée ✅')));
+  toast(note || (opts.overrideUsed ? 'Publié avec dérogation admin ✅' : (localOnly ? "⚠️ Publié, mais l'envoi vers Cloudinary a échoué — visible seulement sur cet appareil pour l'instant." : 'Vidéo publiée ✅')));
   setSubmitting(false);
 }
 
@@ -1346,8 +1407,7 @@ function cutVideoSegment(file, cutStart, cutEnd, onProgress){
       if(done) return;
       if(onProgress) try{ onProgress(Math.min(1, v.currentTime/Math.max(0.01,v.duration))); }catch(e){}
       if(!jumped && v.currentTime>=cutStart-0.05){ jumped=true; try{ v.currentTime=Math.min(cutEnd, v.duration-0.05); }catch(e){} }
-    });
-    v.addEventListener('ended',()=>{ if(!done && recorder && recorder.state!=='inactive') recorder.stop(); });
+    });v.addEventListener('ended',()=>{ if(!done && recorder && recorder.state!=='inactive') recorder.stop(); });
     v.addEventListener('error',()=>{ if(!done){ done=true; cleanup(); reject(new Error('lecture impossible')); } });
     v.src=url;
   });
@@ -1537,7 +1597,7 @@ async function addFingerprint(){
     if($('fpCover')){ $('fpCover').value=''; $('fpCoverPreview').innerHTML=''; }
     toast('Empreinte enregistrée 🛡️');
   }catch(e){ console.error(e); shieldErrorMsg("Impossible d'enregistrer : "+e.message); }
-}
+  }
 function fpDetail(fp){
   if(fp.type==='keyword') return 'Mot-clé/lien : '+esc(fp.value);
   if(fp.worktype==='audio'){
@@ -1740,8 +1800,7 @@ async function previewAccountPic(input){
   const file=input.files[0]; if(!file) return;
   try{ pendingAccountPic = await fileToDataUrl(file,200); renderAccountPicPreview(pendingAccountPic); }
   catch(e){ console.error(e); toast('Impossible de charger cette image.'); }
-}
-async function saveAccount(){
+  }async function saveAccount(){
   const u=findUserById(currentAccountId); if(!u) return;
   const newName=val('accountNameInput').trim();
   accountErrorMsg('');
@@ -1849,3 +1908,4 @@ auth.onAuthStateChanged(async (user)=>{
 </script>
 </body>
 </html>
+  
