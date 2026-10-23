@@ -83,6 +83,14 @@
   .sub-count{font-size:.76rem; color:var(--text-muted); margin-top:2px;}
   .copyright-notice{display:flex; gap:10px; background:rgba(193,68,59,.1); border:1px solid var(--danger); border-radius:10px; padding:12px; margin:14px 0; font-size:.82rem;}
   .copyright-notice img{width:48px; height:48px; object-fit:cover; border-radius:6px; flex-shrink:0;}
+  .btn-sub{background:var(--text); color:var(--bg);}
+  .btn-sub.subscribed{background:var(--surface-2); color:var(--text); border:1px solid var(--border);}
+  .link-row{display:flex; gap:8px; margin-top:12px; align-items:center;}
+  .link-row input{flex:1; min-width:0; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:8px 12px; font-size:.78rem; color:var(--text-muted); outline:none;}
+  .side-card{display:flex; gap:10px; cursor:pointer; margin-bottom:12px;}
+  .side-thumb{width:140px; flex-shrink:0; aspect-ratio:16/9; background:var(--surface); border-radius:var(--r-m); overflow:hidden; display:flex; align-items:center; justify-content:center;}
+  .side-thumb img{width:100%; height:100%; object-fit:cover; display:block;}
+  .side-title{font-size:.82rem; font-weight:600; line-height:1.3; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
 
   /* WATCH */
   .backbtn{margin-bottom:16px;}
@@ -175,6 +183,16 @@
   .comment-item{align-items:flex-start;}
   .comment-row-top{display:flex; align-items:center; width:100%;}
 
+  /* PAGES LÉGALES */
+  .site-footer{border-top:1px solid var(--border); padding:18px 20px 26px; text-align:center; font-size:.76rem; color:var(--text-muted);}
+  .site-footer button{background:none; border:none; color:var(--text-muted); font-size:.76rem; cursor:pointer; text-decoration:underline; padding:2px 6px;}
+  .site-footer button:hover{color:var(--text);}
+  .legal-body h4{font-size:.88rem; margin:16px 0 4px; font-family:'Space Grotesk',sans-serif;}
+  .legal-body p,.legal-body li{font-size:.82rem; color:var(--text-muted); line-height:1.55;}
+  .legal-body ul{padding-left:18px; margin:4px 0;}
+  .legal-body a{color:var(--accent);}
+  .legal-updated{font-size:.72rem; color:var(--text-muted);}
+
   /* TOAST */
   #toast{position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--surface-2); border:1px solid var(--border); padding:11px 18px; border-radius:999px; font-size:.84rem; opacity:0; pointer-events:none; transition:all .25s; z-index:80; max-width:90vw; text-align:center;}
   #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
@@ -203,9 +221,7 @@
     <p style="color:#8B8F9E;">Vérifie ta connexion, désactive un éventuel bloqueur de pub pour cette page, puis recharge.</p>
     <button onclick="location.reload()" style="margin-top:16px; background:#E8A33D; color:#1A1206; border:none; border-radius:8px; padding:10px 20px; font-weight:700; font-size:1rem; cursor:pointer;">Recharger la page</button>
   </div>
-</div>
-
-<div class="topbar">
+  </div><div class="topbar">
   <button class="btnMenu" id="btnMenu">☰</button>
   <div class="brand" onclick="goHome()">
     <div class="brand-mark">N9</div>
@@ -249,7 +265,7 @@
       <div class="watch-wrap">
         <div class="watch-main">
           <div class="player"><video id="playerVideo" controls playsinline></video><iframe id="playerEmbed" hidden allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>
-     <div class="watch-title" id="watchTitle"></div>
+          <div class="watch-title" id="watchTitle"></div>
           <div class="watch-channel-row">
             <div class="watch-channel-left" id="watchChannelName">
               <div class="watch-avatar" id="watchChannelAvatar"></div>
@@ -259,10 +275,15 @@
               </div>
             </div>
             <div class="watch-actions">
+              <span id="watchSubscribeBtn"></span>
               <button class="like-btn" id="watchLikeBtn" onclick="toggleLike()">♥ <span class="count">0</span></button>
               <button class="btn btn-ghost" id="watchDeleteBtn" style="color:var(--danger);" onclick="deleteCurrentVideo()" hidden>🗑️ Supprimer</button>
               <button class="btn btn-ghost" id="watchReportBtn" onclick="reportCurrentVideo()" hidden>🚩 Signaler</button>
             </div>
+          </div>
+          <div class="link-row">
+            <input id="watchLinkInput" readonly onclick="this.select()" title="Lien de cette vidéo">
+            <button class="btn btn-ghost" onclick="copyVideoLink()">🔗 Copier le lien</button>
           </div>
           <div id="watchCopyrightNotice"></div>
           <div class="watch-desc" id="watchDesc"></div>
@@ -276,7 +297,7 @@
             <div id="commentsList"></div>
           </div>
         </div>
-        <div class="watch-side"></div>
+        <div class="watch-side" id="watchSide"></div>
       </div>
     </section>
 
@@ -311,6 +332,11 @@
   </main>
 </div>
 
+<footer class="site-footer">
+  © 2026 NEUF · UNITED STUDIO CI — Tous droits réservés<br>
+  <button onclick="openLegal('privacy')">Confidentialité</button>·<button onclick="openLegal('terms')">Conditions &amp; propriété intellectuelle</button>·<button onclick="openLegal('copyright')">Droits d'auteur</button>·<button onclick="openLegal('contact')">Contact</button>
+</footer>
+
 <!-- IDENTITY MODAL -->
 <div class="overlay" id="identityModal">
   <div class="modal-box">
@@ -335,6 +361,11 @@
     </div>
     <div style="text-align:center;margin-top:14px;">
       <button type="button" onclick="openTakedownForm()" style="background:none;border:none;color:var(--text-muted);font-size:.78rem;text-decoration:underline;cursor:pointer;">🚩 Signaler un contenu protégé non autorisé</button>
+      <div style="margin-top:8px;font-size:.74rem;" class="muted">
+        <button type="button" onclick="openLegal('privacy')" style="background:none;border:none;color:var(--text-muted);text-decoration:underline;cursor:pointer;font-size:inherit;">Confidentialité</button> ·
+        <button type="button" onclick="openLegal('terms')" style="background:none;border:none;color:var(--text-muted);text-decoration:underline;cursor:pointer;font-size:inherit;">Conditions</button> ·
+        <button type="button" onclick="openLegal('contact')" style="background:none;border:none;color:var(--text-muted);text-decoration:underline;cursor:pointer;font-size:inherit;">Contact</button>
+      </div>
     </div>
   </div>
 </div>
@@ -344,14 +375,57 @@
   <div class="modal-box">
     <h2>🚩 Signaler une atteinte au droit d'auteur</h2>
     <p class="muted small">Ouvert à tous, sans compte — pour signaler un contenu publié sur ce site sans autorisation de l'ayant droit.</p>
-    <label>Lien(s) du contenu concerné</label>
-    <textarea id="tdLink" rows="2" placeholder="https://…"></textarea>
-    <label>Votre nom</label>
+    <h3 class="shield-h3">1. Contenu signalé</h3>
+    <label>Lien(s) du contenu concerné *</label>
+    <textarea id="tdLink" rows="2" placeholder="https://… (un lien par ligne)"></textarea>
+    <label>Type d'œuvre concernée *</label>
+    <select id="tdWorkType">
+      <option value="">— Choisir —</option>
+      <option value="video">Vidéo / film / série</option>
+      <option value="music">Musique / son</option>
+      <option value="image">Image / photo / illustration</option>
+      <option value="text">Texte / article / livre</option>
+      <option value="software">Logiciel / jeu</option>
+      <option value="other">Autre</option>
+    </select>
+    <label>Titre de l'œuvre originale *</label>
+    <input type="text" id="tdWorkTitle" placeholder="Ex : titre de la vidéo, du morceau, du livre…">
+    <label>Lien vers l'œuvre originale ou preuve de propriété</label>
+    <input type="text" id="tdOriginalUrl" placeholder="https://… (page officielle, chaîne, dépôt, etc.)">
+    <label>Où et quand le passage apparaît dans la vidéo signalée</label>
+    <input type="text" id="tdTimestamps" placeholder="Ex : de 1:20 à 3:45, ou « toute la vidéo »">
+    <label>Description de l'atteinte *</label>
+    <textarea id="tdDescription" rows="3" placeholder="Explique en quoi ce contenu reprend ton œuvre sans autorisation…"></textarea>
+    <label>Souhaitez-vous la suppression…</label>
+    <select id="tdRemovalScope">
+      <option value="full">…de toute la vidéo</option>
+      <option value="partial">…du passage concerné seulement</option>
+    </select>
+    <label>L'utilisation a-t-elle déjà été autorisée par vous ? *</label>
+    <select id="tdAuthorizedBefore">
+      <option value="">— Choisir —</option>
+      <option value="no">Non, jamais</option>
+      <option value="yes">Oui, mais l'autorisation a expiré ou n'est pas respectée</option>
+    </select>
+
+    <h3 class="shield-h3">2. Vos informations</h3>
+    <label>Votre nom complet *</label>
     <input type="text" id="tdName">
-    <label>Votre relation avec l'œuvre</label>
+    <label>Votre relation avec l'œuvre *</label>
     <input type="text" id="tdRelation" placeholder="Ex : ayant droit, représentant légal, créateur original…">
-    <label>Votre email</label>
+    <label>Société / organisation représentée (si applicable)</label>
+    <input type="text" id="tdOrganization">
+    <label>Votre email *</label>
     <input type="email" id="tdEmail">
+    <label>Téléphone (facultatif)</label>
+    <input type="tel" id="tdPhone">
+    <label>Pays de résidence *</label>
+    <input type="text" id="tdCountry" placeholder="Ex : Côte d'Ivoire, France…">
+      <h3 class="shield-h3">3. Déclarations</h3>
+    <div class="checkbox-row"><input type="checkbox" id="tdGoodFaith"><label style="margin:0;">Je crois de bonne foi que cette utilisation n'est autorisée ni par l'ayant droit, ni par son représentant, ni par la loi. *</label></div>
+    <div class="checkbox-row"><input type="checkbox" id="tdAccurate"><label style="margin:0;">Les informations fournies sont exactes, et je suis l'ayant droit ou autorisé(e) à agir en son nom. *</label></div>
+    <label>Signature électronique (retape ton nom complet) *</label>
+    <input type="text" id="tdSignature">
     <div class="form-error" id="tdErr" hidden></div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeTakedownForm()">Annuler</button>
@@ -448,6 +522,15 @@
   </div>
 </div>
 
+<!-- LEGAL MODAL -->
+<div class="overlay" id="legalModal">
+  <div class="modal-box" style="max-width:640px;">
+    <div class="tab-row" id="legalTabs" style="flex-wrap:wrap;"></div>
+    <div class="legal-body" id="legalBody"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeLegal()">Fermer</button></div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 
@@ -493,7 +576,8 @@ function val(id){ const el=$(id); return el?el.value:''; }
 function esc(str){ return (str||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function fileToDataUrl(file, maxDim){ // redimensionne une image en data URL (pour les pochettes, reste léger dans localStorage)
   return new Promise((resolve,reject)=>{
-    const url=URL.createObjectURL(file), img=new Image();img.onload=()=>{
+    const url=URL.createObjectURL(file), img=new Image();
+    img.onload=()=>{
       const scale=Math.min(1, maxDim/Math.max(img.width,img.height));
       const w=Math.max(1,Math.round(img.width*scale)), h=Math.max(1,Math.round(img.height*scale));
       const c=document.createElement('canvas'); c.width=w; c.height=h;
@@ -518,7 +602,7 @@ function qualityLabelFor(h){
 /* Score de tendance façon "hot" (Reddit/HN) : favorise l'engagement récent plutôt que le simple cumul de vues. */
 function trendScore(v){
   const ageHours=Math.max(0,(Date.now()-(v.createdAt||Date.now()))/3600000);
-  const engagement=(v.views||0) + (v.likedBy||[]).length*3 + (v.comments||[]).length*4;
+  const engagement=(v.views||0) + (v.likedBy||[]).length*3 + ((v.commentCount||0)+(v.comments||[]).length)*4;
   return engagement/Math.pow(ageHours+2,1.3);
 }
 function timeAgo(ts){
@@ -534,9 +618,7 @@ function playIconSvg(){ return '<svg width="34" height="34" viewBox="0 0 24 24" 
 
 let toastTimer=null;
 function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),3400); }
-
-
-/* ============ CRYPTO — empreinte exacte du fichier (SHA-256) ============ */
+   /* ============ CRYPTO — empreinte exacte du fichier (SHA-256) ============ */
 async function sha256Hex(buffer){ const h=await crypto.subtle.digest('SHA-256', buffer); return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
 async function hashFile(file){
   if(file.size<=FP_LARGE_FILE) return sha256Hex(await file.arrayBuffer());
@@ -668,7 +750,8 @@ function packFrames(hexStr){
     out[2*i+1]=parseInt(hexStr.substr(i*16+8,8),16)>>>0;
   }
   return out;
-  }function informativeFlags(p){
+}
+function informativeFlags(p){
   const n=p.length>>1, f=new Uint8Array(n);
   for(let i=0;i<n;i++){ const pc=popcount32(p[2*i])+popcount32(p[2*i+1]); f[i]=(pc>=6 && pc<=58)?1:0; } // ignore images unies (noir, blanc…)
   return f;
@@ -737,8 +820,7 @@ function denseMatch(A,B,frameTh,avgTh){
       const need = isStatic ? Math.min(FP_MIN_SECONDS_STATIC, Math.max(10, shortSec*0.9))   // plan quasi fixe : on exige beaucoup plus
                             : Math.min(FP_MIN_SECONDS, Math.max(2, shortSec*0.6));
       if(avgDist<=avgTh && span>=need && (!best || span>best.span)){
-        best={span, count:r.length, avgDist, testStart:r[0]*sA, refStart:perJ.get(r[0])[0]*sB, testDuration:durA};
-      }
+        best={span, count:r.length, avgDist, testStart:r[0]*sA, refStart:perJ.get(r[0])[0]*sB, testDuration:durA};        }
     };
     for(let k=1;k<js.length;k++){
       if((js[k]-js[k-1])*sA<=gapAllowed) run.push(js[k]);
@@ -750,6 +832,14 @@ function denseMatch(A,B,frameTh,avgTh){
   return best;
 }
 
+/* Texte ajouté au pourcentage d'analyse : temps restant estimé + consigne pour les films longs (lecture accélérée). */
+function progressSuffix(mode, eta){
+  let t='';
+  if(eta!=null && isFinite(eta) && eta>8) t+=' — ≈ '+(eta>=90 ? Math.round(eta/60)+' min' : Math.round(eta)+' s')+' restantes';
+  if(mode==='play') t+=' — film long : garde cet onglet visible';
+  return t;
+}
+
 /* ============ ANALYSE VIDÉO — miniature + durée + empreinte perceptuelle en une seule passe ============ */
 /* Vidéos courtes/moyennes : on « saute » de seconde en seconde (précis). Films longs (> 10 min) : lecture accélérée ×16 et on
    prélève les images au passage — beaucoup plus rapide qu'un saut par image sur un fichier de 1-2 h. */
@@ -757,7 +847,7 @@ function analyzeVideo(src, onProgress){
   return new Promise((resolve)=>{
     const v=document.createElement('video');
     v.crossOrigin='anonymous'; v.muted=true; v.playsInline=true; v.preload='auto';
-    v.style.position='fixed'; v.style.left='-9999px'; v.style.width='2px'; v.style.height='2px';
+    v.style.cssText='position:fixed;right:0;bottom:0;width:48px;height:27px;opacity:.01;pointer-events:none;z-index:-1;'; // dans la fenêtre (le navigateur ne rend pas une vidéo hors écran) mais invisible
     let done=false, duration=null, idx=0, total=0, step=1, frames=[], thumb=null, tainted=false, stall=null, mode='seek', height=null;
     const build=()=>({
       thumb, duration, height,
@@ -767,7 +857,11 @@ function analyzeVideo(src, onProgress){
     const finish=(result)=>{ if(done)return; done=true; clearTimeout(stall); try{v.pause();}catch(e){} v.removeAttribute('src'); v.remove(); resolve(result); };
     // rien ne bouge depuis 30 s → on rend ce qu'on a (sauf si l'onglet est en arrière-plan : le navigateur gèle alors la vidéo, on attend)
     const arm=()=>{ clearTimeout(stall); stall=setTimeout(()=>{ if(document.hidden) arm(); else finish(build()); }, 30000); };
-    const report=()=>{ if(onProgress){ try{ onProgress(Math.min(idx,total), total, mode); }catch(e){} } };
+    const t0=Date.now();
+    const report=()=>{ if(onProgress){ try{
+      const el=(Date.now()-t0)/1000, eta = idx>=20 ? el*(total-idx)/idx : null; // temps restant estimé (après 20 images)
+      onProgress(Math.min(idx,total), total, mode, eta);
+    }catch(e){} } };
     const grabFrame=()=>{ // renvoie le hash de l'image courante (et prend la miniature au milieu de la vidéo)
       if(tainted) return null;
       try{
@@ -805,12 +899,29 @@ function analyzeVideo(src, onProgress){
     /* --- mode « lecture accélérée » (films longs) --- */
     function startPlayback(){
       mode='play';
+      let rate=FP_PLAY_RATE, lastIdx=-1, lastProgressAt=Date.now(), cooldownUntil=0, backs=0, wd=null;
+      const setRate=(r)=>{ rate=r; try{ v.playbackRate=r; }catch(e){} };
+      // Repli : les sauts fonctionnent partout (onglet masqué, fenêtre recouverte, décodeur lent), la lecture accélérée non.
+      const toSeekMode=()=>{ clearInterval(wd); if(done) return; mode='seek'; try{ v.pause(); v.playbackRate=1; }catch(e){} seekNext(); };
+      // Aucune image traitée depuis 8 s (rendu suspendu, lecture bloquée…) → on bascule sur les sauts depuis la position atteinte.
+      wd=setInterval(()=>{
+        if(done||mode!=='play'){ clearInterval(wd); return; }
+        if(idx!==lastIdx){ lastIdx=idx; lastProgressAt=Date.now(); return; }
+        if(Date.now()-lastProgressAt>8000) toSeekMode();
+      }, 2000);
       const onFrame=(now,meta)=>{
-        if(done) return;
+        if(done||mode!=='play') return;
         arm();
         const tm=meta.mediaTime, target=idx*step+FP_OFFSET;
-        if(tm-target > Math.max(2, 3*step)){ // on a « sauté » trop loin (onglet gelé, lecture saccadée) → on revient à la bonne position
-          try{ v.currentTime=Math.max(0,target-0.5); }catch(e){}
+        if(tm-target > Math.max(2, 3*step)){
+          // Le décodeur n'arrive pas à suivre à cette vitesse (images perdues) : on ralentit puis on revient à la bonne position.
+          // Pendant ce retour (délai de 3 s) les images « en avance » sont ignorées — avant, on repartait en boucle sans avancer.
+          if(Date.now()>=cooldownUntil){
+            if(rate>1) setRate(Math.max(1, rate/2));
+            if(++backs>6){ toSeekMode(); return; }
+            cooldownUntil=Date.now()+3000;
+            try{ v.currentTime=Math.max(0,target-0.5); }catch(e){}
+          }
           v.requestVideoFrameCallback(onFrame); return;
         }
         if(tm>=target){
@@ -818,14 +929,14 @@ function analyzeVideo(src, onProgress){
           while(idx<total && idx*step+FP_OFFSET<=tm){ if(h!==null) frames.push(h); idx++; }
           report();
         }
-        if(idx>=total){ finish(build()); return; }
+        if(idx>=total){ clearInterval(wd); finish(build()); return; }
         v.requestVideoFrameCallback(onFrame);
       };
       try{ v.currentTime=Math.max(0, FP_OFFSET-0.5); }catch(e){}
-      v.playbackRate=FP_PLAY_RATE;
+      setRate(FP_PLAY_RATE);
       v.requestVideoFrameCallback(onFrame);
       arm();
-      v.play().catch(()=>{ if(!done && mode==='play' && idx===0){ mode='seek'; seekNext(); } }); // lecture refusée → repli sur les sauts
+      v.play().catch(()=>{ if(!done && mode==='play' && idx===0) toSeekMode(); }); // lecture refusée → repli sur les sauts
     }
     v.addEventListener('ended',()=>{ if(mode==='play') finish(build()); });
     v.addEventListener('error',()=>finish({thumb:null,duration:null,visualHash:null}));
@@ -848,6 +959,87 @@ let currentView = 'home';
 let currentWatchId = null;
 let currentObjectUrl = null;
 let unsubVideos=null, unsubUsers=null, unsubFingerprints=null, unsubBlockLog=null, unsubTakedowns=null;
+let homeFilter='recent';
+
+/* ============ COMMENTAIRES (sous-collection videos/{id}/comments) ============
+   Les nouveaux commentaires vivent chacun dans leur propre document : seuls l'admin et le propriétaire de la
+   chaîne peuvent en supprimer (règle Firestore). Les anciens commentaires (tableau v.comments) restent affichés. */
+let watchComments=[], unsubComments=null;
+function stopWatchComments(){ if(unsubComments){ unsubComments(); unsubComments=null; } watchComments=[]; }
+function startWatchComments(id){
+  stopWatchComments();
+  unsubComments = db.collection('videos').doc(id).collection('comments').orderBy('ts').onSnapshot(snap=>{
+    watchComments = snap.docs.map(d=>({id:d.id, ...d.data(), _sub:true}));
+    const v=videos.find(x=>x.id===currentWatchId);
+    if(v) renderComments(v);
+  }, err=>console.error(err));
+}
+function commentTotal(v){ return (v.commentCount||0)+(v.comments||[]).length; }
+
+/* ============ LIEN DE CHAQUE VIDÉO ============
+   Le lien est construit à partir de l'identifiant de la vidéo (#v=ID) : toutes les vidéos en ont donc un,
+   y compris celles publiées avant cette fonctionnalité. */
+function videoLink(id){ return location.href.split('#')[0] + '#v=' + id; }
+function parseDeepLink(){ const m=(location.hash||'').match(/^#v=([\w-]+)/); return m ? m[1] : null; }
+let pendingDeepLink = parseDeepLink();
+function tryOpenDeepLink(fromCache){
+  if(!pendingDeepLink || !auth.currentUser) return;
+  const v=videos.find(x=>x.id===pendingDeepLink);
+  if(v){
+    const id=pendingDeepLink; pendingDeepLink=null;
+    if(visibleTo(v)) openWatch(id); else toast("Cette vidéo n'est pas disponible.");
+  } else if(!fromCache && videos.length){
+    pendingDeepLink=null; toast('Vidéo introuvable — elle a peut-être été supprimée.');
+  }
+}
+function copyVideoLink(){
+  if(!currentWatchId) return;
+  const link=videoLink(currentWatchId);
+  const fallback=()=>{ const i=$('watchLinkInput'); if(i){ i.select(); try{ document.execCommand('copy'); toast('Lien copié 🔗'); }catch(e){ prompt('Copie ce lien :',link); } } };
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(link).then(()=>toast('Lien copié 🔗'), fallback);
+  else fallback();
+}
+window.addEventListener('hashchange', ()=>{ const id=parseDeepLink(); if(id && id!==currentWatchId){ pendingDeepLink=id; tryOpenDeepLink(false); } });
+
+/* ============ ABONNEMENTS ============
+   Compte de classe : liste de chaînes abonnées stockée dans son propre profil (users/{uid}.subscriptions).
+   Admin : pas de profil dans users, la liste reste donc locale à cet appareil. */
+function mySubs(){
+  if(currentAccountId){ const u=findUserById(currentAccountId); return (u&&u.subscriptions)||[]; }
+  try{ return JSON.parse(localStorage.getItem('neuf_admin_subs')||'[]'); }catch(e){ return []; }
+}
+function isSubscribed(key){ return mySubs().includes(key); }
+function subscriberCount(key){ return users.filter(u=>(u.subscriptions||[]).includes(key)).length; }
+function subscribeBtnHtml(key){
+  if(!currentUser || key===myKey()) return '';
+  const on=isSubscribed(key);
+  return '<button class="btn btn-sub'+(on?' subscribed':'')+'" onclick="event.stopPropagation();toggleSubscribe(\''+String(key).replace(/'/g,"\\'")+'\')">'+(on?'✓ Abonné':'+ S\'abonner')+'</button>';
+  }   async function toggleSubscribe(key){
+  if(!currentUser){ openIdentityModal(); return; }
+  if(key===myKey()) return;
+  const on=isSubscribed(key);
+  if(currentAccountId){
+    const me=findUserById(currentAccountId); if(!me) return;
+    const prev=me.subscriptions||[];
+    me.subscriptions = on ? prev.filter(k=>k!==key) : [...prev, key]; // mise à jour immédiate, confirmée par Firestore ensuite
+    rerenderCurrentView();
+    try{
+      await db.collection('users').doc(currentAccountId).update({
+        subscriptions: on ? firebase.firestore.FieldValue.arrayRemove(key) : firebase.firestore.FieldValue.arrayUnion(key)
+      });
+    }catch(e){ console.error(e); me.subscriptions=prev; rerenderCurrentView(); toast('Erreur : abonnement non enregistré ('+e.message+')'); return; }
+  } else {
+    const list=mySubs(); const next = on ? list.filter(k=>k!==key) : [...list, key];
+    try{ localStorage.setItem('neuf_admin_subs', JSON.stringify(next)); }catch(e){}
+    rerenderCurrentView();
+  }
+  toast(on ? 'Désabonné de '+displayNameFor(key) : 'Abonné à '+displayNameFor(key)+' ⭐');
+}
+function setHomeFilter(f){
+  homeFilter=f;
+  document.querySelectorAll('#homeFilters .filter-chip').forEach(c=>c.classList.toggle('active', c.dataset.filter===f));
+  renderHome();
+}
 
 function newId(){ return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'id'+Date.now()+Math.random().toString(16).slice(2); }
 function isAdminAuthed(){ return !!auth.currentUser && auth.currentUser.email===ADMIN_EMAIL; }
@@ -855,17 +1047,22 @@ function myKey(){ return currentAccountId || ADMIN_NAME; } // identifiant d'aute
 function findUserByEmail(email){ return users.find(u=>u.email===(email||'').toLowerCase()); }
 function findUserById(id){ return users.find(u=>u.id===id); }
 function findUserByName(name){ return users.find(u=>u.name===name); }
-function displayNameFor(authorId){ if(authorId===ADMIN_NAME) return ADMIN_NAME; const u=findUserById(authorId); return u ? u.name : '(compte supprimé)'; }
+/* Profil de l'admin : document users/{uid admin} marqué isAdmin:true (créé à la première modification du nom/photo).
+   Les vidéos de l'admin gardent authorId='Moi' ; nom et photo sont résolus ici, donc tout se met à jour partout. */
+function adminProfile(){ return users.find(u=>u.isAdmin) || null; }
+function accountDocId(){ return currentAccountId || (isAdminAuthed() ? auth.currentUser.uid : null); }
+function profileFor(authorId){ return authorId===ADMIN_NAME ? adminProfile() : findUserById(authorId); }
+function displayNameFor(authorId){ if(authorId===ADMIN_NAME){ const p=adminProfile(); return (p&&p.name)||ADMIN_NAME; } const u=findUserById(authorId); return u ? u.name : '(compte supprimé)'; }
 function isVideoOwner(v){ return v.authorId===myKey(); }
 
 /* Avatars : image de profil si le compte en a une, sinon initiales. Reçoit un authorId (uid ou 'Moi'). */
 function avatarHtml(authorId, cls){
-  const u = authorId===ADMIN_NAME ? null : findUserById(authorId);
+  const u = profileFor(authorId);
   if(u && u.pic) return '<img class="'+cls+'" src="'+u.pic+'" style="display:block;object-fit:cover;" alt="">';
   return '<div class="'+cls+'">'+esc(initials(displayNameFor(authorId)))+'</div>';
 }
 function setAvatarNode(el, authorId){
-  const u = authorId===ADMIN_NAME ? null : findUserById(authorId);
+  const u = profileFor(authorId);
   if(u && u.pic){ el.innerHTML='<img src="'+u.pic+'" style="width:100%;height:100%;object-fit:cover;display:block;" alt="">'; }
   else { el.innerHTML=''; el.textContent=initials(displayNameFor(authorId)); }
 }
@@ -876,12 +1073,16 @@ function attachListeners(){
   unsubVideos = db.collection('videos').orderBy('createdAt','desc').onSnapshot(snap=>{
     videos = snap.docs.map(d=>({id:d.id, ...d.data()}));
     rerenderCurrentView();
+    tryOpenDeepLink(snap.metadata.fromCache);
   }, err=>{ console.error(err); toast('Erreur de synchronisation des vidéos : '+err.message); });
   unsubUsers = db.collection('users').onSnapshot(snap=>{
     users = snap.docs.map(d=>({id:d.id, ...d.data()}));
     if(currentAccountId){ // couvre le cas où onAuthStateChanged se déclenche avant l'écriture du profil par doSignup
       const me=findUserById(currentAccountId);
       if(me && currentUser!==me.name){ currentUser=me.name; updateIdentityPill(); }
+    } else if(isAdminAuthed()){
+      const nm=displayNameFor(ADMIN_NAME);
+      if(currentUser!==nm){ currentUser=nm; updateIdentityPill(); }
     }
     renderRailFriends();
     rerenderCurrentView();
@@ -894,7 +1095,8 @@ function attachListeners(){
     unsubBlockLog = db.collection('blockLog').orderBy('ts','desc').limit(50).onSnapshot(snap=>{
       blockLog = snap.docs.map(d=>({id:d.id, ...d.data()}));
       refreshShieldLists();
-    }, err=>console.error(err));unsubTakedowns = db.collection('takedownRequests').orderBy('createdAt','desc').limit(100).onSnapshot(snap=>{
+    }, err=>console.error(err));
+    unsubTakedowns = db.collection('takedownRequests').orderBy('createdAt','desc').limit(100).onSnapshot(snap=>{
       takedowns = snap.docs.map(d=>({id:d.id, ...d.data()}));
       refreshShieldLists();
     }, err=>console.error(err));
@@ -903,6 +1105,7 @@ function attachListeners(){
 function detachListeners(){
   [unsubVideos,unsubUsers,unsubFingerprints,unsubBlockLog,unsubTakedowns].forEach(u=>{ if(u) u(); });
   unsubVideos=unsubUsers=unsubFingerprints=unsubBlockLog=unsubTakedowns=null;
+  stopWatchComments();
   videos=[]; users=[]; fingerprints=[]; blockLog=[]; takedowns=[];
 }
 async function logBlock(entry){
@@ -913,7 +1116,9 @@ async function logBlock(entry){
    Formulaire accessible sans compte, depuis l'écran de connexion. Écrit directement dans Firestore
    (règle d'écriture publique sur cette collection précise, lecture réservée à l'admin). */
 function openTakedownForm(){
-  $('tdLink').value=''; $('tdName').value=''; $('tdRelation').value=''; $('tdEmail').value='';
+  ['tdLink','tdWorkType','tdWorkTitle','tdOriginalUrl','tdTimestamps','tdDescription','tdAuthorizedBefore','tdName','tdRelation','tdOrganization','tdEmail','tdPhone','tdCountry','tdSignature'].forEach(id=>{ $(id).value=''; });
+  $('tdRemovalScope').value='full';
+  $('tdGoodFaith').checked=false; $('tdAccurate').checked=false;
   $('tdErr').hidden=true;
   $('takedownModal').classList.add('open');
 }
@@ -924,15 +1129,37 @@ async function submitTakedown(){
   const name=val('tdName').trim();
   const relation=val('tdRelation').trim();
   const email=val('tdEmail').trim();
+  const workType=val('tdWorkType');
+  const workTitle=val('tdWorkTitle').trim();
+  const originalUrl=val('tdOriginalUrl').trim();
+  const timestamps=val('tdTimestamps').trim();
+  const description=val('tdDescription').trim();
+  const removalScope=val('tdRemovalScope')||'full';
+  const authorizedBefore=val('tdAuthorizedBefore');
+  const organization=val('tdOrganization').trim();
+  const phone=val('tdPhone').trim();
+  const country=val('tdCountry').trim();
+  const signature=val('tdSignature').trim();
   takedownErrorMsg('');
   if(!links){ takedownErrorMsg('Indique au moins un lien vers le contenu concerné.'); return; }
-  if(!name){ takedownErrorMsg('Indique ton nom.'); return; }
+  if(!workType){ takedownErrorMsg('Choisis le type d\'œuvre concernée.'); return; }
+  if(!workTitle){ takedownErrorMsg('Indique le titre de l\'œuvre originale.'); return; }
+  if(description.length<20){ takedownErrorMsg('Décris l\'atteinte en quelques phrases (20 caractères minimum).'); return; }
+  if(!authorizedBefore){ takedownErrorMsg('Précise si tu as déjà autorisé cette utilisation.'); return; }
+  if(!name){ takedownErrorMsg('Indique ton nom complet.'); return; }
   if(!relation){ takedownErrorMsg('Précise ta relation avec l\'œuvre.'); return; }
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ takedownErrorMsg('Adresse email invalide.'); return; }
+  if(!country){ takedownErrorMsg('Indique ton pays de résidence.'); return; }
+  if(!$('tdGoodFaith').checked || !$('tdAccurate').checked){ takedownErrorMsg('Coche les deux déclarations pour envoyer le signalement.'); return; }
+  if(signature.toLowerCase()!==name.toLowerCase()){ takedownErrorMsg('La signature doit correspondre exactement à ton nom complet.'); return; }
   const btn=$('tdSubmitBtn');
   if(btn){ btn.disabled=true; btn.textContent='Envoi…'; }
   try{
-    await withTimeout(db.collection('takedownRequests').add({ links, name, relation, email, status:'pending', createdAt:Date.now() }), 20000);
+    await withTimeout(db.collection('takedownRequests').add({
+      links, name, relation, email, workType, workTitle, originalUrl, timestamps, description, removalScope, authorizedBefore,
+      organization, phone, country, signature, goodFaith:true, accuracyStatement:true,
+      status:'pending', createdAt:Date.now()
+    }), 20000);
     closeTakedownForm();
     toast('Signalement envoyé — merci, il sera examiné rapidement.');
   }catch(e){
@@ -954,6 +1181,22 @@ function renderTakedownList(){
     const statusBadge = t.status==='approved' ? '<span class="muted small" style="color:var(--teal)">✅ Validé</span>'
       : t.status==='rejected' ? '<span class="muted small" style="color:var(--danger)">❌ Rejeté</span>'
       : '<span class="muted small">⏳ En attente</span>';
+    const typeLabels={video:'Vidéo / film / série', music:'Musique / son', image:'Image / photo', text:'Texte / livre', software:'Logiciel / jeu', other:'Autre'};
+    const line=(lbl,v)=> v ? '<div><strong>'+lbl+' :</strong> '+esc(v)+'</div>' : '';
+    const detailsHtml = t.workTitle ? ('<details style="margin-top:6px;"><summary class="muted small" style="cursor:pointer;">Voir les détails du signalement</summary>'
+      +'<div class="muted small" style="margin-top:4px;word-break:break-word;line-height:1.5;">'
+      +line('Type d\'œuvre', typeLabels[t.workType]||t.workType)
+      +line('Œuvre originale', t.workTitle)
+      +line('Preuve / lien original', t.originalUrl)
+      +line('Passage concerné', t.timestamps)
+      +line('Description', t.description)
+      +line('Suppression demandée', t.removalScope==='partial' ? 'Passage concerné seulement' : 'Toute la vidéo')
+      +line('Autorisation donnée avant', t.authorizedBefore==='yes' ? 'Oui (expirée / non respectée)' : 'Non, jamais')
+      +line('Organisation', t.organization)
+      +line('Téléphone', t.phone)
+      +line('Pays', t.country)
+      +line('Signature', t.signature)
+      +'</div></details>') : '';
     const actions = (!t.status || t.status==='pending') ?
       '<div style="display:flex;gap:6px;margin-top:6px;">'
       +'<button class="btn btn-accent" style="flex:1;padding:6px;font-size:.78rem;" onclick="resolveTakedown(\''+t.id+'\',\'approved\')">✅ Valider</button>'
@@ -964,13 +1207,13 @@ function renderTakedownList(){
       +'<div><strong>'+esc(t.name)+'</strong> ('+esc(t.relation)+')<br>'
       +'<span class="muted small">'+esc(t.email)+' • '+date+'</span></div>'+statusBadge+'</div>'
       +'<div class="muted small" style="margin-top:4px;word-break:break-word;">'+esc(t.links)+'</div>'
+      +detailsHtml
       +actions+'</div>';
   };
   el.innerHTML = (pending.length ? '<p class="muted small" style="margin:4px 0;"><strong>'+pending.length+' en attente</strong></p>' : '')
     + pending.map(row).join('')
     + (resolved.length ? '<p class="muted small" style="margin:10px 0 4px;">Traités</p>' + resolved.map(row).join('') : '');
-}
-async function resolveTakedown(id, status){
+  }async function resolveTakedown(id, status){
   const t=takedowns.find(x=>x.id===id); if(!t) return;
   if(status==='approved'){
     // tente de retrouver la vidéo visée par le(s) lien(s) signalé(s), pour proposer sa suppression directement
@@ -1049,6 +1292,8 @@ function visibleTo(v){
 /* ============ ROUTING ============ */
 function switchView(name){
   currentView=name;
+  if(name!=='watch') stopWatchComments();
+  if(name!=='watch' && location.hash.startsWith('#v=') && !pendingDeepLink) history.replaceState(null,'',location.pathname+location.search);
   $('viewHome').hidden = name!=='home';
   $('viewWatch').hidden = name!=='watch';
   $('viewChannel').hidden = name!=='channel';
@@ -1059,11 +1304,14 @@ function switchView(name){
   window.scrollTo(0,0);
   $('rail').classList.remove('open');
 }
-function goHome(){ switchView('home'); renderHome(); }
+function goHome(){
+  switchView('home'); renderHome();
+  if(location.hash) history.replaceState(null,'',location.pathname+location.search);
+}
 
 /* ============ RAIL ============ */
 function renderRailFriends(){
-  const entries = [{key:ADMIN_NAME,name:ADMIN_NAME}, ...users.map(u=>({key:u.id,name:u.name}))];
+  const entries = [{key:ADMIN_NAME,name:displayNameFor(ADMIN_NAME)}, ...users.filter(u=>!u.isAdmin).map(u=>({key:u.id,name:u.name}))];
   $('railFriends').innerHTML = entries.map(({key,name})=>
     '<button class="rail-friend" data-key="'+esc(key)+'" onclick="openChannel(\''+key.replace(/'/g,"\\'")+'\')">'
     +avatarHtml(key,'rail-avatar')+'<span>'+esc(name)+'</span></button>'
@@ -1086,13 +1334,18 @@ function cardHtml(v){
 }
 function renderHome(){
   const term = val('searchInput').trim().toLowerCase();
+  const subs = mySubs();
   const list = videos.filter(v=>visibleTo(v))
-    .filter(v=> !term || (v.title+' '+v.desc+' '+displayNameFor(v.authorId)).toLowerCase().includes(term))
-    .sort((a,b)=>b.createdAt-a.createdAt);
+    .filter(v=> !term || ((v.title||'')+' '+(v.desc||'')+' '+displayNameFor(v.authorId)).toLowerCase().includes(term))
+    .filter(v=> homeFilter==='mine' ? v.authorId===myKey() : homeFilter==='subs' ? subs.includes(v.authorId) : true)
+    .sort((a,b)=> homeFilter==='popular' ? trendScore(b)-trendScore(a) : b.createdAt-a.createdAt);
   const grid=$('homeGrid'), empty=$('homeEmpty');
   if(list.length===0){
     grid.innerHTML=''; grid.hidden=true; empty.hidden=false;
-    empty.textContent = term ? 'Aucune vidéo ne correspond à « '+term+' ».' : "Aucune vidéo pour l'instant — publie la première !";
+    empty.textContent = term ? 'Aucune vidéo ne correspond à « '+term+' ».'
+      : homeFilter==='subs' ? (subs.length ? "Tes abonnements n'ont encore rien publié." : "Tu n'es abonné à personne — ouvre une chaîne et clique sur « S'abonner ».")
+      : homeFilter==='mine' ? "Tu n'as encore rien publié."
+      : "Aucune vidéo pour l'instant — publie la première !";
     return;
   }
   empty.hidden=true; grid.hidden=false;
@@ -1107,6 +1360,9 @@ function openChannel(key){
   setAvatarNode($('channelAvatar'), key);
   const list = videos.filter(v=>v.authorId===key && visibleTo(v)).sort((a,b)=>b.createdAt-a.createdAt);
   $('channelCount').textContent = list.length+' vidéo'+(list.length>1?'s':'');
+  const nSubs=subscriberCount(key);
+  $('channelSubCount').textContent = nSubs+' abonné'+(nSubs>1?'s':'');
+  $('channelActions').innerHTML = subscribeBtnHtml(key);
   const grid=$('channelGrid'), empty=$('channelEmpty');
   if(list.length===0){ grid.innerHTML=''; grid.hidden=true; empty.hidden=false; }
   else { empty.hidden=true; grid.hidden=false; grid.innerHTML=list.map(cardHtml).join(''); }
@@ -1128,12 +1384,15 @@ function embedUrlFor(url){
 function youtubeIdFor(url){
   const m = (url||'').match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/|youtube\.com\/embed\/)([\w-]{6,})/);
   return m ? m[1] : null;
-  }async function openWatch(id){
+}
+async function openWatch(id){
   const v = videos.find(x=>x.id===id);
   if(!v) return;
   if(!visibleTo(v)){ toast("Cette vidéo n'est pas disponible."); return; }
   currentWatchId=id;
   switchView('watch');
+  if(location.hash!=='#v='+id) history.replaceState(null,'',location.pathname+location.search+'#v='+id);
+  startWatchComments(id);
   renderWatchSkeleton(v);
   if(currentObjectUrl){ URL.revokeObjectURL(currentObjectUrl); currentObjectUrl=null; }
   const player=$('playerVideo'), embed=$('playerEmbed');
@@ -1154,8 +1413,7 @@ function youtubeIdFor(url){
       player.src = currentObjectUrl;
     }catch(e){ console.error(e); showWatchNotice('Impossible de lire cette vidéo sur cet appareil.'); return; }
   } else {
-    const embedUrl = embedUrlFor(v.url);
-    if(embedUrl){ player.hidden=true; embed.hidden=false; embed.src=embedUrl; }
+    const embedUrl = embedUrlFor(v.url); if(embedUrl){ player.hidden=true; embed.hidden=false; embed.src=embedUrl; }
     else { player.src = v.url; }
   }
   hideWatchNotice();
@@ -1214,11 +1472,10 @@ function renderWatchSkeleton(v){
   renderCopyrightInfo(v);
   $('watchDeleteBtn').hidden = !(isAdminAuthed() || isVideoOwner(v));
   const subEl=$('watchSubscribeBtn');
-  if(subEl){
-    subEl.dataset.key=v.authorId;
-    subEl.innerHTML = subscribeBtnHtml(v.authorId, true);
-    loadChannelMeta(v.authorId).then(()=>{ if(subEl.dataset.key===v.authorId) subEl.innerHTML = subscribeBtnHtml(v.authorId, true); });
-  }
+  if(subEl) subEl.innerHTML = subscribeBtnHtml(v.authorId);
+  const nSubs=subscriberCount(v.authorId);
+  $('watchMeta').textContent += ' • '+nSubs+' abonné'+(nSubs>1?'s':'');
+  const li=$('watchLinkInput'); if(li) li.value=videoLink(v.id);
   renderSimilarVideos(v);
 }
 /* Suggestions : d'abord d'autres vidéos de la même chaîne, puis les plus "tendance" ailleurs. */
@@ -1251,7 +1508,7 @@ function toggleLike(){
   updateLikeButton(v);
 }
 function renderComments(v){
-  const comments=v.comments||[];
+  const comments=[...(v.comments||[]), ...watchComments];
   const canModerate = isAdminAuthed() || isVideoOwner(v);
   $('commentsCount').textContent=comments.length;
   $('commentsList').innerHTML = comments.length ? comments.slice().sort((a,b)=>a.ts-b.ts).map(c=>
@@ -1266,15 +1523,25 @@ function sendComment(){
   if(!text) return;
   const v=videos.find(x=>x.id===currentWatchId); if(!v) return;
   input.value='';
-  const comment={id:newId(), authorId:myKey(), text, ts:Date.now()};
-  db.collection('videos').doc(v.id).update({ comments: firebase.firestore.FieldValue.arrayUnion(comment) }).catch(e=>{ console.error(e); toast('Erreur : commentaire non envoyé.'); });
-  v.comments=[...(v.comments||[]), comment];
-  renderComments(v);
+  if(!currentUser){ openIdentityModal(); return; }
+  const cid=newId();
+  const batch=db.batch();
+  batch.set(db.collection('videos').doc(v.id).collection('comments').doc(cid), {authorId:myKey(), text, ts:Date.now()});
+  batch.update(db.collection('videos').doc(v.id), {commentCount: firebase.firestore.FieldValue.increment(1)});
+  batch.commit().catch(e=>{ console.error(e); toast('Erreur : commentaire non envoyé ('+e.message+')'); });
 }
 function deleteComment(commentKey){
   const v=videos.find(x=>x.id===currentWatchId); if(!v) return;
   if(!(isAdminAuthed() || isVideoOwner(v))) return;
   if(!confirm('Supprimer ce commentaire ?')) return;
+  if(watchComments.some(c=>c.id===commentKey)){
+    const batch=db.batch();
+    batch.delete(db.collection('videos').doc(v.id).collection('comments').doc(commentKey));
+    batch.update(db.collection('videos').doc(v.id), {commentCount: firebase.firestore.FieldValue.increment(-1)});
+    batch.commit().then(()=>toast('Commentaire supprimé.')).catch(e=>{ console.error(e); toast('Erreur lors de la suppression : '+e.message); });
+    return;
+  }
+  // ancien commentaire (tableau dans le document de la vidéo)
   const newComments = (v.comments||[]).filter(c=>String(c.id||c.ts)!==String(commentKey));
   db.collection('videos').doc(v.id).update({ comments:newComments }).catch(e=>{ console.error(e); toast('Erreur lors de la suppression.'); });
   v.comments=newComments;
@@ -1289,7 +1556,7 @@ async function deleteVideo(id, opts){
   opts = opts||{};
   const v = videos.find(x=>x.id===id); if(!v) return false;
   const isOwner = isVideoOwner(v);
-  if(!(isAdminAuthed() || isOwner)) return false;
+  if(!(isAdminAuthed() || isOwner)){ toast("Seuls le créateur ou l'administrateur peuvent supprimer cette vidéo."); return false; }
   let reason=null;
   if(isAdminAuthed() && !isOwner){
     reason = opts.reason || prompt('Motif de la suppression (facultatif) :','') || '(non précisé)';
@@ -1297,6 +1564,10 @@ async function deleteVideo(id, opts){
   } else if(!opts.skipConfirm && !confirm('Supprimer définitivement « '+v.title+' » ?')){
     return false;
   }
+  try{ // Firestore ne supprime pas les sous-collections avec le document : on retire d'abord les commentaires
+    const cs=await db.collection('videos').doc(id).collection('comments').get();
+    for(let i=0;i<cs.docs.length;i+=400){ const b=db.batch(); cs.docs.slice(i,i+400).forEach(d=>b.delete(d.ref)); await b.commit(); }
+  }catch(e){ console.error(e); }
   try{ await db.collection('videos').doc(id).delete(); }
   catch(e){ console.error(e); toast('Échec de la suppression : '+e.message); return false; }
   if(v.sourceType==='file'){ try{ await deleteFile(id); }catch(e){ console.error(e); } }
@@ -1310,7 +1581,9 @@ async function deleteCurrentVideo(){
   const id=currentWatchId;
   const ok = await deleteVideo(id);
   if(ok){ toast('Vidéo supprimée.'); goHome(); }
-  }/* ============ BOUCLIER COPYRIGHT — vérification ============ */
+}
+
+/* ============ BOUCLIER COPYRIGHT — vérification ============ */
 /* Une chaîne est autorisée pour une œuvre si c'est la chaîne de l'ayant droit lui-même (rightsHolderChannelId),
    ou si elle figure dans la liste des chaînes autorisées à publier cette œuvre précise. */
 function isAuthorizedFor(fp){
@@ -1341,8 +1614,7 @@ function isExemptRange(fp, refStart, refEnd){
   if(mode==='partiel-zones'){
     if(!Array.isArray(fp.protectedRanges) || !fp.protectedRanges.length) return false;
     return !fp.protectedRanges.some(r => refStart < r.end && refEnd > r.start);
-  }
-  return false;
+  } return false;
 }
 /* Détection multi-œuvres : au-delà de la MEILLEURE correspondance (qui pilote seule le blocage et la
    coupe proposée), repère toutes les AUTRES empreintes distinctes également touchées par cet extrait —
@@ -1487,7 +1759,7 @@ function openUploadModal(){
   $('uploadVisibility').value='public'; $('scheduleRow').hidden=true; $('uploadSchedule').value='';
   $('fileNameHint').textContent='';
   $('uploadAsLabel').textContent=currentUser;
-  $('overrideRow').hidden = currentUser!==ADMIN_NAME;
+  $('overrideRow').hidden = !isAdminAuthed();
   $('chkOverride').checked=false;
   pendingUpload=null;
   hideUploadError();
@@ -1507,16 +1779,18 @@ async function handleUpload(){
   const scheduledTime = val('uploadSchedule');
   const url = val('uploadUrl').trim();
   const file = $('uploadFile').files[0] || null;
-  const override = $('chkOverride').checked && currentUser===ADMIN_NAME;
+  const override = $('chkOverride').checked && isAdminAuthed();
 
   if(!file && !url){ showUploadError('Ajoute un fichier vidéo ou un lien.'); return; }
-  if(visibility==='scheduled' && !scheduledTime){ showUploadError('Choisis une date de publication.'); return; }setSubmitting(true, 'Analyse de la vidéo…');
+  if(visibility==='scheduled' && !scheduledTime){ showUploadError('Choisis une date de publication.'); return; }
+
+  setSubmitting(true, 'Analyse de la vidéo…');
   let tempUrl=null;
   try{
     let fileHash=null, thumb=null, durationSeconds=null, visualHash=null, audioHash=null, height=null;
     if(file){
       fileHash = await hashFile(file); tempUrl = URL.createObjectURL(file);
-      const analysis = await analyzeVideo(tempUrl, (i,n,m)=>setSubmitting(true,'Analyse de la vidéo… '+Math.round(i/n*100)+' %'+(m==='play'?' (film long : garde l\'onglet ouvert)':'')));
+      const analysis = await analyzeVideo(tempUrl, (i,n,m,eta)=>setSubmitting(true,'Analyse de la vidéo… '+Math.round(i/n*100)+' %'+progressSuffix(m,eta)));
       thumb=analysis.thumb; durationSeconds=analysis.duration; visualHash=analysis.visualHash; height=analysis.height;
       setSubmitting(true,'Analyse de la bande sonore…');
       audioHash = await analyzeAudioFile(file);
@@ -1527,7 +1801,7 @@ async function handleUpload(){
       if(ytId) thumb = 'https://img.youtube.com/vi/'+ytId+'/hqdefault.jpg';
     } else {
       // Lien direct vers un fichier vidéo (.mp4…) : on peut tenter la même analyse qu'un fichier.
-      const analysis = await analyzeVideo(url, (i,n,m)=>setSubmitting(true,'Analyse de la vidéo… '+Math.round(i/n*100)+' %'+(m==='play'?' (film long : garde l\'onglet ouvert)':'')));
+      const analysis = await analyzeVideo(url, (i,n,m,eta)=>setSubmitting(true,'Analyse de la vidéo… '+Math.round(i/n*100)+' %'+progressSuffix(m,eta)));
       thumb=analysis.thumb; durationSeconds=analysis.duration; visualHash=analysis.visualHash; height=analysis.height;
     }
 
@@ -1541,8 +1815,7 @@ async function handleUpload(){
         logBlock({authorId:myKey(), title, source:file?file.name:url, reason:check.reason, matchLabel:check.match.label});
         renderBlockPanel(check);
         setSubmitting(false);
-        return;
-      }
+        return;      }
       if(check.flagged){
         logBlock({authorId:myKey(), title, source:file?file.name:url, reason:'(signalement, non bloquant) '+check.reason, matchLabel:check.match.label});
       }
@@ -1699,7 +1972,7 @@ function cutVideoSegment(file, cutStart, cutEnd, onProgress){
     if(!window.MediaRecorder){ reject(new Error('MediaRecorder non disponible')); return; }
     const v=document.createElement('video');
     v.muted=false; v.playsInline=true; v.preload='auto';
-    v.style.position='fixed'; v.style.left='-9999px'; v.style.width='2px'; v.style.height='2px';
+    v.style.cssText='position:fixed;right:0;bottom:0;width:48px;height:27px;opacity:.01;pointer-events:none;z-index:-1;'; // dans la fenêtre (le navigateur ne rend pas une vidéo hors écran) mais invisible
     const url=URL.createObjectURL(file);
     let jumped=false, recorder=null, chunks=[], done=false;
     const cleanup=()=>{ try{v.pause();}catch(e){} URL.revokeObjectURL(url); v.remove(); };
@@ -1724,13 +1997,14 @@ function cutVideoSegment(file, cutStart, cutEnd, onProgress){
     v.addEventListener('error',()=>{ if(!done){ done=true; cleanup(); reject(new Error('lecture impossible')); } });
     v.src=url;
   });
-  }/* Coupe le son (silence en fondu) pendant [muteStart,muteEnd], garde l'image et la durée intactes. Ré-encodage en WebM. */
+}
+/* Coupe le son (silence en fondu) pendant [muteStart,muteEnd], garde l'image et la durée intactes. Ré-encodage en WebM. */
 function muteAudioSegment(file, muteStart, muteEnd, onProgress){
   return new Promise((resolve,reject)=>{
     if(!window.MediaRecorder){ reject(new Error('MediaRecorder non disponible')); return; }
     const v=document.createElement('video');
     v.muted=false; v.playsInline=true; v.preload='auto';
-    v.style.position='fixed'; v.style.left='-9999px'; v.style.width='2px'; v.style.height='2px';
+    v.style.cssText='position:fixed;right:0;bottom:0;width:48px;height:27px;opacity:.01;pointer-events:none;z-index:-1;'; // dans la fenêtre (le navigateur ne rend pas une vidéo hors écran) mais invisible
     const url=URL.createObjectURL(file);
     let recorder=null, chunks=[], done=false, audioCtx=null, gainNode=null;
     const cleanup=()=>{ try{v.pause();}catch(e){} URL.revokeObjectURL(url); v.remove(); try{audioCtx&&audioCtx.close();}catch(e){} };
@@ -1741,8 +2015,7 @@ function muteAudioSegment(file, muteStart, muteEnd, onProgress){
         if(raw.getAudioTracks().length){
           audioCtx = new (window.AudioContext||window.webkitAudioContext)();
           const src = audioCtx.createMediaElementSource(v);
-          gainNode = audioCtx.createGain();
-          src.connect(gainNode);
+          gainNode = audioCtx.createGain();src.connect(gainNode);
           const dest = audioCtx.createMediaStreamDestination();
           gainNode.connect(dest);
           combined = new MediaStream([...combined.getVideoTracks(), ...dest.stream.getAudioTracks()]);
@@ -1851,7 +2124,7 @@ async function runShieldTest(){
     if(file){
       fileHash = await hashFile(file);
       const tempUrl = URL.createObjectURL(file);
-      const analysis = await analyzeVideo(tempUrl, (i,n,m)=>{ resultEl.textContent='Analyse en cours… '+Math.round(i/n*100)+' %'+(m==='play'?' — film long : garde cet onglet ouvert':''); });
+      const analysis = await analyzeVideo(tempUrl, (i,n,m,eta)=>{ resultEl.textContent='Analyse en cours… '+Math.round(i/n*100)+' %'+progressSuffix(m,eta); });
       visualHash = analysis.visualHash;
       resultEl.textContent='Analyse de la bande sonore…';
       audioHash = await analyzeAudioFile(file);
@@ -1875,11 +2148,11 @@ function refreshShieldLists(){
 }
 /* Liste déroulante des chaînes existantes (admin + comptes de classe), pour relier un ayant droit à sa chaîne. */
 function channelOptionsHtml(){
-  return [{key:ADMIN_NAME,name:ADMIN_NAME}, ...users.map(u=>({key:u.id,name:u.name}))]
+  return [{key:ADMIN_NAME,name:displayNameFor(ADMIN_NAME)}, ...users.filter(u=>!u.isAdmin).map(u=>({key:u.id,name:u.name}))]
     .map(c=>'<option value="'+esc(c.key)+'">'+esc(c.name)+'</option>').join('');
 }
 function channelCheckboxesHtml(){
-  const list=[{key:ADMIN_NAME,name:ADMIN_NAME}, ...users.map(u=>({key:u.id,name:u.name}))];
+  const list=[{key:ADMIN_NAME,name:displayNameFor(ADMIN_NAME)}, ...users.filter(u=>!u.isAdmin).map(u=>({key:u.id,name:u.name}))];
   if(!list.length) return '<span class="muted small">Aucune chaîne pour l\'instant.</span>';
   return list.map(c=>'<label style="margin:0;display:flex;align-items:center;gap:5px;font-weight:400;font-size:.82rem;">'
     +'<input type="checkbox" class="fp-auth-chk" value="'+esc(c.key)+'"> '+esc(c.name)+'</label>').join('');
@@ -1915,7 +2188,8 @@ function addExemptRangeRow(startVal, endVal){
   const wrap=$('fpExemptRangesList'); if(!wrap) return;
   const row=document.createElement('div');
   row.className='exempt-range-row';
-  row.style.cssText='display:flex;gap:6px;align-items:center;margin-top:4px;';row.innerHTML = '<input type="text" class="fp-exempt-start" placeholder="Début (ex. 0:00)" style="flex:1;min-width:0;" value="'+esc(startVal||'')+'">'
+  row.style.cssText='display:flex;gap:6px;align-items:center;margin-top:4px;';
+  row.innerHTML = '<input type="text" class="fp-exempt-start" placeholder="Début (ex. 0:00)" style="flex:1;min-width:0;" value="'+esc(startVal||'')+'">'
     + '<span class="muted small">→</span>'
     + '<input type="text" class="fp-exempt-end" placeholder="Fin (ex. 2:03)" style="flex:1;min-width:0;" value="'+esc(endVal||'')+'">'
     + '<button type="button" class="icon-btn danger" title="Retirer cette plage" onclick="this.parentElement.remove()">✕</button>';
@@ -1939,8 +2213,7 @@ function collectExemptRanges(){
     if(s===null || e===null || e<=s) continue; // ligne vide ou invalide : ignorée silencieusement
     ranges.push({start:s, end:e});
   }
-  return ranges;
-}
+  return ranges;}
 function onFpTypeChange(){
   const isAudio = !!($('fpTypeAudio') && $('fpTypeAudio').checked);
   if($('fpVideoRow')) $('fpVideoRow').hidden = isAudio;
@@ -1986,7 +2259,7 @@ async function addFingerprint(){
         shieldErrorMsg('Analyse de l\'image (empreinte exacte + perceptuelle)…');
         const exactHash = await hashFile(file);
         const tempUrl = URL.createObjectURL(file);
-        const analysis = await analyzeVideo(tempUrl, (i,n,m)=>shieldErrorMsg('Analyse de l\'image… '+Math.round(i/n*100)+' %'+(m==='play'?' — film long : garde cet onglet ouvert':'')));
+        const analysis = await analyzeVideo(tempUrl, (i,n,m,eta)=>shieldErrorMsg('Analyse de l\'image… '+Math.round(i/n*100)+' %'+progressSuffix(m,eta)));
         URL.revokeObjectURL(tempUrl);
         shieldErrorMsg('Analyse du son (dialogues, musique de fond…)…');
         const audioHash = await analyzeAudioFile(file, (i,n)=>shieldErrorMsg('Analyse du son… '+Math.round(i/n*100)+' %'));
@@ -2115,7 +2388,8 @@ function switchIdentityTab(tab){
 function identityErrorMsg(msg){ const e=$('identityErr'); if(e){ e.textContent=msg; e.hidden=!msg; } }
 function signupErrorMsg(msg){ const e=$('signupErr'); if(e){ e.textContent=msg; e.hidden=!msg; } }
 function firebaseAuthErrorMsg(e){
-  const map = {'auth/invalid-email':'Adresse email invalide.',
+  const map = {
+    'auth/invalid-email':'Adresse email invalide.',
     'auth/user-not-found':'Email ou mot de passe incorrect.',
     'auth/wrong-password':'Email ou mot de passe incorrect.',
     'auth/invalid-credential':'Email ou mot de passe incorrect.',
@@ -2139,8 +2413,7 @@ async function doLogin(){
   const email=val('loginEmail').trim().toLowerCase();
   const pw=val('loginPw');
   identityErrorMsg('');
-  if(!email || !pw){ identityErrorMsg('Renseigne ton email et ton mot de passe.'); return; }
-  const btn=$('loginSubmitBtn');
+  if(!email || !pw){ identityErrorMsg('Renseigne ton email et ton mot de passe.'); return; }const btn=$('loginSubmitBtn');
   if(btn){ btn.disabled=true; btn.textContent='Connexion…'; }
   try{ await withTimeout(auth.signInWithEmailAndPassword(email, pw), 30000); } // onAuthStateChanged prend le relais
   catch(e){ console.error(e); identityErrorMsg(firebaseAuthErrorMsg(e)); }
@@ -2185,15 +2458,15 @@ function updateAuthUI(){
   $('railStudio').hidden = !currentUser;
 }
 $('btnIdentity').addEventListener('click', ()=>{
-  if(isAdminAuthed()){ if(confirm('Se déconnecter du compte admin ?')) doLogout(); }
-  else if(currentAccountId) openAccount();
+  if(isAdminAuthed() || currentAccountId) openAccount();
   else openIdentityModal();
 });
 
 /* ============ MON COMPTE (nom de chaîne + photo de profil) ============ */
 let pendingAccountPic; // undefined = inchangée, sinon nouvelle data URL (ou null pour retirer la photo)
 function openAccount(){
-  const u=findUserById(currentAccountId); if(!u) return;
+  const u = isAdminAuthed() ? (adminProfile() || {name:displayNameFor(ADMIN_NAME), pic:null}) : findUserById(currentAccountId);
+  if(!u) return;
   $('accountNameInput').value=u.name;
   pendingAccountPic=undefined;
   $('accountPicInput').value='';
@@ -2214,20 +2487,29 @@ async function previewAccountPic(input){
   catch(e){ console.error(e); toast('Impossible de charger cette image.'); }
 }
 async function saveAccount(){
-  const u=findUserById(currentAccountId); if(!u) return;
+  const isAdm=isAdminAuthed();
+  const docId=accountDocId(); if(!docId) return;
+  const u = isAdm ? (adminProfile() || {name:displayNameFor(ADMIN_NAME), pic:null}) : findUserById(docId);
+  if(!u) return;
   const newName=val('accountNameInput').trim();
   accountErrorMsg('');
   if(!newName){ accountErrorMsg('Le nom de chaîne ne peut pas être vide.'); return; }
   if(newName!==u.name){
-    if(newName===ADMIN_NAME){ accountErrorMsg('Ce nom de chaîne est réservé.'); return; }
+    if(!isAdm && newName===ADMIN_NAME){ accountErrorMsg('Ce nom de chaîne est réservé.'); return; }
     try{
-      const dup = await db.collection('users').where('name','==',newName).limit(1).get();
-      if(!dup.empty){ accountErrorMsg('Ce nom de chaîne est déjà pris.'); return; }
+      const dup = await db.collection('users').where('name','==',newName).limit(2).get();
+      if(dup.docs.some(d=>d.id!==docId)){ accountErrorMsg('Ce nom de chaîne est déjà pris.'); return; }
     }catch(e){ console.error(e); }
   }
   const patch={name:newName};
   if(pendingAccountPic!==undefined) patch.pic=pendingAccountPic;
-  try{ await db.collection('users').doc(u.id).update(patch); }
+  try{
+    if(isAdm){ // le profil admin est créé au premier enregistrement (set + merge), puis simplement mis à jour
+      await db.collection('users').doc(docId).set({...patch, isAdmin:true, createdAt:(adminProfile()&&adminProfile().createdAt)||Date.now()}, {merge:true});
+    } else {
+      await db.collection('users').doc(docId).update(patch);
+    }
+  }
   catch(e){ console.error(e); accountErrorMsg("Échec de l'enregistrement : "+e.message); return; }
   // authorId (uid) ne change jamais : le nom affiché est résolu en direct partout (displayNameFor),
   // donc les vidéos/commentaires déjà publiés suivent automatiquement le renommage, sans rien à mettre à jour.
@@ -2248,7 +2530,7 @@ function renderStudio(){
   const mine = videos.filter(v=>isVideoOwner(v)).sort((a,b)=>b.createdAt-a.createdAt);
   const totalViews = mine.reduce((n,v)=>n+(v.views||0),0);
   const totalLikes = mine.reduce((n,v)=>n+((v.likedBy||[]).length),0);
-  const totalComments = mine.reduce((n,v)=>n+((v.comments||[]).length),0);
+  const totalComments = mine.reduce((n,v)=>n+commentTotal(v),0);
   $('studioStats').innerHTML = [
     [mine.length, mine.length>1?'Vidéos':'Vidéo'],
     [totalViews, 'Vues totales'],
@@ -2279,7 +2561,7 @@ function renderStudio(){
       +'<div class="studio-thumb" onclick="openWatch(\''+v.id+'\')" style="cursor:pointer;">'+thumbInner+'</div>'
       +'<div class="studio-meta" onclick="openWatch(\''+v.id+'\')" style="cursor:pointer;">'
       +'<div class="studio-title">'+esc(v.title)+copyrightMark+'</div>'
-      +'<div class="studio-nums">'+(v.views||0)+' vues • '+((v.likedBy||[]).length)+' j\'aime • '+((v.comments||[]).length)+' commentaires • '+timeAgo(v.createdAt)+'</div>'
+      +'<div class="studio-nums">'+(v.views||0)+' vues • '+((v.likedBy||[]).length)+' j\'aime • '+commentTotal(v)+' commentaires • '+timeAgo(v.createdAt)+'</div>'
       +'</div>'
       +'<button class="icon-btn danger" title="Supprimer cette vidéo" onclick="event.stopPropagation();studioDeleteVideo(\''+v.id+'\')">🗑️</button>'
       +'</div>';
@@ -2289,6 +2571,118 @@ async function studioDeleteVideo(id){
   const ok = await deleteVideo(id);
   if(ok){ toast('Vidéo supprimée.'); renderStudio(); }
 }
+
+/* ============ PAGES LÉGALES (confidentialité, conditions & propriété intellectuelle, droits d'auteur, contact) ============ */
+const CONTACT_EMAIL='unitedstudioci@gmail.com';
+const LEGAL_UPDATED="22 octobre 2026";
+const LEGAL_TABS=[['privacy','Confidentialité'],['terms','Conditions & propriété intellectuelle'],['copyright','Droits d\'auteur'],['contact','Contact']];
+function legalContent(tab){
+  const mail='<a href="mailto:'+CONTACT_EMAIL+'">'+CONTACT_EMAIL+'</a>';
+  if(tab==='privacy') return `
+    <h3>Politique de confidentialité</h3>
+    <p class="legal-updated">Dernière mise à jour : ${LEGAL_UPDATED}</p>
+    <h4>1. Qui est responsable ?</h4>
+    <p>NEUF est une plateforme de partage de vidéos destinée à un cercle fermé (« la bande », « la classe »). UNITED STUDIO CI, éditeur du site NEUF, est responsable du traitement des données décrit ici. Contact : ${mail}.</p>
+    <h4>2. Données que nous collectons</h4>
+    <ul>
+      <li><strong>Compte :</strong> adresse email et mot de passe (gérés par Firebase Authentication — le mot de passe n'est jamais lisible par UNITED STUDIO CI), nom de chaîne, photo de profil facultative.</li>
+      <li><strong>Contenus :</strong> vidéos, titres, descriptions, miniatures, commentaires, « j'aime », abonnements, nombre de vues (y compris par jour).</li>
+      <li><strong>Signalements de droits d'auteur :</strong> nom, relation avec l'œuvre, email, pays, téléphone et organisation (facultatifs), détails du signalement et signature électronique.</li>
+      <li><strong>Modération :</strong> un journal des blocages et suppressions (titre, auteur, motif), visible uniquement de l'administrateur.</li>
+      <li><strong>Analyse anti-contrefaçon :</strong> à la publication d'une vidéo, ton navigateur l'analyse (images et son) pour la comparer à des œuvres protégées. L'analyse se fait sur ton appareil ; seuls l'empreinte exacte du fichier et le résultat de détection sont enregistrés avec la vidéo.</li>
+    </ul>
+    <h4>3. Pourquoi ?</h4>
+    <p>Pour faire fonctionner le site (connexion, publication, commentaires, abonnements), le sécuriser, modérer les contenus, respecter le droit d'auteur et répondre à tes demandes. Nous n'utilisons pas tes données pour de la publicité ni du profilage, et nous ne les vendons pas.</p>
+    <h4>4. Qui voit quoi ?</h4>
+    <p>Le site est accessible uniquement aux personnes connectées. Ton nom de chaîne, ta photo, tes vidéos publiques et tes commentaires sont visibles par les membres connectés. Tes vidéos privées ou programmées ne sont visibles que de toi jusqu'à leur publication. Ton email n'est visible par personne d'autre que toi et, techniquement, l'administrateur du projet Firebase.</p>
+    <h4>5. Services tiers</h4>
+    <ul>
+      <li><strong>Google Firebase</strong> (authentification et base de données Firestore) ;</li>
+      <li><strong>Cloudinary</strong> (hébergement des fichiers vidéo publiés) ;</li>
+      <li><strong>Google Fonts</strong> (polices) ;</li>
+      <li><strong>YouTube / Google Drive</strong> lorsque tu publies un lien intégré : leur lecteur applique ses propres règles.</li>
+    </ul>
+    <p>Ces services peuvent traiter des données hors de ton pays. Leurs politiques de confidentialité s'appliquent en plus de celle-ci.</p>
+    <h4>6. Stockage sur ton appareil</h4>
+    <p>Le site utilise le stockage du navigateur (session de connexion, copie locale de secours d'une vidéo si l'envoi en ligne échoue, préférences de l'administrateur). Aucun cookie publicitaire ni traceur marketing n'est utilisé.</p>
+    <h4>7. Durée de conservation</h4>
+    <p>Tes données sont conservées tant que ton compte existe. Une vidéo supprimée est retirée du site (ses commentaires aussi). Les signalements de droits d'auteur et le journal de modération sont conservés le temps nécessaire à leur traitement et à la défense des droits de chacun.</p>
+    <h4>8. Tes droits</h4>
+    <p>Tu peux demander l'accès à tes données, leur rectification, leur suppression, la limitation ou l'opposition à leur traitement, ainsi que leur portabilité. Tu peux modifier ton nom et ta photo à tout moment dans « Mon compte ». Pour tout le reste, écris à ${mail}.</p>
+    <h4>9. Mineurs</h4>
+    <p>Si tu as moins de 15 ans, demande l'accord d'un parent ou d'un responsable avant de créer un compte. Ne publie jamais d'informations sensibles (adresse, téléphone, pièces d'identité) dans les titres, descriptions, commentaires ou vidéos.</p>    <h4>10. Sécurité</h4>
+    <p>Nous appliquons des mesures raisonnables (authentification, règles d'accès à la base de données, connexions chiffrées). Aucun système n'est infaillible : choisis un mot de passe solide et ne le partage pas.</p>
+    <h4>11. Modifications</h4>
+    <p>Cette politique peut évoluer. La date de mise à jour est indiquée en haut de cette page.</p>`;
+  if(tab==='terms') return `
+    <h3>Conditions d'utilisation et propriété intellectuelle</h3>
+    <p class="legal-updated">Dernière mise à jour : ${LEGAL_UPDATED}</p>
+    <h4>1. Acceptation</h4>
+    <p>En créant un compte ou en utilisant NEUF, tu acceptes ces conditions. Si tu n'es pas d'accord, n'utilise pas le site.</p>
+    <h4>2. Ton compte</h4>
+    <ul>
+      <li>Donne des informations exactes et garde ton mot de passe secret.</li>
+      <li>Tu es responsable de ce qui est fait avec ton compte.</li>
+      <li>Ne te fais pas passer pour quelqu'un d'autre.</li>
+    </ul>
+    <h4>3. Tes contenus</h4>
+    <p>Tu restes propriétaire de tes vidéos, textes et images. En les publiant, tu déclares avoir le droit de le faire (c'est ton œuvre, ou tu as l'autorisation de l'ayant droit) et tu accordes à NEUF une licence gratuite, non exclusive, limitée au fonctionnement du site, pour les héberger, les afficher et les reproduire techniquement tant qu'ils sont en ligne. Cette licence prend fin quand tu supprimes le contenu.</p>
+    <h4>4. Contenus interdits</h4>
+    <ul>
+      <li>Contenus illégaux, haineux, violents, pornographiques ou qui harcèlent, menacent ou humilient quelqu'un ;</li>
+      <li>atteintes à la vie privée (publier l'image ou les données d'une personne sans son accord) ;</li>
+      <li>œuvres de tiers (films, musiques, séries, images…) publiées sans autorisation de l'ayant droit ;</li>
+      <li>virus, tentatives de piratage, spam, détournement du site.</li>
+    </ul>
+    <h4>5. Propriété intellectuelle de NEUF</h4>
+    <p>Le site, son code source, son design, son nom, son logo et ses textes sont la propriété exclusive de UNITED STUDIO CI et protégés par le droit d'auteur. Tous droits réservés. Il est interdit de copier, modifier, redistribuer, héberger ailleurs, extraire ou réutiliser tout ou partie du site, de son code ou de son design, ou de s'en servir pour entraîner des modèles d'IA, sans autorisation écrite préalable. Voir le fichier LICENSE du projet.</p>
+    <h4>6. Bouclier Copyright</h4>
+    <p>NEUF analyse automatiquement les vidéos publiées pour détecter des contenus protégés enregistrés par l'administrateur. Selon le cas, la publication peut être bloquée, signalée ou autorisée (par exemple si tu es l'ayant droit ou si l'ayant droit t'a autorisé). Ce système peut se tromper. Si tu choisis de « publier quand même (fair use) », tu agis sous ta seule responsabilité et ce choix est enregistré. Un contenu protégé publié sans autorisation peut être supprimé.</p>
+    <h4>7. Modération</h4>
+    <p>L'administrateur peut supprimer tout contenu qui enfreint ces conditions ou la loi, et suspendre un compte en cas d'infractions graves ou répétées. Le créateur d'une chaîne peut supprimer sa propre vidéo ainsi que les commentaires sous ses vidéos.</p>
+    <h4>8. Responsabilité</h4>
+    <p>NEUF est fourni « en l'état », sans garantie de disponibilité continue. UNITED STUDIO CI n'est pas responsable des contenus publiés par les utilisateurs mais s'engage à retirer rapidement tout contenu manifestement illicite qui lui est signalé. Chaque utilisateur est responsable de ce qu'il publie.</p>
+    <h4>9. Modifications et droit applicable</h4>
+    <p>Ces conditions peuvent évoluer ; l'utilisation continue du site vaut acceptation. Elles sont régies par le droit applicable dans le pays où UNITED STUDIO CI est établi, sans préjudice des droits impératifs dont tu bénéficies.</p>
+    <h4>10. Contact</h4>
+    <p>Pour toute question : ${mail}.</p>`;
+  if(tab==='copyright') return `
+    <h3>Droits d'auteur et signalement</h3>
+    <p class="legal-updated">Dernière mise à jour : ${LEGAL_UPDATED}</p>
+    <h4>Nous respectons les droits des créateurs</h4>
+    <p>Les utilisateurs ne doivent publier que des contenus dont ils sont les auteurs ou pour lesquels ils ont l'autorisation de l'ayant droit.</p>
+    <h4>Signaler un contenu</h4>
+    <p>Si tu es ayant droit (ou son représentant) et que ton œuvre est publiée sans autorisation, utilise le formulaire de signalement — il est ouvert à tous, sans compte. Indique :</p>
+    <ul>
+      <li>le ou les liens du contenu concerné ;</li>
+      <li>l'œuvre originale (titre, type, lien ou preuve de propriété) ;</li>
+      <li>le passage concerné et une description de l'atteinte ;</li>
+      <li>tes coordonnées (nom, email, pays) ;</li>
+      <li>la déclaration de bonne foi, la déclaration d'exactitude et ta signature électronique.</li>
+    </ul>
+    <p><button class="btn btn-accent" onclick="closeLegal();openTakedownForm();">🚩 Ouvrir le formulaire de signalement</button></p>
+    <h4>Traitement</h4>
+    <p>Chaque signalement est examiné par l'administrateur. S'il est validé, le contenu concerné est supprimé et le motif est enregistré. S'il est rejeté ou incomplet, la personne peut être recontactée par email pour fournir des preuves supplémentaires.</p>
+    <h4>Contestation</h4>
+    <p>Si ton contenu a été supprimé à tort, écris à ${mail} en expliquant pourquoi tu estimes avoir le droit de le publier (œuvre originale, autorisation de l'ayant droit, exception légale…). Le dossier sera réexaminé.</p>
+    <h4>Faux signalements et récidive</h4>
+    <p>Déclarer sciemment de fausses informations dans un signalement peut engager ta responsabilité. Les comptes qui publient de manière répétée des contenus contrefaisants peuvent être suspendus.</p>`;
+  return `
+    <h3>Contact</h3>
+    <p>Pour toute question, demande d'accès ou de suppression de données, contestation de modération ou autorisation d'utilisation, écris-nous :</p>
+    <p style="font-size:1rem;">✉️ ${mail}</p>
+    <p>Indique l'objet de ta demande et, si possible, le lien de la vidéo ou le nom de ta chaîne pour que nous puissions te répondre plus vite.</p>
+    <h4>Signaler un contenu protégé</h4>
+    <p>Pour un signalement de droits d'auteur, utilise de préférence le formulaire dédié :</p>
+    <p><button class="btn btn-ghost" onclick="closeLegal();openTakedownForm();">🚩 Signaler une atteinte au droit d'auteur</button></p>`;
+}
+function renderLegal(tab){
+  $('legalTabs').innerHTML = LEGAL_TABS.map(([k,l])=>'<button class="tab-btn'+(k===tab?' active':'')+'" onclick="renderLegal(\''+k+'\')">'+esc(l)+'</button>').join('');
+  $('legalBody').innerHTML = legalContent(tab);
+  $('legalBody').scrollTop=0;
+}
+function openLegal(tab){ renderLegal(tab||'privacy'); $('legalModal').classList.add('open'); }
+function closeLegal(){ $('legalModal').classList.remove('open'); }
 
 /* ============ WIRING GÉNÉRAL ============ */
 $('btnMenu').addEventListener('click', ()=>$('rail').classList.toggle('open'));
@@ -2325,5 +2719,3 @@ auth.onAuthStateChanged(async (user)=>{
 </script>
 </body>
 </html>
-  
-  
