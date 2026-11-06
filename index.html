@@ -183,11 +183,21 @@
   .comment-item{align-items:flex-start;}
   .comment-row-top{display:flex; align-items:center; width:100%;}
 
+  /* RETRAIT / CONTESTATION / CONTENT ID */
+  .mod-banner{background:rgba(193,68,59,.1); border:1px solid var(--danger); border-radius:10px; padding:12px; margin:14px 0; font-size:.84rem; line-height:1.5;}
+  .card-badge.removed{color:#ff8a80;}
+  .own-form{max-width:560px; display:flex; flex-direction:column; gap:10px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r-l); padding:18px; margin-bottom:22px;}
+  .own-form label{font-size:.78rem; color:var(--text-muted); margin-top:4px;}
+  .own-form input,.own-form select,.own-form textarea{width:100%; padding:9px 11px; border-radius:8px; border:1px solid var(--border); background:var(--bg); outline:none;}
+  .own-form input[type=checkbox],.own-form input[type=radio]{width:auto;}
+  .own-form input:focus,.own-form select:focus,.own-form textarea:focus{border-color:var(--accent);}
+  .own-row{display:flex; gap:12px; align-items:center; padding:12px 8px; border-bottom:1px solid var(--border); flex-wrap:wrap;}
+  .own-row select{background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:6px 8px; font-size:.78rem;}
+
   /* PAGES LÉGALES */
   .site-footer{border-top:1px solid var(--border); padding:18px 20px 26px; text-align:center; font-size:.76rem; color:var(--text-muted);}
   .site-footer button{background:none; border:none; color:var(--text-muted); font-size:.76rem; cursor:pointer; text-decoration:underline; padding:2px 6px;}
-  .site-footer button:hover{color:var(--text);}
-  .legal-body h4{font-size:.88rem; margin:16px 0 4px; font-family:'Space Grotesk',sans-serif;}
+  .site-footer button:hover{color:var(--text);}.legal-body h4{font-size:.88rem; margin:16px 0 4px; font-family:'Space Grotesk',sans-serif;}
   .legal-body p,.legal-body li{font-size:.82rem; color:var(--text-muted); line-height:1.55;}
   .legal-body ul{padding-left:18px; margin:4px 0;}
   .legal-body a{color:var(--accent);}
@@ -221,7 +231,9 @@
     <p style="color:#8B8F9E;">Vérifie ta connexion, désactive un éventuel bloqueur de pub pour cette page, puis recharge.</p>
     <button onclick="location.reload()" style="margin-top:16px; background:#E8A33D; color:#1A1206; border:none; border-radius:8px; padding:10px 20px; font-weight:700; font-size:1rem; cursor:pointer;">Recharger la page</button>
   </div>
-  </div><div class="topbar">
+</div>
+
+<div class="topbar">
   <button class="btnMenu" id="btnMenu">☰</button>
   <div class="brand" onclick="goHome()">
     <div class="brand-mark">N9</div>
@@ -243,6 +255,7 @@
   <aside class="rail" id="rail">
     <button class="rail-item active" id="railHome" onclick="goHome()">Accueil</button>
     <button class="rail-item" id="railStudio" onclick="openStudio()" hidden>📊 Studio</button>
+    <button class="rail-item" id="railContentId" onclick="openContentId()" hidden>🎬 Content ID</button>
     <button class="rail-item" id="railReports" onclick="openReports()" hidden>🚩 Signalements</button>
     <div class="rail-label">La classe</div>
     <div id="railFriends"></div>
@@ -281,6 +294,7 @@
               <button class="btn btn-ghost" id="watchReportBtn" onclick="reportCurrentVideo()" hidden>🚩 Signaler</button>
             </div>
           </div>
+          <div id="watchModeration"></div>
           <div class="link-row">
             <input id="watchLinkInput" readonly onclick="this.select()" title="Lien de cette vidéo">
             <button class="btn btn-ghost" onclick="copyVideoLink()">🔗 Copier le lien</button>
@@ -322,6 +336,11 @@
       <div class="studio-chart" id="studioChart"></div>
       <div id="studioList"></div>
       <div class="empty-state" id="studioEmpty" hidden>Tu n'as encore rien publié.</div>
+    </section>
+
+    <section id="viewContentId" hidden>
+      <h2 style="margin-bottom:6px;">🎬 Content ID — espace ayants droit</h2>
+      <div id="contentIdBody"></div>
     </section>
 
     <section id="viewReports" hidden>
@@ -377,8 +396,7 @@
     <p class="muted small">Ouvert à tous, sans compte — pour signaler un contenu publié sur ce site sans autorisation de l'ayant droit.</p>
     <h3 class="shield-h3">1. Contenu signalé</h3>
     <label>Lien(s) du contenu concerné *</label>
-    <textarea id="tdLink" rows="2" placeholder="https://… (un lien par ligne)"></textarea>
-    <label>Type d'œuvre concernée *</label>
+    <textarea id="tdLink" rows="2" placeholder="https://… (un lien par ligne)"></textarea>  <label>Type d'œuvre concernée *</label>
     <select id="tdWorkType">
       <option value="">— Choisir —</option>
       <option value="video">Vidéo / film / série</option>
@@ -421,7 +439,8 @@
     <input type="tel" id="tdPhone">
     <label>Pays de résidence *</label>
     <input type="text" id="tdCountry" placeholder="Ex : Côte d'Ivoire, France…">
-      <h3 class="shield-h3">3. Déclarations</h3>
+
+    <h3 class="shield-h3">3. Déclarations</h3>
     <div class="checkbox-row"><input type="checkbox" id="tdGoodFaith"><label style="margin:0;">Je crois de bonne foi que cette utilisation n'est autorisée ni par l'ayant droit, ni par son représentant, ni par la loi. *</label></div>
     <div class="checkbox-row"><input type="checkbox" id="tdAccurate"><label style="margin:0;">Les informations fournies sont exactes, et je suis l'ayant droit ou autorisé(e) à agir en son nom. *</label></div>
     <label>Signature électronique (retape ton nom complet) *</label>
@@ -509,6 +528,56 @@
   </div>
 </div>
 
+<!-- COUNTER-NOTICE MODAL -->
+<div class="overlay" id="counterModal">
+  <div class="modal-box">
+    <h2>⚖️ Contester le signalement</h2>
+    <p class="small" id="counterFor"></p>
+    <p class="muted small">Si tu penses que ta vidéo a été retirée par erreur ou que ton usage est légitime, explique pourquoi. L'administrateur examine ta contestation ; si elle est acceptée, ta vidéo est rétablie.</p>
+    <label>Motif de la contestation *</label>
+    <select id="cnCategory">
+      <option value="">— Choisir —</option>
+      <option value="critique">Critique ou commentaire</option>
+      <option value="parodie">Parodie</option>
+      <option value="enseignement">Enseignement ou recherche</option>
+      <option value="actualite">Compte rendu d'actualité</option>
+      <option value="citation">Courte citation / extrait accessoire</option>
+      <option value="autorise">J'ai l'autorisation de l'ayant droit</option>
+      <option value="original">C'est mon œuvre / je suis l'ayant droit</option>
+      <option value="erreur">Erreur d'identification (ce n'est pas la même œuvre)</option>
+      <option value="autre">Autre</option>
+    </select>
+    <label>Explique ta contestation * (40 caractères minimum)</label>
+    <textarea id="cnExplanation" rows="4" placeholder="Ex : j'utilise 20 secondes pour critiquer le passage, avec mon propre commentaire par-dessus…"></textarea>
+    <label>Lien ou preuve (autorisation, œuvre originale…) — facultatif</label>
+    <input type="url" id="cnEvidence" placeholder="https://…">
+    <div class="checkbox-row"><input type="checkbox" id="cnGoodFaith"><label style="margin:0;">Je déclare de bonne foi que cette vidéo a été retirée par erreur ou que mon usage est légitime. *</label></div>
+    <div class="checkbox-row"><input type="checkbox" id="cnConsent"><label style="margin:0;">J'accepte que mon nom de chaîne et cette contestation soient transmis à la personne qui a signalé la vidéo. *</label></div>
+    <label>Signature (retape ton nom de chaîne) *</label>
+    <input type="text" id="cnSignature">
+    <div class="form-error" id="cnErr" hidden></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeCounterNotice()">Annuler</button>
+      <button class="btn btn-accent" id="cnSubmitBtn" onclick="submitCounterNotice()">Envoyer la contestation</button>
+    </div>
+  </div>
+</div>
+
+<!-- PARTNERS MODAL -->
+<div class="overlay" id="partnersModal">
+  <div class="modal-box">
+    <h2>🤝 Partenaires autorisés</h2>
+    <p class="muted small">Les chaînes cochées peuvent publier cette œuvre sans déclencher le Bouclier. L'ayant droit lié à une chaîne est déjà autorisé automatiquement.</p>
+    <p class="small" id="partnersFor"></p>
+    <div id="partnersList" style="display:flex;flex-direction:column;gap:6px;max-height:240px;overflow-y:auto;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;"></div>
+    <div class="checkbox-row" id="partnersApplyRow" hidden><input type="checkbox" id="partnersApplyAll"><label style="margin:0;" id="partnersApplyLbl"></label></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closePartners()">Annuler</button>
+      <button class="btn btn-accent" onclick="savePartners()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
 <!-- CLOUD MODAL -->
 <div class="overlay" id="syncModal">
   <div class="modal-box">
@@ -527,8 +596,7 @@
   <div class="modal-box" style="max-width:640px;">
     <div class="tab-row" id="legalTabs" style="flex-wrap:wrap;"></div>
     <div class="legal-body" id="legalBody"></div>
-    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeLegal()">Fermer</button></div>
-  </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeLegal()">Fermer</button></div>  </div>
 </div>
 
 <div id="toast"></div>
@@ -618,7 +686,9 @@ function playIconSvg(){ return '<svg width="34" height="34" viewBox="0 0 24 24" 
 
 let toastTimer=null;
 function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),3400); }
-   /* ============ CRYPTO — empreinte exacte du fichier (SHA-256) ============ */
+
+
+/* ============ CRYPTO — empreinte exacte du fichier (SHA-256) ============ */
 async function sha256Hex(buffer){ const h=await crypto.subtle.digest('SHA-256', buffer); return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
 async function hashFile(file){
   if(file.size<=FP_LARGE_FILE) return sha256Hex(await file.arrayBuffer());
@@ -726,8 +796,7 @@ function popcount32(x){
 function hammingDistanceHex(a,b){
   const ha=parseInt(a.substr(0,8),16), la=parseInt(a.substr(8,8),16), hb=parseInt(b.substr(0,8),16), lb=parseInt(b.substr(8,8),16);
   return popcount32(ha^hb)+popcount32(la^lb);
-}
-/* Ancien comparateur (9 images, position par position) */
+}/* Ancien comparateur (9 images, position par position) */
 function visualSimilarity(fpA, fpB){
   if(!fpA || !fpB || fpA.length!==fpB.length || fpA.length===0) return null;
   let total=0;
@@ -820,7 +889,8 @@ function denseMatch(A,B,frameTh,avgTh){
       const need = isStatic ? Math.min(FP_MIN_SECONDS_STATIC, Math.max(10, shortSec*0.9))   // plan quasi fixe : on exige beaucoup plus
                             : Math.min(FP_MIN_SECONDS, Math.max(2, shortSec*0.6));
       if(avgDist<=avgTh && span>=need && (!best || span>best.span)){
-        best={span, count:r.length, avgDist, testStart:r[0]*sA, refStart:perJ.get(r[0])[0]*sB, testDuration:durA};        }
+        best={span, count:r.length, avgDist, testStart:r[0]*sA, refStart:perJ.get(r[0])[0]*sB, testDuration:durA};
+      }
     };
     for(let k=1;k<js.length;k++){
       if((js[k]-js[k-1])*sA<=gapAllowed) run.push(js[k]);
@@ -927,8 +997,7 @@ function analyzeVideo(src, onProgress){
         if(tm>=target){
           const h=grabFrame();
           while(idx<total && idx*step+FP_OFFSET<=tm){ if(h!==null) frames.push(h); idx++; }
-          report();
-        }
+          report();}
         if(idx>=total){ clearInterval(wd); finish(build()); return; }
         v.requestVideoFrameCallback(onFrame);
       };
@@ -960,6 +1029,9 @@ let currentWatchId = null;
 let currentObjectUrl = null;
 let unsubVideos=null, unsubUsers=null, unsubFingerprints=null, unsubBlockLog=null, unsubTakedowns=null;
 let homeFilter='recent';
+let counterNotices=[], rhRequests=[], myRhRequest=null, myHolder=null;
+let unsubCounter=null, unsubRhReq=null, unsubHolder=null;
+let viewerCountry=null, viewerCountryLoading=false; // pays du visiteur : déterminé seulement si une restriction géographique existe
 
 /* ============ COMMENTAIRES (sous-collection videos/{id}/comments) ============
    Les nouveaux commentaires vivent chacun dans leur propre document : seuls l'admin et le propriétaire de la
@@ -1014,7 +1086,8 @@ function subscribeBtnHtml(key){
   if(!currentUser || key===myKey()) return '';
   const on=isSubscribed(key);
   return '<button class="btn btn-sub'+(on?' subscribed':'')+'" onclick="event.stopPropagation();toggleSubscribe(\''+String(key).replace(/'/g,"\\'")+'\')">'+(on?'✓ Abonné':'+ S\'abonner')+'</button>';
-  }   async function toggleSubscribe(key){
+}
+async function toggleSubscribe(key){
   if(!currentUser){ openIdentityModal(); return; }
   if(key===myKey()) return;
   const on=isSubscribed(key);
@@ -1101,18 +1174,36 @@ function attachListeners(){
       refreshShieldLists();
     }, err=>console.error(err));
   }
+  // Contestations : l'admin voit tout, chaque membre voit seulement les siennes.
+  const cnMap=snap=>{ counterNotices = snap.docs.map(d=>({id:d.id, ...d.data()})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)); refreshShieldLists(); rerenderCurrentView(); };
+  unsubCounter = isAdminAuthed()
+    ? db.collection('counterNotices').orderBy('createdAt','desc').limit(100).onSnapshot(cnMap, err=>console.error(err))
+    : db.collection('counterNotices').where('authorId','==',myKey()).onSnapshot(cnMap, err=>console.error(err));
+  // Content ID : l'admin voit toutes les demandes, un membre voit seulement sa demande et son statut d'ayant droit.
+  if(isAdminAuthed()){
+    unsubRhReq = db.collection('rightsHolderRequests').orderBy('createdAt','desc').limit(100).onSnapshot(snap=>{
+      rhRequests = snap.docs.map(d=>({id:d.id, ...d.data()}));
+      refreshShieldLists();
+    }, err=>console.error(err));
+  } else if(currentAccountId){
+    unsubRhReq = db.collection('rightsHolderRequests').doc(currentAccountId).onSnapshot(d=>{
+      myRhRequest = d.exists ? {id:d.id, ...d.data()} : null; rerenderCurrentView();
+    }, err=>console.error(err));
+    unsubHolder = db.collection('rightsHolders').doc(currentAccountId).onSnapshot(d=>{
+      myHolder = d.exists ? {id:d.id, ...d.data()} : null; updateAuthUI(); rerenderCurrentView();
+    }, err=>console.error(err));
+  }
 }
 function detachListeners(){
-  [unsubVideos,unsubUsers,unsubFingerprints,unsubBlockLog,unsubTakedowns].forEach(u=>{ if(u) u(); });
-  unsubVideos=unsubUsers=unsubFingerprints=unsubBlockLog=unsubTakedowns=null;
+  [unsubVideos,unsubUsers,unsubFingerprints,unsubBlockLog,unsubTakedowns,unsubCounter,unsubRhReq,unsubHolder].forEach(u=>{ if(u) u(); });
+  unsubVideos=unsubUsers=unsubFingerprints=unsubBlockLog=unsubTakedowns=unsubCounter=unsubRhReq=unsubHolder=null;
   stopWatchComments();
-  videos=[]; users=[]; fingerprints=[]; blockLog=[]; takedowns=[];
+  videos=[]; users=[]; fingerprints=[]; blockLog=[]; takedowns=[]; counterNotices=[]; rhRequests=[]; myRhRequest=null; myHolder=null;
 }
 async function logBlock(entry){
   try{ await db.collection('blockLog').add({...entry, ts:Date.now()}); }catch(e){ console.error(e); }
-}
-
-/* ============ SIGNALEMENT PUBLIC (DMCA) ============
+  }
+  /* ============ SIGNALEMENT PUBLIC (DMCA) ============
    Formulaire accessible sans compte, depuis l'écran de connexion. Écrit directement dans Firestore
    (règle d'écriture publique sur cette collection précise, lecture réservée à l'admin). */
 function openTakedownForm(){
@@ -1213,22 +1304,31 @@ function renderTakedownList(){
   el.innerHTML = (pending.length ? '<p class="muted small" style="margin:4px 0;"><strong>'+pending.length+' en attente</strong></p>' : '')
     + pending.map(row).join('')
     + (resolved.length ? '<p class="muted small" style="margin:10px 0 4px;">Traités</p>' + resolved.map(row).join('') : '');
-  }async function resolveTakedown(id, status){
+}
+async function resolveTakedown(id, status){
   const t=takedowns.find(x=>x.id===id); if(!t) return;
   if(status==='approved'){
-    // tente de retrouver la vidéo visée par le(s) lien(s) signalé(s), pour proposer sa suppression directement
+    // tente de retrouver la vidéo visée par le(s) lien(s) signalé(s). Elle est RETIRÉE (invisible pour les autres) et non
+    // supprimée : son auteur est informé et peut contester. Elle reste supprimable à la main par l'administrateur.
     const target = videos.find(v => (t.links||'').includes(v.id) || (v.url && (t.links||'').includes(v.url)));
-    let deletedTitle=null;
+    let removedTitle=null, removedId=null;
     if(target){
-      if(confirm('Supprimer aussi la vidéo « '+target.title+' » visée par ce signalement ?')){
-        const ok = await deleteVideo(target.id, {skipConfirm:true, reason:'Atteinte aux droits d\'auteur — signalée par '+t.name+' ('+t.relation+')'});
-        if(ok) deletedTitle=target.title;
+      if(confirm('Retirer la vidéo « '+target.title+' » ? Elle devient invisible pour les autres membres ; son auteur est informé et peut contester.')){
+        try{
+          await db.collection('videos').doc(target.id).update({moderation:{
+            status:'removed',
+            reason:'Atteinte aux droits d\'auteur — signalée par '+t.name+' ('+t.relation+')'+(t.workTitle?' pour l\'œuvre « '+t.workTitle+' »':''),
+            claimant:t.name, workTitle:t.workTitle||'', takedownId:id, at:Date.now()
+          }});
+          removedTitle=target.title; removedId=target.id;
+          logBlock({authorId:myKey(), title:target.title, source:displayNameFor(target.authorId), reason:'Vidéo retirée suite à un signalement de '+t.name+' ('+t.relation+')', matchLabel:t.workTitle||''});
+        }catch(e){ console.error(e); toast('Erreur : '+e.message); return; }
       }
-    } else if(!confirm('Aucune vidéo du site ne correspond automatiquement à ce lien — valider quand même le signalement (sans rien supprimer) ?')){
+    } else if(!confirm('Aucune vidéo du site ne correspond automatiquement à ce lien — valider quand même le signalement (sans rien retirer) ?')){
       return;
     }
-    const msg = 'Vidéo'+(deletedTitle?(' « '+deletedTitle+' »'):'')+' supprimée pour atteinte aux droits d\'auteur par '+t.name;
-    try{ await db.collection('takedownRequests').doc(id).update({status:'approved', resolutionMessage:msg, resolvedAt:Date.now()}); }
+    const msg = 'Vidéo'+(removedTitle?(' « '+removedTitle+' »'):'')+' retirée pour atteinte aux droits d\'auteur — signalement de '+t.name;
+    try{ await db.collection('takedownRequests').doc(id).update({status:'approved', resolutionMessage:msg, resolvedAt:Date.now(), ...(removedId?{videoId:removedId}:{})}); }
     catch(e){ console.error(e); toast('Erreur : '+e.message); }
   } else {
     try{
@@ -1269,9 +1369,16 @@ function rerenderCurrentView(){
   if(currentView==='home') renderHome();
   else if(currentView==='channel') openChannel(currentChannelKey);
   else if(currentView==='studio') renderStudio();
+  else if(currentView==='contentid') renderContentId();
   else if(currentView==='watch' && currentWatchId){
     const v=videos.find(x=>x.id===currentWatchId);
-    if(v) renderWatchSkeleton(v);
+    if(v){
+      if(!visibleTo(v)){ // retirée, ou bloquée dans ce pays, pendant qu'on la regardait
+        try{ $('playerVideo').pause(); $('playerEmbed').src=''; }catch(e){}
+        goHome(); toast("Cette vidéo n'est plus disponible."); return;
+      }
+      renderWatchSkeleton(v);
+    }
   }
 }
 function setCloudStatus(ok){
@@ -1280,7 +1387,31 @@ function setCloudStatus(ok){
 }
 
 /* ============ VISIBILITÉ ============ */
+/* Restrictions géographiques demandées par l'ayant droit (mode « blocage par pays ») : liste de codes pays, ou null. */
+function geoRestrictionFor(v){
+  const list=copyrightInfoList(v); if(!list) return null;
+  const set=new Set();
+  list.forEach(ci=>{ if(ci.policy==='geo' && !ci.authorized && !ci.exempt && Array.isArray(ci.geoCountries)) ci.geoCountries.forEach(c=>set.add(String(c).toUpperCase())); });
+  return set.size ? Array.from(set) : null;
+}
+/* Le pays n'est demandé (service api.country.is, à partir de l'adresse IP) que s'il existe au moins une vidéo à restriction
+   géographique. Tant qu'il est inconnu — ou si le service est injoignable — la vidéo reste visible. */
+function ensureViewerCountry(){
+  if(viewerCountry===null && !viewerCountryLoading){
+    viewerCountryLoading=true;
+    fetch('https://api.country.is/').then(r=>r.ok?r.json():null)
+      .then(d=>{ viewerCountry = (d && /^[A-Za-z]{2}$/.test(d.country||'')) ? d.country.toUpperCase() : '?'; })
+      .catch(()=>{ viewerCountry='?'; })
+      .finally(()=>{ viewerCountryLoading=false; rerenderCurrentView(); });
+  }
+  return viewerCountry;
+}
+function isRemoved(v){ return !!(v && v.moderation && v.moderation.status==='removed'); }
 function visibleTo(v){
+  const mine = v.authorId===myKey() || isAdminAuthed();
+  if(isRemoved(v)) return mine; // retirée après un signalement : invisible pour les autres, l'auteur peut la contester
+  const geo = geoRestrictionFor(v);
+  if(geo && !mine){ const c=ensureViewerCountry(); if(c && geo.includes(c)) return false; }
   if(v.visibility==='private') return v.authorId===myKey();
   if(v.visibility==='scheduled'){
     const due=new Date(v.scheduledTime).getTime();
@@ -1298,9 +1429,11 @@ function switchView(name){
   $('viewWatch').hidden = name!=='watch';
   $('viewChannel').hidden = name!=='channel';
   $('viewStudio').hidden = name!=='studio';
+  $('viewContentId').hidden = name!=='contentid';
   document.querySelectorAll('.rail-item,.rail-friend').forEach(el=>el.classList.remove('active'));
   if(name==='home') $('railHome').classList.add('active');
   if(name==='studio') $('railStudio').classList.add('active');
+  if(name==='contentid') $('railContentId').classList.add('active');
   window.scrollTo(0,0);
   $('rail').classList.remove('open');
 }
@@ -1320,7 +1453,8 @@ function renderRailFriends(){
 
 /* ============ HOME ============ */
 function cardHtml(v){
-  const badge = v.visibility==='private' ? '<span class="card-badge private">🔒 Privé</span>'
+  const badge = isRemoved(v) ? '<span class="card-badge removed">⛔ Retirée</span>'
+    : v.visibility==='private' ? '<span class="card-badge private">🔒 Privé</span>'
     : (v.visibility==='scheduled' && new Date(v.scheduledTime).getTime()>Date.now())
       ? '<span class="card-badge scheduled">⏰ '+new Date(v.scheduledTime).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span>' : '';
   const dur = v.durationSeconds ? '<span class="duration-badge">'+formatDuration(v.durationSeconds)+'</span>' : '';
@@ -1413,7 +1547,8 @@ async function openWatch(id){
       player.src = currentObjectUrl;
     }catch(e){ console.error(e); showWatchNotice('Impossible de lire cette vidéo sur cet appareil.'); return; }
   } else {
-    const embedUrl = embedUrlFor(v.url); if(embedUrl){ player.hidden=true; embed.hidden=false; embed.src=embedUrl; }
+    const embedUrl = embedUrlFor(v.url);
+    if(embedUrl){ player.hidden=true; embed.hidden=false; embed.src=embedUrl; }
     else { player.src = v.url; }
   }
   hideWatchNotice();
@@ -1436,6 +1571,15 @@ function hideWatchNotice(){ const n=$('watchNotice'); if(n) n.hidden=true; }
 /* Panneau "informations" affiché sous la vidéo quand elle correspond à une empreinte du Bouclier :
    œuvre, ayant droit (lien vers sa chaîne si elle est sur le site), pochette, et si l'utilisation
    était autorisée ou publiée quand même (fair use / dérogation admin) sans autorisation. */
+/* Crédit automatique : lien vers l'œuvre originale ; blocage par pays : simple mention. */
+function isHttpUrl(u){ return /^https?:\/\/[^\s]+$/i.test(u||''); }
+function policyExtraHtml(ci){
+  const pol=ci.policy||'bloquant';
+  if(pol==='credit') return '<div class="muted small" style="color:var(--teal);">🎬 Utilisation autorisée avec crédit à l\'ayant droit.</div>'
+    + (isHttpUrl(ci.originalLink) ? '<div style="margin-top:4px;"><a href="'+esc(ci.originalLink)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent);font-weight:600;">🔗 Voir l\'œuvre originale</a></div>' : '');
+  if(pol==='geo') return '<div class="muted small">🌍 Cette œuvre est soumise à des restrictions géographiques.</div>';
+  return '';
+}
 function renderCopyrightInfo(v){
   const el=$('watchCopyrightNotice'); if(!el) return;
   const list=copyrightInfoList(v);
@@ -1451,7 +1595,7 @@ function renderCopyrightInfo(v){
         : (ci.exempt ? '<div class="muted small" style="color:var(--teal);">✅ Extrait autorisé par l\'ayant droit (plage horaire épargnée).</div>' : ''));
     return '<div style="display:flex; gap:10px; align-items:center; padding:6px 0;">'
       + (ci.cover ? '<img src="'+ci.cover+'" alt="" style="width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;">' : '')
-      + '<div class="muted small"><div>Œuvre : <strong>'+esc(ci.workTitle||ci.label||'—')+'</strong></div><div>Ayant droit : '+holderHtml+'</div>'+badge+'</div></div>';
+      + '<div class="muted small"><div>Œuvre : <strong>'+esc(ci.workTitle||ci.label||'—')+'</strong></div><div>Ayant droit : '+holderHtml+'</div>'+badge+policyExtraHtml(ci)+'</div></div>';
   }).join('<hr style="border-color:var(--border); margin:0;">');
   const topBadge = unauthorized
     ? '<div class="form-error" style="margin-top:8px;">⚠️ Contenu protégé détecté à la publication — mis en ligne quand même ('+(v.fairUseClaimed?'fair use revendiqué par l\'auteur':'dérogation admin')+'), sans autorisation de l\'ayant droit.</div>'
@@ -1470,6 +1614,7 @@ function renderWatchSkeleton(v){
   updateLikeButton(v);
   renderComments(v);
   renderCopyrightInfo(v);
+  renderModerationBanner(v);
   $('watchDeleteBtn').hidden = !(isAdminAuthed() || isVideoOwner(v));
   const subEl=$('watchSubscribeBtn');
   if(subEl) subEl.innerHTML = subscribeBtnHtml(v.authorId);
@@ -1614,7 +1759,8 @@ function isExemptRange(fp, refStart, refEnd){
   if(mode==='partiel-zones'){
     if(!Array.isArray(fp.protectedRanges) || !fp.protectedRanges.length) return false;
     return !fp.protectedRanges.some(r => refStart < r.end && refEnd > r.start);
-  } return false;
+  }
+  return false;
 }
 /* Détection multi-œuvres : au-delà de la MEILLEURE correspondance (qui pilote seule le blocage et la
    coupe proposée), repère toutes les AUTRES empreintes distinctes également touchées par cet extrait —
@@ -1646,12 +1792,12 @@ function collectAllDetections(primaryFp, visualHash, audioHash){
 }
 function checkCopyright({url,title,desc,fileHash,visualHash,audioHash}){
   const text=(url+' '+title+' '+desc).toLowerCase();
-  const isBlocking=fp=>(fp.enforcement||'bloquant')!=='signalement';
+  const isBlocking=fp=>!['signalement','credit','geo'].includes(fp.enforcement||'bloquant'); // credit/geo : la publication passe (lien d'origine affiché / blocage par pays à l'affichage)
   const mk=(kind, reason, fp, cutInfo, refRange)=>{
     const authorized = fp && isAuthorizedFor(fp);
     const exempt = !!(fp && !authorized && refRange && isExemptRange(fp, refRange.start, refRange.end));
     const skip = authorized || exempt;
-    const res = {blocked: skip?false:isBlocking(fp), flagged: skip?false:!isBlocking(fp), authorized, exempt, kind, reason, match:fp, cutInfo: skip?null:(cutInfo||null)};
+    const res = {blocked: skip?false:isBlocking(fp), flagged: skip?false:!!(fp && fp.enforcement==='signalement'), authorized, exempt, kind, reason, match:fp, cutInfo: skip?null:(cutInfo||null), refRange: refRange||null};
     const extra = fp ? collectAllDetections(fp, visualHash, audioHash) : [];
     res.detections = fp ? [{fp, authorized, exempt}, ...extra] : [];
     if(extra.length) res.reason += ' (+'+extra.length+' autre'+(extra.length>1?'s':'')+' élément'+(extra.length>1?'s':'')+' protégé'+(extra.length>1?'s':'')+' détecté'+(extra.length>1?'s':'')+' dans cette vidéo)';
@@ -1659,9 +1805,7 @@ function checkCopyright({url,title,desc,fileHash,visualHash,audioHash}){
   };
 
   const kw = fingerprints.find(fp=>fp.type==='keyword' && text.includes(fp.value));
-  if(kw) return mk(kw.worktype||'video','Correspondance mot-clé / lien', kw, null);
-
-  if(fileHash){
+  if(kw) return mk(kw.worktype||'video','Correspondance mot-clé / lien', kw, null);if(fileHash){
     const hm = fingerprints.find(fp=>fp.type==='file' && fp.exactHash && fp.exactHash===fileHash);
     if(hm) return mk(hm.worktype||'video','Empreinte de fichier identique — copie complète', hm, null);
   }
@@ -1740,7 +1884,10 @@ function copyrightInfoFromCheck(check){
     rightsHolder: d.fp.rightsHolder||null,
     rightsHolderChannelId: d.fp.rightsHolderChannelId||null,
     cover: d.fp.cover||null,
-    label: d.fp.label||null
+    label: d.fp.label||null,
+    policy: d.fp.enforcement||'bloquant',
+    originalLink: d.fp.originalLink||null,
+    geoCountries: Array.isArray(d.fp.geoCountries) ? d.fp.geoCountries : null
   }));
 }
 /* Lit v.copyrightInfo en tolérant l'ancien format (un seul objet, avant la détection multi-œuvres)
@@ -1812,12 +1959,13 @@ async function handleUpload(){
     if(!override){
       if(check.blocked){
         pendingUpload = {...ctx, check};
-        logBlock({authorId:myKey(), title, source:file?file.name:url, reason:check.reason, matchLabel:check.match.label});
+        logBlock({authorId:myKey(), title, source:file?file.name:url, reason:check.reason, matchLabel:check.match.label, ...(check.cutInfo?{cutStart:Math.round(check.cutInfo.start*10)/10, cutEnd:Math.round(check.cutInfo.end*10)/10}:{})});
         renderBlockPanel(check);
         setSubmitting(false);
-        return;      }
+        return;
+      }
       if(check.flagged){
-        logBlock({authorId:myKey(), title, source:file?file.name:url, reason:'(signalement, non bloquant) '+check.reason, matchLabel:check.match.label});
+        logBlock({authorId:myKey(), title, source:file?file.name:url, reason:'(signalement, non bloquant) '+check.reason, matchLabel:check.match.label, ...(check.cutInfo?{cutStart:Math.round(check.cutInfo.start*10)/10, cutEnd:Math.round(check.cutInfo.end*10)/10}:{})});
       }
     }
 
@@ -1844,6 +1992,7 @@ function renderBlockPanel(check){
     + (m.workTitle ? '<div><strong>Œuvre :</strong> '+esc(m.workTitle)+'</div>' : '')
     + (m.rightsHolder ? '<div><strong>Ayants droit :</strong> '+esc(m.rightsHolder)+'</div>' : '')
     + (kindLabel ? '<div><strong>Type :</strong> '+kindLabel+'</div>' : '')
+    + (check.refRange ? '<div><strong>Dans l\'original :</strong> de '+formatDuration(check.refRange.start)+' à '+formatDuration(check.refRange.end)+'</div>' : '')
     + (m.cover ? '<img src="'+m.cover+'" style="width:60px;height:60px;object-fit:cover;border-radius:6px;margin-top:6px;">' : '')
     + '</div>';
   const cutBtn = canCut
@@ -1854,8 +2003,18 @@ function renderBlockPanel(check){
   const e=$('uploadError');
   e.innerHTML = '🛡️ Publication bloquée : '+esc(check.reason)+'.'
     + ' <button type="button" onclick="toggleBlockDetails()" style="background:none;border:none;color:inherit;text-decoration:underline;cursor:pointer;padding:0;font:inherit;">ℹ️ En savoir plus</button>'
+    + timelineHtml(dur, cut)
     + details + actions;
-  e.hidden=false;
+  e.hidden=false;}
+/* Frise de la vidéo testée : la zone reconnue comme protégée est surlignée en rouge (début → fin). */
+function timelineHtml(dur, cut){
+  if(!dur || !cut || !(cut.end>cut.start)) return '';
+  const a=Math.max(0,Math.min(99,cut.start/dur*100)), w=Math.max(1.5,Math.min(100-a,(cut.end-cut.start)/dur*100));
+  return '<div style="margin-top:10px;">'
+    +'<div style="margin-bottom:5px;">📍 Passage concerné dans ta vidéo : <strong>'+formatDuration(cut.start)+' → '+formatDuration(cut.end)+'</strong> (sur '+formatDuration(dur)+')</div>'
+    +'<div style="position:relative;height:14px;background:var(--surface-2);border:1px solid var(--border);border-radius:7px;overflow:hidden;">'
+    +'<div style="position:absolute;left:'+a.toFixed(1)+'%;width:'+w.toFixed(1)+'%;top:0;bottom:0;background:var(--danger);"></div></div>'
+    +'<div style="display:flex;justify-content:space-between;font-size:.68rem;opacity:.75;margin-top:2px;"><span>0:00</span><span>'+formatDuration(dur)+'</span></div></div>';
 }
 function toggleBlockDetails(){ const d=$('blockDetails'); if(d) d.hidden=!d.hidden; }
 
@@ -2015,7 +2174,8 @@ function muteAudioSegment(file, muteStart, muteEnd, onProgress){
         if(raw.getAudioTracks().length){
           audioCtx = new (window.AudioContext||window.webkitAudioContext)();
           const src = audioCtx.createMediaElementSource(v);
-          gainNode = audioCtx.createGain();src.connect(gainNode);
+          gainNode = audioCtx.createGain();
+          src.connect(gainNode);
           const dest = audioCtx.createMediaStreamDestination();
           gainNode.connect(dest);
           combined = new MediaStream([...combined.getVideoTracks(), ...dest.stream.getAudioTracks()]);
@@ -2045,8 +2205,7 @@ function muteAudioSegment(file, muteStart, muteEnd, onProgress){
 
 $('uploadFile').addEventListener('change', ()=>{
   const f=$('uploadFile').files[0];
-  if(f){ $('uploadUrl').value=''; $('fileNameHint').textContent=f.name; }
-  else $('fileNameHint').textContent='';
+  if(f){ $('uploadUrl').value=''; $('fileNameHint').textContent=f.name; }else $('fileNameHint').textContent='';
 });
 $('uploadUrl').addEventListener('input', ()=>{ if(val('uploadUrl')){ $('uploadFile').value=''; $('fileNameHint').textContent=''; } });
 $('uploadVisibility').addEventListener('change', ()=>{ $('scheduleRow').hidden = val('uploadVisibility')!=='scheduled'; });
@@ -2083,9 +2242,13 @@ function renderShieldContent(){
     +'<label>Mode</label><select id="fpEnforcement" onchange="onFpEnforcementChange()">'
       +'<option value="bloquant">🛡️ Bloquant — bloque la publication</option>'
       +'<option value="signalement">⚠️ Signalement seulement — publication autorisée, juste notée dans le journal</option>'
+      +'<option value="credit">🔗 Crédit — publication autorisée, lien vers l\'œuvre originale affiché sous la vidéo</option>'
+      +'<option value="geo">🌍 Blocage par pays — publiée, mais invisible dans les pays indiqués</option>'
       +'<option value="partiel">⏱️ Bloquant, sauf certaines plages horaires épargnées</option>'
     +'<option value="partiel-zones">⏱️ Bloquant SEULEMENT dans certaines plages (le reste est libre)</option>'
     +'</select>'
+    +'<label>Lien de l\'œuvre originale (affiché sous les vidéos — mode crédit)</label><input type="url" id="fpOriginalLink" placeholder="https://…">'
+    +'<label>Pays où bloquer (mode « blocage par pays » — codes à 2 lettres, ex : FR, CI)</label><input type="text" id="fpGeoCountries" placeholder="FR, CI">'
     +'<div id="fpExemptRangesBox" hidden>'
       +'<label id="fpExemptRangesLabel">Plages (temps dans la vidéo/l\'audio ORIGINAL, format mm:ss)</label>'
       +'<div id="fpExemptRangesList"></div>'
@@ -2106,12 +2269,16 @@ function renderShieldContent(){
     +'<button class="btn btn-ghost" style="width:100%" onclick="runShieldTest()">Vérifier</button>'
     +'<div id="testResult" class="muted small" style="margin-top:6px;"></div>'
     +'<h3 class="shield-h3">🚩 Signalements reçus ('+takedowns.length+')</h3><div id="takedownList" class="shield-list"></div>'
+    +'<h3 class="shield-h3" id="counterH3">⚖️ Contestations ('+counterNotices.length+')</h3><div id="counterList" class="shield-list"></div>'
+    +'<h3 class="shield-h3" id="rhH3">🎬 Demandes Content ID ('+rhRequests.length+')</h3><div id="rhReqList" class="shield-list"></div>'
     +'<h3 class="shield-h3">Compte admin</h3>'
     +'<button class="btn btn-ghost" style="width:100%" onclick="adminLogout()">Se déconnecter du compte admin</button>'
     +'<div class="modal-actions"><button class="btn btn-ghost" onclick="closeShield()">Fermer</button></div>';
   renderFingerprintsList();
   renderBlockLogList();
   renderTakedownList();
+  renderCounterList();
+  renderRhReqList();
 }
 async function runShieldTest(){
   const file = $('testFile').files[0];
@@ -2135,12 +2302,14 @@ async function runShieldTest(){
       ? '🛑 <strong>Bloqué</strong> — '+esc(check.reason)+' (empreinte : « '+esc(check.match.label)+' »)'
       : (check.flagged
         ? '⚠️ <strong>Autorisé mais signalé</strong> — '+esc(check.reason)+' (empreinte : « '+esc(check.match.label)+' »)'
-        : '✅ Autorisé — aucune empreinte protégée ne correspond.');
+        : (check.match && check.authorized ? '✅ Autorisé — chaîne partenaire de « '+esc(check.match.label)+' ».'
+          : (check.match && !check.exempt ? 'ℹ️ <strong>Détecté, publication autorisée</strong> — mode « '+esc(check.match.enforcement||'')+' » — '+esc(check.reason)+' (empreinte : « '+esc(check.match.label)+' »)'
+            : '✅ Autorisé — aucune empreinte protégée ne correspond.')));
   }catch(e){ console.error(e); resultEl.textContent='Erreur pendant le test : '+e.message; }
 }
 function refreshShieldLists(){
   if(!$('shieldModal').classList.contains('open')) return;
-  renderFingerprintsList(); renderBlockLogList(); renderTakedownList();
+  renderFingerprintsList(); renderBlockLogList(); renderTakedownList(); renderCounterList(); renderRhReqList();
   const h3s=document.querySelectorAll('#shieldBody h3.shield-h3');
   if(h3s[0]) h3s[0].textContent='Empreintes actives ('+fingerprints.length+')';
   if(h3s[1]) h3s[1].textContent='Journal des blocages ('+blockLog.length+')';
@@ -2213,7 +2382,8 @@ function collectExemptRanges(){
     if(s===null || e===null || e<=s) continue; // ligne vide ou invalide : ignorée silencieusement
     ranges.push({start:s, end:e});
   }
-  return ranges;}
+  return ranges;
+}
 function onFpTypeChange(){
   const isAudio = !!($('fpTypeAudio') && $('fpTypeAudio').checked);
   if($('fpVideoRow')) $('fpVideoRow').hidden = isAudio;
@@ -2235,8 +2405,12 @@ async function addFingerprint(){
   const enforcement=val('fpEnforcement')||'bloquant';
   const exemptRanges = enforcement==='partiel' ? collectExemptRanges() : [];
   const protectedRanges = enforcement==='partiel-zones' ? collectExemptRanges() : [];
-  if(enforcement==='partiel' && !exemptRanges.length){ shieldErrorMsg('Ajoute au moins une plage épargnée valide (ou choisis un autre mode).'); return; }
-  if(enforcement==='partiel-zones' && !protectedRanges.length){ shieldErrorMsg('Ajoute au moins une plage à bloquer valide (ou choisis un autre mode).'); return; }
+  if(enforcement==='partiel' && !exemptRanges.length){ shieldErrorMsg('Ajoute au moins une plage épargnée valide (ou choisis un autre mode).'); return; }  if(enforcement==='partiel-zones' && !protectedRanges.length){ shieldErrorMsg('Ajoute au moins une plage à bloquer valide (ou choisis un autre mode).'); return; }
+  const originalLink=val('fpOriginalLink').trim();
+  const geoCountries=parseCountries(val('fpGeoCountries'));
+  if(originalLink && !isHttpUrl(originalLink)){ shieldErrorMsg('Le lien de l\'œuvre originale doit commencer par http:// ou https://.'); return; }
+  if(enforcement==='geo' && !geoCountries.length){ shieldErrorMsg('Indique au moins un pays (code à 2 lettres) pour le blocage par pays.'); return; }
+  const extra={originalLink:originalLink||null, geoCountries};
   const kw=val('fpKeyword').trim().toLowerCase();
   const file = worktype==='audio' ? ($('fpAudioFile')&&$('fpAudioFile').files[0]) : $('fpFile').files[0];
   const coverFile = worktype==='audio' ? ($('fpCover')&&$('fpCover').files[0]) : null;
@@ -2247,13 +2421,13 @@ async function addFingerprint(){
     let cover=null;
     if(coverFile){ try{ cover=await fileToDataUrl(coverFile,200); }catch(e){ /* pochette optionnelle : on continue sans */ } }
     const batch=[];
-    if(kw) batch.push({type:'keyword', value:kw, label, worktype, workTitle, rightsHolder, rightsHolderChannelId, authorizedChannels, enforcement, exemptRanges, protectedRanges, cover, addedAt:now});
+    if(kw) batch.push({type:'keyword', value:kw, label, worktype, workTitle, rightsHolder, rightsHolderChannelId, authorizedChannels, enforcement, exemptRanges, protectedRanges, ...extra, cover, addedAt:now});
     if(file){
       if(worktype==='audio'){
         shieldErrorMsg('Analyse du fichier audio…');
         const exactHash = await hashFile(file);
         const audioHash = await analyzeAudioFile(file, (i,n)=>shieldErrorMsg('Analyse du fichier audio… '+Math.round(i/n*100)+' %'));
-        batch.push({type:'file', worktype, label, workTitle, rightsHolder, rightsHolderChannelId, authorizedChannels, enforcement, exemptRanges, protectedRanges, cover, exactHash, audioHash, addedAt:now});
+        batch.push({type:'file', worktype, label, workTitle, rightsHolder, rightsHolderChannelId, authorizedChannels, enforcement, exemptRanges, protectedRanges, ...extra, cover, exactHash, audioHash, addedAt:now});
         if(!audioHash) toast("⚠️ Empreinte exacte enregistrée, mais l'empreinte audio perceptuelle n'a pas pu être calculée (codec non reconnu par le navigateur, ou fichier trop long/volumineux) — seule la copie strictement identique sera reconnue.");
       } else {
         shieldErrorMsg('Analyse de l\'image (empreinte exacte + perceptuelle)…');
@@ -2263,13 +2437,13 @@ async function addFingerprint(){
         URL.revokeObjectURL(tempUrl);
         shieldErrorMsg('Analyse du son (dialogues, musique de fond…)…');
         const audioHash = await analyzeAudioFile(file, (i,n)=>shieldErrorMsg('Analyse du son… '+Math.round(i/n*100)+' %'));
-        batch.push({type:'file', worktype, label, workTitle, rightsHolder, rightsHolderChannelId, authorizedChannels, enforcement, exemptRanges, protectedRanges, cover, exactHash, visualHash: analysis.visualHash||null, audioHash: audioHash||null, partial: !!analysis.visualHash && !analysis.complete, addedAt:now});
+        batch.push({type:'file', worktype, label, workTitle, rightsHolder, rightsHolderChannelId, authorizedChannels, enforcement, exemptRanges, protectedRanges, ...extra, cover, exactHash, visualHash: analysis.visualHash||null, audioHash: audioHash||null, partial: !!analysis.visualHash && !analysis.complete, addedAt:now});
         if(!audioHash) toast("⚠️ Empreinte image enregistrée, mais pas de son détecté/analysé pour cette vidéo (pas de bande son, codec non reconnu, ou fichier trop long) — la musique/les dialogues de cette œuvre ne seront pas reconnus séparément de l'image.");
       }
     }
     for(const fp of batch){ await db.collection('fingerprints').doc(newId()).set(fp); }
     $('shieldErr').hidden=true;
-    $('fpLabel').value=''; $('fpWorkTitle').value=''; $('fpRightsHolder').value=''; if($('fpRightsHolderChannel')) $('fpRightsHolderChannel').value=''; $('fpKeyword').value=''; $('fpFile').value='';
+    $('fpLabel').value=''; $('fpWorkTitle').value=''; $('fpRightsHolder').value=''; if($('fpRightsHolderChannel')) $('fpRightsHolderChannel').value=''; $('fpKeyword').value=''; $('fpFile').value=''; if($('fpOriginalLink')) $('fpOriginalLink').value=''; if($('fpGeoCountries')) $('fpGeoCountries').value='';
     document.querySelectorAll('.fp-auth-chk:checked').forEach(c=>c.checked=false);
     if($('fpExemptRangesList')) $('fpExemptRangesList').innerHTML='';
     if($('fpExemptRangesBox')) $('fpExemptRangesBox').hidden=true;
@@ -2292,14 +2466,18 @@ function fpDetail(fp){
 function fpRowHtml(fp){
   const icon = fp.type==='keyword' ? '🔗' : (fp.worktype==='audio' ? '🎵' : '🎬');
   const enforcement = fp.enforcement||'bloquant';
-  const badge = enforcement==='signalement' ? '⚠️ signalement (non bloquant)'
+  const badge = enforcement==='credit' ? '🔗 crédit — publication autorisée, lien vers l\'original affiché'+(fp.originalLink?'':' (aucun lien renseigné)')
+    : enforcement==='geo' ? '🌍 bloqué dans : '+esc((fp.geoCountries||[]).join(', ')||'(aucun pays)')
+    : enforcement==='signalement' ? '⚠️ signalement (non bloquant)'
     : (enforcement==='partiel-zones' ? '⏱️ bloquant seulement : '+(Array.isArray(fp.protectedRanges)&&fp.protectedRanges.length ? fp.protectedRanges.map(r=>formatDuration(r.start)+'→'+formatDuration(r.end)).join(', ') : '(aucune plage valide)')
     : enforcement==='partiel' ? '⏱️ bloquant, épargné : '+(Array.isArray(fp.exemptRanges)&&fp.exemptRanges.length ? fp.exemptRanges.map(r=>formatDuration(r.start)+'→'+formatDuration(r.end)).join(', ') : '(aucune plage valide)')
     : '🛡️ bloquant');
   const cover = fp.cover ? '<img src="'+fp.cover+'" style="width:34px;height:34px;object-fit:cover;border-radius:6px;margin-right:8px;flex-shrink:0;">' : '';
-  return '<div class="shield-row"><div style="display:flex;align-items:center;">'+cover+'<div><strong>'+icon+' '+esc(fp.label)+'</strong>'
-    +'<br><span class="muted small">'+fpDetail(fp)+'</span><br><span class="muted small">'+badge+'</span></div></div>'
+  return '<div class="shield-row"><div style="display:flex;align-items:center;">'+cover+'<div><strong>'+icon+' '+esc(fp.label)+'</strong>'+(fp.ownerUid?' <span class="muted small">👤 déposée par l\'ayant droit</span>':'')
+    +'<br><span class="muted small">'+fpDetail(fp)+'</span><br><span class="muted small">'+badge+'</span>'
+    +'<br><span class="muted small">🤝 '+(Array.isArray(fp.authorizedChannels)&&fp.authorizedChannels.length ? 'Partenaires : '+esc(fp.authorizedChannels.map(displayNameFor).join(', ')) : 'Aucun partenaire')+'</span></div></div>'
     +'<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;">'
+    +'<button class="icon-btn" title="Partenaires autorisés" onclick="openPartners(\''+fp.id+'\')">🤝</button>'
     +'<button class="icon-btn" title="Changer bloquant / signalement" onclick="toggleEnforcement(\''+fp.id+'\')">🔁</button>'
     +'<button class="icon-btn danger" onclick="removeFingerprint(\''+fp.id+'\')">✕</button></div></div>';
 }
@@ -2332,6 +2510,36 @@ function renderFingerprintsList(){
     return '<details class="fp-holder" open><summary>🏢 '+holderLabel+' ('+total+')</summary>'+workBlocks+'</details>';
   }).join('');
 }
+/* Partenaires : chaînes autorisées à publier une œuvre, modifiables à tout moment (sans refaire l'analyse du fichier). */
+let partnersFpId=null;
+function openPartners(id){
+  const fp=fingerprints.find(f=>f.id===id); if(!fp || !canEditFp(fp)) return;
+  partnersFpId=id;
+  $('partnersFor').innerHTML='<strong>'+esc(fp.label||'')+'</strong>'+(fp.rightsHolder?' — '+esc(fp.rightsHolder):'');
+  const sel=new Set(fp.authorizedChannels||[]);
+  const chans=[{key:ADMIN_NAME,name:displayNameFor(ADMIN_NAME)}, ...users.filter(u=>!u.isAdmin).map(u=>({key:u.id,name:u.name}))].filter(c=>c.key!==fp.rightsHolderChannelId);
+  $('partnersList').innerHTML = chans.length
+    ? chans.map(c=>'<label style="margin:0;display:flex;align-items:center;gap:7px;font-weight:400;font-size:.85rem;"><input type="checkbox" class="partner-chk" value="'+esc(c.key)+'"'+(sel.has(c.key)?' checked':'')+'> '+esc(c.name)+'</label>').join('')
+    : '<span class="muted small">Aucune autre chaîne pour l\'instant.</span>';
+  const same = fp.rightsHolder ? fingerprints.filter(f=>f.rightsHolder===fp.rightsHolder && f.id!==id && canEditFp(f)).length : 0;
+  $('partnersApplyRow').hidden = !same;
+  $('partnersApplyAll').checked=false;
+  $('partnersApplyLbl').textContent = 'Appliquer cette liste aux '+same+' autre'+(same>1?'s':'')+' empreinte'+(same>1?'s':'')+' de « '+(fp.rightsHolder||'')+' » (remplace leurs listes)';
+  $('partnersModal').classList.add('open');
+}
+function closePartners(){ $('partnersModal').classList.remove('open'); partnersFpId=null; }
+async function savePartners(){
+  const fp=fingerprints.find(f=>f.id===partnersFpId); if(!fp) return;
+  const list=Array.from(document.querySelectorAll('.partner-chk:checked')).map(c=>c.value);
+  const targets = ($('partnersApplyAll').checked && fp.rightsHolder) ? fingerprints.filter(f=>f.rightsHolder===fp.rightsHolder && canEditFp(f)) : [fp];
+  try{
+    const b=db.batch();
+    targets.forEach(f=>b.update(db.collection('fingerprints').doc(f.id), {authorizedChannels:list}));
+    await b.commit();
+    closePartners();
+    toast('Partenaires enregistrés 🤝'+(targets.length>1?' ('+targets.length+' empreintes)':''));
+  }catch(e){ console.error(e); toast('Erreur : '+e.message); }
+}
 function toggleEnforcement(id){
   const fp=fingerprints.find(f=>f.id===id); if(!fp) return;
   const next = (fp.enforcement||'bloquant')==='signalement' ? 'bloquant' : 'signalement';
@@ -2345,7 +2553,7 @@ function renderBlockLogList(){
   const el=$('blockLogList'); if(!el) return;
   el.innerHTML = blockLog.length ? blockLog.slice(0,25).map(b=>
     '<div class="shield-row"><div><strong>'+esc(displayNameFor(b.authorId))+'</strong> — '+esc(b.title)+'<br>'
-    +'<span class="muted small">'+esc(b.source||'')+' • '+esc(b.reason)+' • '+timeAgo(b.ts)+'</span></div></div>'
+    +'<span class="muted small">'+esc(b.source||'')+' • '+esc(b.reason)+(b.cutEnd>b.cutStart ? ' • 📍 '+formatDuration(b.cutStart)+' → '+formatDuration(b.cutEnd) : '')+' • '+timeAgo(b.ts)+'</span></div></div>'
   ).join('') : '<p class="muted small">Aucun blocage pour l\'instant.</p>';
 }
 
@@ -2398,8 +2606,7 @@ function firebaseAuthErrorMsg(e){
     'auth/network-request-failed':'Impossible de contacter Firebase — vérifie ta connexion internet.',
     'auth/too-many-requests':'Trop de tentatives — réessaie dans quelques minutes.',
     'timeout':'La connexion à Firebase met trop de temps à répondre — vérifie ta connexion et réessaie.',
-  };
-  return map[e.code] || ('Erreur : '+(e.message||e.code||'inconnue'));
+  };  return map[e.code] || ('Erreur : '+(e.message||e.code||'inconnue'));
 }
 /* Évite qu'un bouton reste bloqué en silence sur une connexion lente/coupée : au-delà de ce délai,
    on abandonne et on affiche un message clair plutôt que d'attendre indéfiniment. */
@@ -2413,7 +2620,8 @@ async function doLogin(){
   const email=val('loginEmail').trim().toLowerCase();
   const pw=val('loginPw');
   identityErrorMsg('');
-  if(!email || !pw){ identityErrorMsg('Renseigne ton email et ton mot de passe.'); return; }const btn=$('loginSubmitBtn');
+  if(!email || !pw){ identityErrorMsg('Renseigne ton email et ton mot de passe.'); return; }
+  const btn=$('loginSubmitBtn');
   if(btn){ btn.disabled=true; btn.textContent='Connexion…'; }
   try{ await withTimeout(auth.signInWithEmailAndPassword(email, pw), 30000); } // onAuthStateChanged prend le relais
   catch(e){ console.error(e); identityErrorMsg(firebaseAuthErrorMsg(e)); }
@@ -2456,6 +2664,7 @@ function updateIdentityPill(){
 }
 function updateAuthUI(){
   $('railStudio').hidden = !currentUser;
+  $('railContentId').hidden = !currentAccountId; // l'admin gère tout depuis le Bouclier
 }
 $('btnIdentity').addEventListener('click', ()=>{
   if(isAdminAuthed() || currentAccountId) openAccount();
@@ -2557,12 +2766,15 @@ function renderStudio(){
     const ci = ciList ? ciList[0] : null;
     const extraCount = ciList && ciList.length>1 ? ' (+'+(ciList.length-1)+')' : '';
     const copyrightMark = ci ? '<span title="'+esc((v.fairUseClaimed||v.overrideUsed) ? 'Contenu protégé publié sans autorisation ('+(v.fairUseClaimed?'fair use':'dérogation admin')+') — '+(ci.workTitle||ci.label||'')+(ciList.length>1?' et '+(ciList.length-1)+' autre(s) élément(s)':'') : (ci.authorized ? 'Contenu protégé utilisé avec autorisation de l\'ayant droit — '+(ci.workTitle||ci.label||'') : (ci.exempt ? 'Extrait autorisé (plage épargnée) — '+(ci.workTitle||ci.label||'') : 'Contenu protégé détecté — '+(ci.workTitle||ci.label||''))))+'" style="margin-left:6px;cursor:help;">'+((v.fairUseClaimed||v.overrideUsed)?'⚠️©':'©')+extraCount+'</span>' : '';
+    const removed=isRemoved(v), cn=removed ? counterNoticeFor(v) : null;
+    const modMark = removed ? '<span style="margin-left:6px;color:#ff8a80;font-size:.74rem;">⛔ Retirée'+(cn ? (cn.status==='pending'?' — contestation en cours':(cn.status==='rejected'?' — contestation rejetée':'')) : ' — tu peux contester')+'</span>' : '';
+    const contestBtn = (removed && !cn) ? '<button class="btn btn-ghost" style="padding:6px 10px;font-size:.74rem;" onclick="event.stopPropagation();openCounterNotice(\''+v.id+'\')">⚖️ Contester</button>' : '';
     return '<div class="studio-row">'
       +'<div class="studio-thumb" onclick="openWatch(\''+v.id+'\')" style="cursor:pointer;">'+thumbInner+'</div>'
       +'<div class="studio-meta" onclick="openWatch(\''+v.id+'\')" style="cursor:pointer;">'
-      +'<div class="studio-title">'+esc(v.title)+copyrightMark+'</div>'
+      +'<div class="studio-title">'+esc(v.title)+copyrightMark+modMark+'</div>'
       +'<div class="studio-nums">'+(v.views||0)+' vues • '+((v.likedBy||[]).length)+' j\'aime • '+commentTotal(v)+' commentaires • '+timeAgo(v.createdAt)+'</div>'
-      +'</div>'
+      +'</div>'+contestBtn
       +'<button class="icon-btn danger" title="Supprimer cette vidéo" onclick="event.stopPropagation();studioDeleteVideo(\''+v.id+'\')">🗑️</button>'
       +'</div>';
   }).join('');
@@ -2572,9 +2784,342 @@ async function studioDeleteVideo(id){
   if(ok){ toast('Vidéo supprimée.'); renderStudio(); }
 }
 
+/* ============ OUTILS ============ */
+function parseCountries(str){ return Array.from(new Set((str||'').split(/[,;\s]+/).map(c=>c.trim().toUpperCase()).filter(c=>/^[A-Z]{2}$/.test(c)))); }
+function canEditFp(f){ return isAdminAuthed() || (!!currentAccountId && f.ownerUid===currentAccountId); }
+
+/* ============ RETRAIT RÉVERSIBLE & CONTESTATION (counter-notice) ============
+   Une vidéo retirée après un signalement validé n'est pas supprimée : elle devient invisible pour les autres (moderation.status),
+   son auteur la voit toujours, voit le motif et peut contester (usage équitable : critique, parodie, enseignement…).
+   L'administrateur accepte (la vidéo est rétablie) ou rejette (avec un motif). */
+const CN_LABELS={critique:'Critique / commentaire', parodie:'Parodie', enseignement:'Enseignement / recherche', actualite:'Compte rendu d\'actualité', citation:'Courte citation', autorise:'Autorisation de l\'ayant droit', original:'Œuvre personnelle / ayant droit', erreur:'Erreur d\'identification', autre:'Autre'};
+function counterNoticeFor(v){
+  const since=(v.moderation&&v.moderation.at)||0;
+  return counterNotices.filter(n=>n.videoId===v.id && (n.createdAt||0)>=since).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0))[0]||null;
+}
+function renderModerationBanner(v){
+  const el=$('watchModeration'); if(!el) return;
+  if(!isRemoved(v)){ el.innerHTML=''; return; }
+  const cn=counterNoticeFor(v);
+  let body='<strong>⛔ Cette vidéo a été retirée</strong> — '+esc(v.moderation.reason||'signalement de droits d\'auteur')+'. Les autres membres ne peuvent plus la voir.';
+  if(isVideoOwner(v)){
+    if(!cn) body+='<div style="margin-top:8px;">Tu penses que c\'est une erreur, ou que ton usage est légitime (critique, parodie, enseignement, œuvre à toi, autorisation…) ? <button class="btn btn-accent" style="margin-top:6px;" onclick="openCounterNotice(\''+v.id+'\')">⚖️ Contester le signalement</button></div>';
+    else if(cn.status==='pending') body+='<div class="muted small" style="margin-top:8px;">⏳ Contestation envoyée le '+new Date(cn.createdAt).toLocaleDateString('fr-FR')+' — elle est en cours d\'examen.</div>';
+    else if(cn.status==='rejected') body+='<div style="margin-top:8px;">❌ Contestation rejetée'+(cn.adminNote?' : '+esc(cn.adminNote):'')+'.</div>';
+  } else if(isAdminAuthed() && cn){
+    body+='<div class="muted small" style="margin-top:8px;">⚖️ Contestation de l\'auteur : '+(cn.status==='pending'?'à traiter':cn.status)+' — voir le Bouclier.</div>';
+  }  el.innerHTML='<div class="mod-banner">'+body+'</div>';
+}
+let cnVideoId=null;
+function cnErr(msg){ const e=$('cnErr'); if(e){ e.textContent=msg; e.hidden=!msg; } }
+function openCounterNotice(videoId){
+  const v=videos.find(x=>x.id===videoId); if(!v || !isRemoved(v) || !isVideoOwner(v)) return;
+  cnVideoId=videoId;
+  $('counterFor').innerHTML='Vidéo : <strong>'+esc(v.title)+'</strong><br><span class="muted">Motif du retrait : '+esc(v.moderation.reason||'signalement de droits d\'auteur')+'</span>';
+  ['cnCategory','cnExplanation','cnEvidence','cnSignature'].forEach(id=>{ $(id).value=''; });
+  $('cnGoodFaith').checked=false; $('cnConsent').checked=false; cnErr('');
+  $('counterModal').classList.add('open');
+}
+function closeCounterNotice(){ $('counterModal').classList.remove('open'); cnVideoId=null; }
+async function submitCounterNotice(){
+  const v=videos.find(x=>x.id===cnVideoId); if(!v) return;
+  const category=val('cnCategory'), explanation=val('cnExplanation').trim(), evidenceUrl=val('cnEvidence').trim(), signature=val('cnSignature').trim();
+  cnErr('');
+  if(!category){ cnErr('Choisis le motif de ta contestation.'); return; }
+  if(explanation.length<40){ cnErr('Explique ta contestation en quelques phrases (40 caractères minimum).'); return; }
+  if(evidenceUrl && !isHttpUrl(evidenceUrl)){ cnErr('Le lien de preuve doit commencer par http:// ou https://.'); return; }
+  if(!$('cnGoodFaith').checked || !$('cnConsent').checked){ cnErr('Coche les deux déclarations pour envoyer ta contestation.'); return; }
+  if(signature.toLowerCase()!==String(currentUser||'').toLowerCase()){ cnErr('La signature doit correspondre exactement à ton nom de chaîne ('+currentUser+').'); return; }
+  const mod=v.moderation||{};
+  const btn=$('cnSubmitBtn'); if(btn){ btn.disabled=true; btn.textContent='Envoi…'; }
+  try{
+    await withTimeout(db.collection('counterNotices').add({
+      videoId:v.id, videoTitle:v.title, authorId:myKey(), takedownId:mod.takedownId||null, claimant:mod.claimant||'',
+      category, explanation, evidenceUrl, goodFaith:true, consent:true, signature, status:'pending', createdAt:Date.now()
+    }), 20000);
+    closeCounterNotice();
+    toast('Contestation envoyée ⚖️ — elle sera examinée.');
+  }catch(e){ console.error(e); cnErr(firebaseAuthErrorMsg(e)); }
+  finally{ if(btn){ btn.disabled=false; btn.textContent='Envoyer la contestation'; } }
+}
+/* Côté admin (dans le Bouclier) */
+function renderCounterList(){
+  const el=$('counterList'); if(!el) return;
+  const pend=counterNotices.filter(n=>n.status==='pending').length;
+  const h=$('counterH3'); if(h) h.textContent='⚖️ Contestations ('+counterNotices.length+(pend?', '+pend+' en attente':'')+')';
+  if(!counterNotices.length){ el.innerHTML='<p class="muted small">Aucune contestation.</p>'; return; }
+  el.innerHTML=counterNotices.map(n=>{
+    const date=new Date(n.createdAt).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const st = n.status==='accepted' ? '<span class="muted small" style="color:var(--teal)">✅ Acceptée</span>'
+      : n.status==='rejected' ? '<span class="muted small" style="color:var(--danger)">❌ Rejetée</span>' : '<span class="muted small">⏳ En attente</span>';
+    const td=takedowns.find(t=>t.id===n.takedownId);
+    const mail = (td && td.email) ? ' • <a href="mailto:'+esc(td.email)+'?subject='+encodeURIComponent('Contestation — '+n.videoTitle)+'&body='+encodeURIComponent('Bonjour '+td.name+',\n\nL\'auteur de la vidéo « '+n.videoTitle+' » conteste votre signalement ('+(CN_LABELS[n.category]||n.category)+') :\n\n'+n.explanation+'\n\nMerci de nous indiquer si vous maintenez votre signalement.')+'" style="color:var(--teal);">✉️ Écrire au plaignant</a>' : '';
+    const proof = isHttpUrl(n.evidenceUrl) ? ' • <a href="'+esc(n.evidenceUrl)+'" target="_blank" rel="noopener noreferrer" style="color:var(--teal);">preuve</a>' : '';
+    const actions = n.status==='pending'
+      ? '<div style="display:flex;gap:6px;margin-top:6px;">'
+        +'<button class="btn btn-accent" style="flex:1;padding:6px;font-size:.78rem;" onclick="resolveCounter(\''+n.id+'\',\'accepted\')">✅ Accepter (rétablir)</button>'
+        +'<button class="btn btn-ghost" style="flex:1;padding:6px;font-size:.78rem;" onclick="resolveCounter(\''+n.id+'\',\'rejected\')">❌ Rejeter</button></div>'
+      : (n.adminNote ? '<div class="muted small" style="margin-top:4px;">'+esc(n.adminNote)+'</div>' : '');
+    return '<div class="shield-row" style="flex-direction:column;align-items:stretch;">'
+      +'<div style="display:flex;justify-content:space-between;gap:8px;"><div><strong>'+esc(displayNameFor(n.authorId))+'</strong> — « '+esc(n.videoTitle)+' »<br>'
+      +'<span class="muted small">'+esc(CN_LABELS[n.category]||n.category)+' • '+date+'</span></div>'+st+'</div>'
+      +'<div class="muted small" style="margin-top:4px;word-break:break-word;">'+esc(n.explanation)+'</div>'
+      +'<div class="muted small" style="margin-top:2px;">Signalé par : '+esc(n.claimant||'—')+mail+proof+' • <a href="#" onclick="closeShield();openWatch(\''+n.videoId+'\');return false;" style="color:var(--teal);">voir la vidéo</a></div>'
+      +actions+'</div>';
+  }).join('');
+}
+async function resolveCounter(id, status){
+  const n=counterNotices.find(x=>x.id===id); if(!n) return;
+  if(status==='accepted'){
+    if(!confirm('Accepter la contestation et rétablir la vidéo « '+n.videoTitle+' » ?')) return;
+    const note=prompt('Note pour l\'auteur (facultatif) :','')||'';
+    try{
+      const b=db.batch();
+      b.update(db.collection('videos').doc(n.videoId), {moderation:firebase.firestore.FieldValue.delete(), restoredAt:Date.now()});
+      b.update(db.collection('counterNotices').doc(id), {status:'accepted', adminNote:note, resolvedAt:Date.now()});
+      await b.commit();
+      toast('Vidéo rétablie ✅ — pense à prévenir la personne qui avait signalé.');
+    }catch(e){ console.error(e); toast('Erreur : '+e.message+' (la vidéo a peut-être été supprimée).'); }
+  } else {
+    const note=prompt('Motif du rejet (visible par l\'auteur) :',''); if(note===null) return;
+    try{
+      await db.collection('counterNotices').doc(id).update({status:'rejected', adminNote:note||'', resolvedAt:Date.now()});
+      toast('Contestation rejetée.');
+    }catch(e){ console.error(e); toast('Erreur : '+e.message); }
+  }
+}
+
+/* ============ CONTENT ID — espace des ayants droit ============
+   Un membre demande l'accès ; l'administrateur l'approuve (rightsHolders/{uid}). L'ayant droit dépose ensuite ses œuvres originales
+   ICI : le fichier est analysé sur son appareil, seule l'empreinte (image / son) est enregistrée — rien n'est envoyé ni publié.
+   Il choisit lui-même la sanction pour ses œuvres : blocage mondial, blocage par pays, autorisation avec crédit, ou simple veille. */
+function openContentId(){
+  if(!currentUser){ openIdentityModal(); return; }
+  switchView('contentid'); renderContentId(true);
+}
+function contentIdState(){ return myHolder ? 'holder' : (myRhRequest ? myRhRequest.status : 'none'); }
+function renderContentId(force){
+  const el=$('contentIdBody'); if(!el) return;
+  if(!currentAccountId){ el.innerHTML='<p class="muted">Cet espace est réservé aux comptes membres. L\'administrateur gère les œuvres protégées depuis le Bouclier.</p>'; el.dataset.state='admin'; return; }
+  const state=contentIdState();
+  if(force || el.dataset.state!==state){ el.dataset.state=state; el.innerHTML=contentIdHtml(state); }
+  if(state==='holder') renderOwnWorks();
+}
+function contentIdIntro(){
+  return '<p class="muted small" style="max-width:640px;line-height:1.55;margin-bottom:14px;">Content ID protège tes œuvres sur NEUF : tu déposes ton œuvre originale, le site en calcule une <strong>empreinte</strong> (image et son) <strong>sur ton appareil</strong>, et les vidéos publiées qui la reprennent sont détectées automatiquement. '
+    +'Ton fichier n\'est ni envoyé, ni publié — seule l\'empreinte est enregistrée. L\'accès est validé par l\'administrateur.</p>';
+}
+function contentIdHtml(state){
+  if(state==='holder'){
+    const partners = users.filter(u=>!u.isAdmin && u.id!==currentAccountId).map(u=>'<label style="margin:0;display:flex;align-items:center;gap:6px;font-weight:400;font-size:.82rem;"><input type="checkbox" class="own-auth-chk" value="'+esc(u.id)+'"> '+esc(u.name)+'</label>').join('') || '<span class="muted small">Aucune autre chaîne pour l\'instant.</span>';
+    return contentIdIntro()
+      +'<p class="small" style="margin-bottom:14px;">✅ Ayant droit vérifié : <strong>'+esc(myHolder.name||'')+'</strong></p>'
+      +'<div class="own-form"><h3 style="font-size:1rem;">Ajouter une œuvre à protéger</h3>'
+      +'<label>Nom de l\'œuvre *</label><input type="text" id="ownTitle" placeholder="Ex : The Amazing Digital Circus">'
+      +'<label>Libellé précis (facultatif)</label><input type="text" id="ownLabel" placeholder="Ex : Épisode 3 — version HD">'
+      +'<label>Fichier original * (vidéo ou audio — analysé sur ton appareil, jamais envoyé)</label><input type="file" id="ownFile" accept="video/*,audio/*">'
+      +'<label>Que doit faire le site quand une vidéo reprend cette œuvre ? *</label>'
+      +'<select id="ownEnforcement">'
+        +'<option value="bloquant">🛡️ Bloquer — la vidéo ne peut pas être publiée (partout)</option>'
+        +'<option value="geo">🌍 Bloquer dans certains pays — publiée, mais invisible dans ces pays</option>'
+        +'<option value="credit">🔗 Autoriser avec crédit — publiée, avec un lien vers l\'œuvre originale</option>'
+        +'<option value="signalement">⚠️ Surveiller seulement — publiée, notée dans le journal</option>'
+      +'</select>'
+      +'<label>Lien de l\'œuvre originale (affiché sous les vidéos en mode crédit)</label><input type="url" id="ownOriginal" placeholder="https://…">'
+      +'<label>Pays à bloquer (mode « par pays » — codes à 2 lettres, ex : FR, CI)</label><input type="text" id="ownCountries" placeholder="FR, CI">'
+      +'<label>Chaînes partenaires autorisées à utiliser cette œuvre</label><div class="checkbox-row" style="flex-wrap:wrap;gap:10px;">'+partners+'</div>'
+      +'<div class="form-error" id="ownErr" hidden></div><div class="muted small" id="ownMsg"></div>'
+      +'<button class="btn btn-accent" id="ownAddBtn" onclick="addOwnWork()">+ Enregistrer l\'œuvre</button></div>'
+      +'<h3 style="font-size:1rem;margin-bottom:6px;">Mes œuvres protégées (<span id="ownCount">0</span>)</h3><div id="ownWorksList"></div>';
+  }
+  if(state==='pending'){
+    return contentIdIntro()+'<div class="own-form"><strong>⏳ Demande envoyée</strong><div class="muted small">Ta demande pour « '+esc(myRhRequest.holderName||'')+' » est en cours d\'examen par l\'administrateur. Tu verras cet espace s\'ouvrir dès qu\'elle sera acceptée.</div></div>';
+  }
+  const note = state==='rejected' ? '<div class="form-error" style="margin-bottom:12px;max-width:560px;">❌ Ta précédente demande a été refusée'+(myRhRequest&&myRhRequest.adminNote?' : '+esc(myRhRequest.adminNote):'')+'. Tu peux en déposer une nouvelle avec plus de précisions.</div>'
+    : state==='revoked' ? '<div class="form-error" style="margin-bottom:12px;max-width:560px;">⛔ Ton accès Content ID a été retiré'+(myRhRequest&&myRhRequest.adminNote?' : '+esc(myRhRequest.adminNote):'')+'. Tu peux déposer une nouvelle demande.</div>' : '';
+  return contentIdIntro()+note
+    +'<div class="own-form"><h3 style="font-size:1rem;">Demander l\'accès Content ID</h3>'
+    +'<label>Nom de l\'ayant droit * (artiste, studio, société…)</label><input type="text" id="rhName" placeholder="Ex : UNITED STUDIO CI">'
+    +'<label>Quelles œuvres veux-tu protéger ? *</label><textarea id="rhDesc" rows="3" placeholder="Ex : mes clips musicaux, mes courts-métrages, ma série…"></textarea>'
+    +'<label>Preuve que tu en es l\'ayant droit * (chaîne officielle, site, page de l\'artiste…)</label><input type="url" id="rhProof" placeholder="https://…">'
+    +'<div class="checkbox-row"><input type="checkbox" id="rhDecl"><label style="margin:0;">Je déclare être l\'auteur de ces œuvres ou être autorisé(e) à les protéger. Je comprends que de fausses déclarations peuvent entraîner le retrait de mon accès. *</label></div>'
+    +'<div class="form-error" id="rhErr" hidden></div>'
+    +'<button class="btn btn-accent" id="rhSubmitBtn" onclick="requestContentIdAccess()">Envoyer ma demande</button></div>';
+}
+function rhErrMsg(msg){ const e=$('rhErr'); if(e){ e.textContent=msg; e.hidden=!msg; } }
+async function requestContentIdAccess(){
+  const holderName=val('rhName').trim(), description=val('rhDesc').trim(), proofUrl=val('rhProof').trim();
+  rhErrMsg('');
+  if(!holderName){ rhErrMsg('Indique le nom de l\'ayant droit.'); return; }
+  if(description.length<15){ rhErrMsg('Décris les œuvres à protéger (15 caractères minimum).'); return; }
+  if(!isHttpUrl(proofUrl)){ rhErrMsg('Ajoute un lien de preuve valide (commençant par http:// ou https://).'); return; }
+  if(!$('rhDecl').checked){ rhErrMsg('Coche la déclaration pour envoyer la demande.'); return; }
+  const btn=$('rhSubmitBtn'); if(btn){ btn.disabled=true; btn.textContent='Envoi…'; }
+  try{
+    await withTimeout(db.collection('rightsHolderRequests').doc(currentAccountId).set({
+      uid:currentAccountId, channelName:currentUser||'', holderName, description, proofUrl, declaration:true, status:'pending', createdAt:Date.now()
+    }), 20000);
+    toast('Demande envoyée 🎬 — l\'administrateur va l\'examiner.');
+  }catch(e){ console.error(e); rhErrMsg(firebaseAuthErrorMsg(e)); if(btn){ btn.disabled=false; btn.textContent='Envoyer ma demande'; } }
+}
+function ownMsg(msg, isErr){
+  const e=$('ownErr'), m=$('ownMsg');
+  if(isErr){ if(e){ e.textContent=msg; e.hidden=!msg; } if(m) m.textContent=''; }
+  else { if(e) e.hidden=true; if(m) m.textContent=msg||''; }
+}
+async function addOwnWork(){
+  if(!myHolder || !currentAccountId) return;
+  const workTitle=val('ownTitle').trim(), label=val('ownLabel').trim()||workTitle;
+  const enforcement=val('ownEnforcement')||'bloquant';
+  const originalLink=val('ownOriginal').trim();
+  const geoCountries=parseCountries(val('ownCountries'));
+  const file=$('ownFile').files[0]||null;
+  const authorizedChannels=Array.from(document.querySelectorAll('.own-auth-chk:checked')).map(c=>c.value);
+  ownMsg('',true);
+  if(!workTitle){ ownMsg('Indique le nom de l\'œuvre.',true); return; }
+  if(!file){ ownMsg('Choisis le fichier original de l\'œuvre.',true); return; }
+  if(originalLink && !isHttpUrl(originalLink)){ ownMsg('Le lien doit commencer par http:// ou https://.',true); return; }
+  if(enforcement==='geo' && !geoCountries.length){ ownMsg('Indique au moins un pays (code à 2 lettres, ex : FR) pour le blocage par pays.',true); return; }
+  const btn=$('ownAddBtn'); if(btn) btn.disabled=true;
+  try{
+    const worktype = (file.type||'').startsWith('audio/') ? 'audio' : 'video';
+    ownMsg('Analyse du fichier sur ton appareil…');
+    const exactHash=await hashFile(file);
+    let visualHash=null, audioHash=null, partial=false;
+    if(worktype==='audio'){
+      audioHash=await analyzeAudioFile(file,(i,n)=>ownMsg('Analyse du son… '+Math.round(i/n*100)+' %'));
+    } else {
+      const tempUrl=URL.createObjectURL(file);
+      const analysis=await analyzeVideo(tempUrl,(i,n,m,eta)=>ownMsg('Analyse de l\'image… '+Math.round(i/n*100)+' %'+progressSuffix(m,eta)));
+      URL.revokeObjectURL(tempUrl);
+      visualHash=analysis.visualHash||null; partial=!!analysis.visualHash && !analysis.complete;
+      ownMsg('Analyse du son…');
+      audioHash=await analyzeAudioFile(file,(i,n)=>ownMsg('Analyse du son… '+Math.round(i/n*100)+' %'));
+    }
+    if(!visualHash && !audioHash){ ownMsg('Impossible de calculer une empreinte pour ce fichier (format non reconnu par le navigateur ?). Essaie un MP4 ou un MP3.',true); return; }
+    const doc={
+      type:'file', worktype, label, workTitle, rightsHolder:myHolder.name||currentUser, rightsHolderChannelId:currentAccountId, ownerUid:currentAccountId,
+      authorizedChannels, enforcement, exemptRanges:[], protectedRanges:[], originalLink:originalLink||null, geoCountries,
+      cover:null, exactHash, visualHash, audioHash, partial, addedAt:Date.now()
+    };
+    await db.collection('fingerprints').doc(newId()).set(doc);
+    ['ownTitle','ownLabel','ownFile','ownOriginal','ownCountries'].forEach(id=>{ $(id).value=''; });
+    document.querySelectorAll('.own-auth-chk:checked').forEach(c=>c.checked=false);
+    ownMsg('');
+    toast('Œuvre protégée 🛡️'+(worktype==='video'&&!audioHash?' (image seulement — son non analysé)':''));
+  }catch(e){ console.error(e); ownMsg('Impossible d\'enregistrer : '+e.message,true); }
+  finally{ if(btn) btn.disabled=false; }
+  }function ownWorkRowHtml(fp){
+  const pol=fp.enforcement||'bloquant';
+  const opts=[['bloquant','🛡️ Bloquer (monde)'],['geo','🌍 Bloquer par pays'],['credit','🔗 Autoriser + crédit'],['signalement','⚠️ Surveiller']]
+    .map(([v,l])=>'<option value="'+v+'"'+(pol===v?' selected':'')+'>'+l+'</option>').join('');
+  const extra = pol==='geo' ? ' • 🌍 '+esc((fp.geoCountries||[]).join(', ')||'(aucun pays)') : (pol==='credit' ? ' • 🔗 '+(isHttpUrl(fp.originalLink)?'lien renseigné':'aucun lien') : '');
+  const nPart=(fp.authorizedChannels||[]).length;
+  return '<div class="own-row"><div style="flex:1;min-width:220px;"><strong>'+(fp.worktype==='audio'?'🎵':'🎬')+' '+esc(fp.label||fp.workTitle||'')+'</strong>'
+    +(fp.label&&fp.workTitle&&fp.label!==fp.workTitle ? '<span class="muted small"> — '+esc(fp.workTitle)+'</span>' : '')
+    +'<br><span class="muted small">'+fpDetail(fp)+'</span><br><span class="muted small">🤝 '+nPart+' partenaire'+(nPart>1?'s':'')+extra+'</span></div>'
+    +'<select onchange="changeOwnPolicy(\''+fp.id+'\',this.value)">'+opts+'</select>'
+    +'<button class="icon-btn" title="Partenaires autorisés" onclick="openPartners(\''+fp.id+'\')">🤝</button>'
+    +'<button class="icon-btn" title="Lien de l\'œuvre originale" onclick="editOwnLink(\''+fp.id+'\')">🔗</button>'
+    +'<button class="icon-btn" title="Pays bloqués" onclick="editOwnCountries(\''+fp.id+'\')">🌍</button>'
+    +'<button class="icon-btn danger" title="Retirer cette œuvre du Content ID" onclick="removeOwnWork(\''+fp.id+'\')">✕</button></div>';
+}
+function renderOwnWorks(){
+  const el=$('ownWorksList'); if(!el) return;
+  const mine=fingerprints.filter(f=>f.ownerUid===currentAccountId).sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));
+  const c=$('ownCount'); if(c) c.textContent=mine.length;
+  el.innerHTML = mine.length ? mine.map(ownWorkRowHtml).join('') : '<p class="muted small">Aucune œuvre protégée pour l\'instant.</p>';
+}
+async function changeOwnPolicy(id, value){
+  const fp=fingerprints.find(f=>f.id===id); if(!fp || !canEditFp(fp)) return;
+  const patch={enforcement:value};
+  if(value==='geo'){
+    const c=prompt('Pays où bloquer (codes à 2 lettres séparés par des virgules, ex : FR, CI) :',(fp.geoCountries||[]).join(', '));
+    const list=c===null ? [] : parseCountries(c);
+    if(!list.length){ if(c!==null) toast('Aucun code pays valide.'); renderOwnWorks(); return; }
+    patch.geoCountries=list;
+  }
+  if(value==='credit' && !isHttpUrl(fp.originalLink)){
+    const l=prompt('Lien de l\'œuvre originale (affiché sous les vidéos qui l\'utilisent) :','');
+    if(l===null){ renderOwnWorks(); return; }
+    if(l.trim()){ if(!isHttpUrl(l.trim())){ toast('Lien invalide (http:// ou https://).'); renderOwnWorks(); return; } patch.originalLink=l.trim(); }
+  }
+  try{ await db.collection('fingerprints').doc(id).update(patch); toast('Mode mis à jour ✅'); }
+  catch(e){ console.error(e); toast('Erreur : '+e.message); renderOwnWorks(); }
+}
+async function editOwnLink(id){
+  const fp=fingerprints.find(f=>f.id===id); if(!fp || !canEditFp(fp)) return;
+  const l=prompt('Lien de l\'œuvre originale (laisse vide pour l\'enlever) :',fp.originalLink||''); if(l===null) return;
+  if(l.trim() && !isHttpUrl(l.trim())){ toast('Lien invalide (http:// ou https://).'); return; }
+  db.collection('fingerprints').doc(id).update({originalLink:l.trim()||null}).then(()=>toast('Lien enregistré 🔗')).catch(e=>{ console.error(e); toast('Erreur : '+e.message); });
+}
+async function editOwnCountries(id){
+  const fp=fingerprints.find(f=>f.id===id); if(!fp || !canEditFp(fp)) return;
+  const c=prompt('Pays où bloquer (codes à 2 lettres, ex : FR, CI) :',(fp.geoCountries||[]).join(', ')); if(c===null) return;
+  const list=parseCountries(c);
+  if((fp.enforcement||'bloquant')==='geo' && !list.length){ toast('Au moins un pays est nécessaire en mode « par pays ».'); return; }
+  db.collection('fingerprints').doc(id).update({geoCountries:list}).then(()=>toast('Pays enregistrés 🌍')).catch(e=>{ console.error(e); toast('Erreur : '+e.message); });
+}
+function removeOwnWork(id){
+  const fp=fingerprints.find(f=>f.id===id); if(!fp || !canEditFp(fp)) return;
+  if(!confirm('Retirer « '+(fp.label||fp.workTitle||'cette œuvre')+' » du Content ID ? Les vidéos qui la reprennent ne seront plus détectées.')) return;
+  db.collection('fingerprints').doc(id).delete().then(()=>toast('Œuvre retirée.')).catch(e=>{ console.error(e); toast('Erreur : '+e.message); });
+}
+/* Côté admin (dans le Bouclier) */
+function renderRhReqList(){
+  const el=$('rhReqList'); if(!el) return;
+  const pend=rhRequests.filter(r=>r.status==='pending').length;
+  const h=$('rhH3'); if(h) h.textContent='🎬 Demandes Content ID ('+rhRequests.length+(pend?', '+pend+' en attente':'')+')';
+  if(!rhRequests.length){ el.innerHTML='<p class="muted small">Aucune demande.</p>'; return; }
+  el.innerHTML=rhRequests.map(r=>{
+    const date=new Date(r.createdAt).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const st = r.status==='approved' ? '<span class="muted small" style="color:var(--teal)">✅ Approuvé</span>'
+      : r.status==='rejected' ? '<span class="muted small" style="color:var(--danger)">❌ Refusé</span>'
+      : r.status==='revoked' ? '<span class="muted small" style="color:var(--danger)">⛔ Révoqué</span>' : '<span class="muted small">⏳ En attente</span>';
+    const nWorks=fingerprints.filter(f=>f.ownerUid===r.id).length;
+    const btn=(label,fn,cls)=>'<button class="btn '+cls+'" style="flex:1;padding:6px;font-size:.78rem;" onclick="'+fn+'(\''+r.id+'\')">'+label+'</button>';
+    const actions = r.status==='approved' ? '<div style="display:flex;gap:6px;margin-top:6px;">'+btn('⛔ Révoquer l\'accès','revokeRhRequest','btn-ghost')+'</div>'
+      : '<div style="display:flex;gap:6px;margin-top:6px;">'+btn('✅ Approuver','approveRhRequest','btn-accent')+(r.status==='pending'?btn('❌ Refuser','rejectRhRequest','btn-ghost'):'')+'</div>';
+    return '<div class="shield-row" style="flex-direction:column;align-items:stretch;">'
+      +'<div style="display:flex;justify-content:space-between;gap:8px;"><div><strong>'+esc(r.holderName||'')+'</strong> — chaîne « '+esc(displayNameFor(r.id))+' »<br><span class="muted small">'+date+(nWorks?' • '+nWorks+' œuvre'+(nWorks>1?'s':''):'')+'</span></div>'+st+'</div>'
+      +'<div class="muted small" style="margin-top:4px;word-break:break-word;">'+esc(r.description||'')+'</div>'
+      +'<div class="muted small" style="margin-top:2px;word-break:break-word;">Preuve : '+(isHttpUrl(r.proofUrl)?'<a href="'+esc(r.proofUrl)+'" target="_blank" rel="noopener noreferrer" style="color:var(--teal);">'+esc(r.proofUrl)+'</a>':esc(r.proofUrl||'—'))+'</div>'
+      +(r.adminNote?'<div class="muted small" style="margin-top:2px;">Note : '+esc(r.adminNote)+'</div>':'')
+      +actions+'</div>';
+  }).join('');
+}
+async function approveRhRequest(uid){
+  const r=rhRequests.find(x=>x.id===uid); if(!r) return;
+  if(!confirm('Approuver « '+r.holderName+' » comme ayant droit Content ID ? Cette personne pourra déposer des œuvres et choisir leur sanction.')) return;
+  try{
+    const b=db.batch();
+    b.set(db.collection('rightsHolders').doc(uid), {name:r.holderName, approvedAt:Date.now()});
+    b.update(db.collection('rightsHolderRequests').doc(uid), {status:'approved', adminNote:'', resolvedAt:Date.now()});
+    await b.commit(); toast('Accès Content ID accordé ✅');
+  }catch(e){ console.error(e); toast('Erreur : '+e.message); }
+}
+async function rejectRhRequest(uid){
+  const note=prompt('Motif du refus (visible par le demandeur) :',''); if(note===null) return;
+  try{ await db.collection('rightsHolderRequests').doc(uid).update({status:'rejected', adminNote:note||'', resolvedAt:Date.now()}); toast('Demande refusée.'); }
+  catch(e){ console.error(e); toast('Erreur : '+e.message); }
+}
+async function revokeRhRequest(uid){
+  const r=rhRequests.find(x=>x.id===uid); if(!r) return;
+  const note=prompt('Motif du retrait d\'accès (visible par la personne) :',''); if(note===null) return;
+  const own=fingerprints.filter(f=>f.ownerUid===uid);
+  const delWorks = own.length ? confirm('Supprimer aussi ses '+own.length+' œuvre'+(own.length>1?'s':'')+' protégée'+(own.length>1?'s':'')+' ? (OK = supprimer, Annuler = les garder)') : false;
+  try{
+    const b=db.batch();
+    b.delete(db.collection('rightsHolders').doc(uid));
+    b.update(db.collection('rightsHolderRequests').doc(uid), {status:'revoked', adminNote:note||'', resolvedAt:Date.now()});
+    if(delWorks) own.forEach(f=>b.delete(db.collection('fingerprints').doc(f.id)));
+    await b.commit(); toast('Accès révoqué.');
+  }catch(e){ console.error(e); toast('Erreur : '+e.message); }
+}
+
 /* ============ PAGES LÉGALES (confidentialité, conditions & propriété intellectuelle, droits d'auteur, contact) ============ */
 const CONTACT_EMAIL='unitedstudioci@gmail.com';
-const LEGAL_UPDATED="22 octobre 2026";
+const LEGAL_UPDATED="4 novembre 2026";
 const LEGAL_TABS=[['privacy','Confidentialité'],['terms','Conditions & propriété intellectuelle'],['copyright','Droits d\'auteur'],['contact','Contact']];
 function legalContent(tab){
   const mail='<a href="mailto:'+CONTACT_EMAIL+'">'+CONTACT_EMAIL+'</a>';
@@ -2582,13 +3127,16 @@ function legalContent(tab){
     <h3>Politique de confidentialité</h3>
     <p class="legal-updated">Dernière mise à jour : ${LEGAL_UPDATED}</p>
     <h4>1. Qui est responsable ?</h4>
-    <p>NEUF est une plateforme de partage de vidéos destinée à un cercle fermé (« la bande », « la classe »). UNITED STUDIO CI, éditeur du site NEUF, est responsable du traitement des données décrit ici. Contact : ${mail}.</p>
+    <p>NEUF est une plateforme de partage de vidéos entre membres. UNITED STUDIO CI, éditeur du site NEUF, est responsable du traitement des données décrit ici. Contact : ${mail}.</p>
     <h4>2. Données que nous collectons</h4>
     <ul>
       <li><strong>Compte :</strong> adresse email et mot de passe (gérés par Firebase Authentication — le mot de passe n'est jamais lisible par UNITED STUDIO CI), nom de chaîne, photo de profil facultative.</li>
       <li><strong>Contenus :</strong> vidéos, titres, descriptions, miniatures, commentaires, « j'aime », abonnements, nombre de vues (y compris par jour).</li>
       <li><strong>Signalements de droits d'auteur :</strong> nom, relation avec l'œuvre, email, pays, téléphone et organisation (facultatifs), détails du signalement et signature électronique.</li>
       <li><strong>Modération :</strong> un journal des blocages et suppressions (titre, auteur, motif), visible uniquement de l'administrateur.</li>
+      <li><strong>Content ID (ayants droit) :</strong> si tu demandes l'accès, le nom de l'ayant droit, la description de tes œuvres et ton lien de preuve ; une fois accepté, les empreintes (image et son) des œuvres que tu déposes. Les fichiers originaux sont analysés sur ton appareil et ne sont jamais envoyés.</li>
+      <li><strong>Contestations :</strong> le motif, l'explication, le lien de preuve et la signature que tu fournis pour contester le retrait d'une vidéo. Avec ton nom de chaîne, ils peuvent être transmis à la personne qui a effectué le signalement.</li>
+      <li><strong>Restrictions géographiques :</strong> uniquement lorsqu'une vidéo contient une œuvre dont l'ayant droit a demandé un blocage par pays, ton navigateur interroge le service api.country.is, qui déduit ton pays de ton adresse IP. NEUF ne conserve pas ton adresse IP.</li>
       <li><strong>Analyse anti-contrefaçon :</strong> à la publication d'une vidéo, ton navigateur l'analyse (images et son) pour la comparer à des œuvres protégées. L'analyse se fait sur ton appareil ; seuls l'empreinte exacte du fichier et le résultat de détection sont enregistrés avec la vidéo.</li>
     </ul>
     <h4>3. Pourquoi ?</h4>
@@ -2601,6 +3149,7 @@ function legalContent(tab){
       <li><strong>Cloudinary</strong> (hébergement des fichiers vidéo publiés) ;</li>
       <li><strong>Google Fonts</strong> (polices) ;</li>
       <li><strong>YouTube / Google Drive</strong> lorsque tu publies un lien intégré : leur lecteur applique ses propres règles.</li>
+      <li><strong>api.country.is</strong> (détermination du pays, seulement en cas de restriction géographique, voir ci-dessus).</li>
     </ul>
     <p>Ces services peuvent traiter des données hors de ton pays. Leurs politiques de confidentialité s'appliquent en plus de celle-ci.</p>
     <h4>6. Stockage sur ton appareil</h4>
@@ -2610,7 +3159,8 @@ function legalContent(tab){
     <h4>8. Tes droits</h4>
     <p>Tu peux demander l'accès à tes données, leur rectification, leur suppression, la limitation ou l'opposition à leur traitement, ainsi que leur portabilité. Tu peux modifier ton nom et ta photo à tout moment dans « Mon compte ». Pour tout le reste, écris à ${mail}.</p>
     <h4>9. Mineurs</h4>
-    <p>Si tu as moins de 15 ans, demande l'accord d'un parent ou d'un responsable avant de créer un compte. Ne publie jamais d'informations sensibles (adresse, téléphone, pièces d'identité) dans les titres, descriptions, commentaires ou vidéos.</p>    <h4>10. Sécurité</h4>
+    <p>Si tu as moins de 15 ans, demande l'accord d'un parent ou d'un responsable avant de créer un compte. Ne publie jamais d'informations sensibles (adresse, téléphone, pièces d'identité) dans les titres, descriptions, commentaires ou vidéos.</p>
+    <h4>10. Sécurité</h4>
     <p>Nous appliquons des mesures raisonnables (authentification, règles d'accès à la base de données, connexions chiffrées). Aucun système n'est infaillible : choisis un mot de passe solide et ne le partage pas.</p>
     <h4>11. Modifications</h4>
     <p>Cette politique peut évoluer. La date de mise à jour est indiquée en haut de cette page.</p>`;
@@ -2639,7 +3189,9 @@ function legalContent(tab){
     <h4>6. Bouclier Copyright</h4>
     <p>NEUF analyse automatiquement les vidéos publiées pour détecter des contenus protégés enregistrés par l'administrateur. Selon le cas, la publication peut être bloquée, signalée ou autorisée (par exemple si tu es l'ayant droit ou si l'ayant droit t'a autorisé). Ce système peut se tromper. Si tu choisis de « publier quand même (fair use) », tu agis sous ta seule responsabilité et ce choix est enregistré. Un contenu protégé publié sans autorisation peut être supprimé.</p>
     <h4>7. Modération</h4>
-    <p>L'administrateur peut supprimer tout contenu qui enfreint ces conditions ou la loi, et suspendre un compte en cas d'infractions graves ou répétées. Le créateur d'une chaîne peut supprimer sa propre vidéo ainsi que les commentaires sous ses vidéos.</p>
+    <p>L'administrateur peut retirer ou supprimer tout contenu qui enfreint ces conditions ou la loi, et suspendre un compte en cas d'infractions graves ou répétées. Une vidéo retirée à la suite d'un signalement de droits d'auteur n'est pas effacée : elle devient invisible pour les autres membres, son auteur en est informé et peut contester le retrait (voir « Droits d'auteur »). Le créateur d'une chaîne peut supprimer sa propre vidéo ainsi que les commentaires sous ses vidéos.</p>
+    <h4>7 bis. Content ID (ayants droit)</h4>
+    <p>Tout membre peut demander l'accès à l'espace Content ID pour protéger ses œuvres. L'accès est validé par l'administrateur et peut être retiré en cas de fausse déclaration ou d'abus (par exemple protéger une œuvre dont on n'est pas l'ayant droit). L'ayant droit choisit lui-même la réaction du site lorsqu'une vidéo reprend son œuvre : blocage à la publication, blocage dans certains pays, autorisation avec crédit (lien vers l'œuvre originale affiché sous la vidéo), ou simple veille. Il peut autoriser des chaînes partenaires. Le détecteur automatique peut se tromper : c'est pourquoi chaque retrait peut être contesté.</p>
     <h4>8. Responsabilité</h4>
     <p>NEUF est fourni « en l'état », sans garantie de disponibilité continue. UNITED STUDIO CI n'est pas responsable des contenus publiés par les utilisateurs mais s'engage à retirer rapidement tout contenu manifestement illicite qui lui est signalé. Chaque utilisateur est responsable de ce qu'il publie.</p>
     <h4>9. Modifications et droit applicable</h4>
@@ -2653,8 +3205,7 @@ function legalContent(tab){
     <p>Les utilisateurs ne doivent publier que des contenus dont ils sont les auteurs ou pour lesquels ils ont l'autorisation de l'ayant droit.</p>
     <h4>Signaler un contenu</h4>
     <p>Si tu es ayant droit (ou son représentant) et que ton œuvre est publiée sans autorisation, utilise le formulaire de signalement — il est ouvert à tous, sans compte. Indique :</p>
-    <ul>
-      <li>le ou les liens du contenu concerné ;</li>
+    <ul>      <li>le ou les liens du contenu concerné ;</li>
       <li>l'œuvre originale (titre, type, lien ou preuve de propriété) ;</li>
       <li>le passage concerné et une description de l'atteinte ;</li>
       <li>tes coordonnées (nom, email, pays) ;</li>
@@ -2662,9 +3213,11 @@ function legalContent(tab){
     </ul>
     <p><button class="btn btn-accent" onclick="closeLegal();openTakedownForm();">🚩 Ouvrir le formulaire de signalement</button></p>
     <h4>Traitement</h4>
-    <p>Chaque signalement est examiné par l'administrateur. S'il est validé, le contenu concerné est supprimé et le motif est enregistré. S'il est rejeté ou incomplet, la personne peut être recontactée par email pour fournir des preuves supplémentaires.</p>
-    <h4>Contestation</h4>
-    <p>Si ton contenu a été supprimé à tort, écris à ${mail} en expliquant pourquoi tu estimes avoir le droit de le publier (œuvre originale, autorisation de l'ayant droit, exception légale…). Le dossier sera réexaminé.</p>
+    <p>Chaque signalement est examiné par l'administrateur. S'il est validé, la vidéo concernée est retirée (invisible pour les autres membres) et le motif est enregistré ; son auteur le voit sur sa vidéo et dans son Studio. S'il est rejeté ou incomplet, la personne peut être recontactée par email pour fournir des preuves supplémentaires.</p>
+    <h4>Contester un retrait</h4>
+    <p>Si ta vidéo a été retirée, ouvre-la depuis ton Studio et clique sur <strong>« Contester le signalement »</strong>. Choisis ton motif — critique ou commentaire, parodie, enseignement ou recherche, compte rendu d'actualité, courte citation, autorisation de l'ayant droit, œuvre personnelle, erreur d'identification — explique ta situation, ajoute une preuve si tu en as une, puis signe avec ton nom de chaîne. L'administrateur examine ta contestation : si elle est acceptée, ta vidéo est rétablie ; sinon, tu reçois le motif du refus. Ta contestation et ton nom de chaîne peuvent être transmis à la personne qui a signalé la vidéo. Tu peux aussi nous écrire à ${mail}.</p>
+    <h4>Réactions possibles de l'ayant droit</h4>
+    <p>Selon le choix de l'ayant droit, une vidéo qui reprend son œuvre peut être bloquée à la publication, rendue invisible dans certains pays, publiée avec un lien vers l'œuvre originale, ou simplement surveillée. Les ayants droit peuvent demander l'accès à l'espace Content ID depuis le menu.</p>
     <h4>Faux signalements et récidive</h4>
     <p>Déclarer sciemment de fausses informations dans un signalement peut engager ta responsabilité. Les comptes qui publient de manière répétée des contenus contrefaisants peuvent être suspendus.</p>`;
   return `
@@ -2718,4 +3271,5 @@ auth.onAuthStateChanged(async (user)=>{
 });
 </script>
 </body>
-</html>
+  </html>
+  
