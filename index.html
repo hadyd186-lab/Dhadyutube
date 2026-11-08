@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEUF — La bande</title>
+<title>Dhadyutube</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -99,6 +99,23 @@
   .watch-side{flex:1 1 260px; min-width:0;}
   .player{width:100%; aspect-ratio:16/9; background:#000; border-radius:var(--r-l); overflow:hidden;}
   .player video, .player iframe{width:100%; height:100%; display:block; border:none;}
+  .player.short{width:auto; max-width:100%; height:min(80vh,720px); aspect-ratio:9/16; margin:0 auto;}
+  .card-badge.short{background:var(--accent); color:var(--accent-ink);}
+  .shorts-feed{height:calc(100vh - 150px); min-height:420px; overflow-y:auto; scroll-snap-type:y mandatory; scrollbar-width:none; border-radius:var(--r-l);}
+  .shorts-feed::-webkit-scrollbar{display:none;}
+  .short-item{height:100%; scroll-snap-align:start; scroll-snap-stop:always; display:flex; align-items:center; justify-content:center; gap:14px; padding:4px 0;}
+  .short-frame{position:relative; height:100%; max-width:100%; aspect-ratio:9/16; background:#000; border-radius:var(--r-l); overflow:hidden; cursor:pointer;}
+  .short-frame video{width:100%; height:100%; object-fit:contain; display:block; background:#000;}
+  .short-info{position:absolute; left:0; right:0; bottom:0; padding:38px 14px 14px; background:linear-gradient(transparent,rgba(0,0,0,.78)); color:#fff; pointer-events:none;}
+  .short-info .short-author{font-weight:700; font-size:.88rem; pointer-events:auto; cursor:pointer;}
+  .short-info .short-title{font-size:.84rem; margin-top:3px; line-height:1.35;}
+  .short-pause{position:absolute; inset:0; display:none; align-items:center; justify-content:center; font-size:3rem; color:#fff; text-shadow:0 2px 12px rgba(0,0,0,.6); pointer-events:none;}
+  .short-frame.paused .short-pause{display:flex;}
+  .short-actions{display:flex; flex-direction:column; gap:12px; align-items:center;}
+  .short-act{width:46px; height:46px; border-radius:50%; border:1px solid var(--border); background:var(--surface-2); color:var(--text); font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;}
+  .short-act.active{color:var(--danger); border-color:var(--danger);}
+  .short-cnt{font-size:.7rem; color:var(--text-muted); margin-top:-8px; text-align:center;}
+  @media (max-width:700px){ .short-item{gap:6px;} .short-act{width:40px;height:40px;} .shorts-feed{height:calc(100vh - 190px);} }
   .watch-title{font-size:1.2rem; font-weight:700; margin-top:14px;}
   .watch-channel-row{display:flex; align-items:center; justify-content:space-between; margin-top:14px; padding-bottom:14px; border-bottom:1px solid var(--border); gap:10px; flex-wrap:wrap;}
   .watch-channel-left{display:flex; align-items:center; gap:10px; cursor:pointer;}
@@ -197,10 +214,8 @@
   /* PAGES LÉGALES */
   .site-footer{border-top:1px solid var(--border); padding:18px 20px 26px; text-align:center; font-size:.76rem; color:var(--text-muted);}
   .site-footer button{background:none; border:none; color:var(--text-muted); font-size:.76rem; cursor:pointer; text-decoration:underline; padding:2px 6px;}
-  .site-footer button:hover{color:var(--text);}.legal-body h4{font-size:.88rem; margin:16px 0 4px; font-family:'Space Grotesk',sans-serif;}
-  .legal-body p,.legal-body li{font-size:.82rem; color:var(--text-muted); line-height:1.55;}
-  .legal-body ul{padding-left:18px; margin:4px 0;}
-  .legal-body a{color:var(--accent);}
+  .site-footer button:hover{color:var(--text);}
+  .legal-body h4{font-size:.88rem; margin:16px 0 4px; font-family:'Space Grotesk',sans-ser .legal-body a{color:var(--accent);}
   .legal-updated{font-size:.72rem; color:var(--text-muted);}
 
   /* TOAST */
@@ -236,15 +251,15 @@
 <div class="topbar">
   <button class="btnMenu" id="btnMenu">☰</button>
   <div class="brand" onclick="goHome()">
-    <div class="brand-mark">N9</div>
-    <div class="brand-word">NEUF</div>
+    <div class="brand-mark">D</div>
+    <div class="brand-word">Dhadyutube</div>
   </div>
   <div class="searchbar">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#fff" stroke-width="2"/><path d="M20 20L16.5 16.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
-    <input id="searchInput" placeholder="Rechercher dans la bande…" oninput="renderHome()">
+    <input id="searchInput" placeholder="Rechercher…" oninput="renderHome()">
   </div>
   <div class="topbar-actions">
-    <button class="btn btn-ghost" id="btnSync" title="Sauvegarde locale">💾 Local</button>
+    <button class="btn btn-ghost" id="btnSync" title="Stockage en ligne">☁️ Cloud</button>
     <button class="btn btn-ghost" id="btnShield">🛡️ Bouclier</button>
     <button class="btn btn-accent" id="btnUpload">+ Publier</button>
     <button class="identity-pill" id="btnIdentity" title="Changer d'identité"></button>
@@ -254,10 +269,11 @@
 <div class="body">
   <aside class="rail" id="rail">
     <button class="rail-item active" id="railHome" onclick="goHome()">Accueil</button>
+    <button class="rail-item" id="railShorts" onclick="openShorts()">📱 Shorts</button>
     <button class="rail-item" id="railStudio" onclick="openStudio()" hidden>📊 Studio</button>
     <button class="rail-item" id="railContentId" onclick="openContentId()" hidden>🎬 Content ID</button>
     <button class="rail-item" id="railReports" onclick="openReports()" hidden>🚩 Signalements</button>
-    <div class="rail-label">La classe</div>
+    <div class="rail-label" id="railSubsLabel" hidden>Abonnements</div>
     <div id="railFriends"></div>
   </aside>
 
@@ -269,8 +285,15 @@
         <button class="filter-chip" data-filter="mine" onclick="setHomeFilter('mine')">👤 Ma chaîne</button>
         <button class="filter-chip" data-filter="subs" onclick="setHomeFilter('subs')">⭐ Abonnements</button>
       </div>
+      <div id="homeChannels"></div>
       <div class="grid" id="homeGrid"></div>
       <div class="empty-state" id="homeEmpty" hidden></div>
+    </section>
+
+    <section id="viewShorts" hidden>
+      <h2 style="margin-bottom:10px;">📱 Shorts</h2>
+      <div class="shorts-feed" id="shortsFeed"></div>
+      <div class="empty-state" id="shortsEmpty" hidden>Aucun Short pour l'instant — publie le premier (vidéo verticale 9:16 de 2 minutes maximum) !</div>
     </section>
 
     <section id="viewWatch" hidden>
@@ -352,7 +375,7 @@
 </div>
 
 <footer class="site-footer">
-  © 2026 NEUF · UNITED STUDIO CI — Tous droits réservés<br>
+  © 2026 Dhadyutube · UNITED STUDIO CI — Tous droits réservés<br>
   <button onclick="openLegal('privacy')">Confidentialité</button>·<button onclick="openLegal('terms')">Conditions &amp; propriété intellectuelle</button>·<button onclick="openLegal('copyright')">Droits d'auteur</button>·<button onclick="openLegal('contact')">Contact</button>
 </footer>
 
@@ -392,11 +415,11 @@
 <!-- TAKEDOWN MODAL -->
 <div class="overlay" id="takedownModal">
   <div class="modal-box">
-    <h2>🚩 Signaler une atteinte au droit d'auteur</h2>
-    <p class="muted small">Ouvert à tous, sans compte — pour signaler un contenu publié sur ce site sans autorisation de l'ayant droit.</p>
+    <h2>🚩 Signaler une atteinte au droit d'auteur</h2><p class="muted small">Ouvert à tous, sans compte — pour signaler un contenu publié sur ce site sans autorisation de l'ayant droit.</p>
     <h3 class="shield-h3">1. Contenu signalé</h3>
     <label>Lien(s) du contenu concerné *</label>
-    <textarea id="tdLink" rows="2" placeholder="https://… (un lien par ligne)"></textarea>  <label>Type d'œuvre concernée *</label>
+    <textarea id="tdLink" rows="2" placeholder="https://… (un lien par ligne)"></textarea>
+    <label>Type d'œuvre concernée *</label>
     <select id="tdWorkType">
       <option value="">— Choisir —</option>
       <option value="video">Vidéo / film / série</option>
@@ -491,7 +514,7 @@
 
     <label>Visibilité</label>
     <select id="uploadVisibility">
-      <option value="public">Publique (toute la bande)</option>
+      <option value="public">Publique (visible par tous les membres)</option>
       <option value="private">Privée (visible par toi uniquement)</option>
       <option value="scheduled">Programmée</option>
     </select>
@@ -500,16 +523,16 @@
       <input type="datetime-local" id="uploadSchedule">
     </div>
 
+    <label>Type de publication</label>
+    <select id="uploadKind" onchange="updateKindHint()">
+      <option value="video">🎬 Vidéo</option>
+      <option value="short">📱 Short (2 min max, vertical 9:16)</option>
+    </select>
+    <div class="muted small" id="kindHint" hidden>Un Short doit durer <strong>2 minutes maximum</strong> et être au <strong>format vertical 9:16</strong> (ex. 1080×1920). Le fichier est vérifié avant l'envoi.</div>
+
     <label>Fichier vidéo</label>
     <input type="file" id="uploadFile" accept="video/*">
     <div class="muted small" id="fileNameHint"></div>
-    <label>…ou lien vidéo</label>
-    <input type="url" id="uploadUrl" placeholder="https://…">
-
-    <div class="checkbox-row" id="overrideRow" hidden>
-      <input type="checkbox" id="chkOverride">
-      <label style="margin:0;">Contenu déjà autorisé — ignorer le Bouclier Copyright pour cette publication</label>
-    </div>
 
     <div class="form-error" id="uploadError" hidden></div>
 
@@ -524,6 +547,7 @@
 <div class="overlay" id="shieldModal">
   <div class="modal-box" style="max-width:500px;">
     <h2>🛡️ Bouclier Copyright</h2>
+    <p class="muted small" style="margin:0 0 10px;">🎧 <strong>Audio :</strong> analyse des fréquences, du rythme et de l'amplitude pour créer une carte d'identité sonore unique. 🎬 <strong>Audiovisuel :</strong> découpage en images clés et analyse de la disposition des pixels (luminosité, contours, formes).</p>
     <div id="shieldBody"></div>
   </div>
 </div>
@@ -581,22 +605,22 @@
 <!-- CLOUD MODAL -->
 <div class="overlay" id="syncModal">
   <div class="modal-box">
-    <h2>💾 Stockage local</h2>
+    <h2>☁️ Stockage en ligne</h2>
     <p class="muted small" id="cloudStatus">Vérification de la connexion…</p>
-    <p class="muted small">Connecté à Firebase : comptes, vidéos, likes, commentaires et empreintes du Bouclier sont synchronisés en direct pour toute la classe. Storage n'étant pas activé, un fichier vidéo uploadé directement reste visible seulement sur l'appareil qui l'a publié — utilise un lien (Drive, YouTube non répertorié…) pour qu'il soit regardable par tout le monde. Exporte une sauvegarde JSON de temps en temps par précaution.</p>
+    <p class="muted small">Le site est connecté à Cloudinary : les vidéos que tu publies sont hébergées en ligne et peuvent être vues depuis n'importe quel appareil, selon leurs règles de visibilité (publique, privée ou programmée). Les comptes, likes, commentaires et empreintes du Bouclier sont synchronisés en direct via Firebase. Tu peux aussi exporter une sauvegarde JSON des données par précaution.</p>
     <button class="btn btn-accent" style="width:100%" onclick="exportData()">Exporter une sauvegarde JSON</button>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeSync()">Fermer</button>
     </div>
   </div>
-</div>
-
-<!-- LEGAL MODAL -->
+      </div>
+        <!-- LEGAL MODAL -->
 <div class="overlay" id="legalModal">
   <div class="modal-box" style="max-width:640px;">
     <div class="tab-row" id="legalTabs" style="flex-wrap:wrap;"></div>
     <div class="legal-body" id="legalBody"></div>
-    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeLegal()">Fermer</button></div>  </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeLegal()">Fermer</button></div>
+  </div>
 </div>
 
 <div id="toast"></div>
@@ -727,7 +751,7 @@ const VISUAL_MATCH_THRESHOLD = 10;
 const AH_BANDS = [100,160,260,420,680,1100,1800,2900,4700]; // 9 bandes log-espacées (voix/instruments)
 const AH_FRAME_THRESHOLD = 16;     // distance de Hamming max (sur 64 bits) pour dire « même instant sonore »
 const AH_AVG_THRESHOLD = 13;       // distance moyenne max sur tout l'extrait retrouvé
-const AH_MAX_DURATION = 1800;      // au-delà de 30 min, l'empreinte audio n'est plus calculée (mémoire du décodage) — l'empreinte visuelle reste active
+const AH_MAX_DURATION = 1800;      // décodage direct : au-delà de 30 min on passe à la lecture en flux (voir plus bas)
 const AH_MAX_FILE = 150*1024*1024; // idem, par taille de fichier
 
 function gridToHashHex(gray, w, h){ // grille w x h -> 64 bits (h lignes x (w-1) comparaisons) -> 16 caractères hex
@@ -777,15 +801,173 @@ async function analyzeAudioBuffer(buf, onProgress){
 }
 let __sharedAudioCtx=null;
 function getAudioCtx(){ return __sharedAudioCtx || (__sharedAudioCtx = new (window.AudioContext||window.webkitAudioContext)()); }
-/* Décode le fichier (musique OU piste audio d'une vidéo) et calcule son empreinte audio. Renvoie null si le fichier est trop gros/long, ou si le décodage échoue (pas de piste audio, codec non reconnu par le navigateur). */
-async function analyzeAudioFile(file, onProgress){
-  if(!file || file.size>AH_MAX_FILE) return null;
+/* ---- Lecture en FLUX de la piste audio d'un MP4 / M4A / MOV (fichiers lourds ou longs) ----
+   decodeAudioData exige de charger tout le fichier en mémoire (+ le son décompressé), d'où les limites de 150 Mo / 30 min. Ici on lit
+   seulement la table des échantillons (« moov ») puis UNIQUEMENT les octets de la piste audio, qu'on décode par petits morceaux avec
+   WebCodecs (AudioDecoder) : la mémoire utilisée reste faible quelle que soit la taille de la vidéo. Aucune bibliothèque externe.
+   Formats gérés : AAC, MP3 et Opus dans un conteneur MP4. Sinon (MKV, WebM, AVI… ou navigateur sans WebCodecs) : pas d'empreinte audio. */
+const AH_STREAM_MAX_DURATION = 4*3600; // garde l'empreinte sous la limite de 1 Mo d'un document Firestore
+function mp4Boxes(dv, start, end){
+  const out=[]; let p=start;
+  while(p+8<=end){
+    let size=dv.getUint32(p), hdr=8;
+    const type=String.fromCharCode(dv.getUint8(p+4),dv.getUint8(p+5),dv.getUint8(p+6),dv.getUint8(p+7));
+    if(size===1){ if(p+16>end) break; size=Number(dv.getBigUint64(p+8)); hdr=16; }
+    else if(size===0) size=end-p;
+    if(size<hdr || p+size>end) break;
+    out.push({type, start:p, hdr, end:p+size}); p+=size;
+  }
+  return out;
+}function mp4Child(dv, box, type){ return mp4Boxes(dv, box.start+box.hdr, box.end).find(b=>b.type===type)||null; }
+function mp4DescLen(dv, p){ let len=0, n=0, b; do{ b=dv.getUint8(p+n); len=(len<<7)|(b&0x7f); n++; }while((b&0x80) && n<4); return [len,n]; }
+/* Lit la première piste audio d'un « moov » : codec, fréquence, canaux, description du décodeur et table des échantillons (position, taille, temps). */
+function parseMp4Audio(moovBuf){
+  const dv=new DataView(moovBuf), top=mp4Boxes(dv,0,moovBuf.byteLength);
+  const moov=top.find(b=>b.type==='moov'); if(!moov) return null;
+  for(const trak of mp4Boxes(dv, moov.start+moov.hdr, moov.end).filter(b=>b.type==='trak')){
+    const mdia=mp4Child(dv,trak,'mdia'); if(!mdia) continue;
+    const hdlr=mp4Child(dv,mdia,'hdlr'); if(!hdlr) continue;
+    const hp=hdlr.start+hdlr.hdr+8; // version/flags + pre_defined
+    if(String.fromCharCode(dv.getUint8(hp),dv.getUint8(hp+1),dv.getUint8(hp+2),dv.getUint8(hp+3))!=='soun') continue;
+    const mdhd=mp4Child(dv,mdia,'mdhd'), minf=mp4Child(dv,mdia,'minf'), stbl=minf&&mp4Child(dv,minf,'stbl');
+    if(!mdhd||!stbl) return null;
+    const mp=mdhd.start+mdhd.hdr, timescale=dv.getUint8(mp)===1 ? dv.getUint32(mp+20) : dv.getUint32(mp+12);
+    // --- description du codec (stsd) ---
+    const stsd=mp4Child(dv,stbl,'stsd'); if(!stsd) return null;
+    const entry=mp4Boxes(dv, stsd.start+stsd.hdr+8, stsd.end)[0]; if(!entry) return null;
+    const ep=entry.start+entry.hdr;
+    if(dv.getUint16(ep+8)!==0) return null; // entrée « QuickTime v1/v2 » : non gérée
+    let channels=dv.getUint16(ep+16), sampleRate=dv.getUint32(ep+24)>>>16;
+    const kids=mp4Boxes(dv, ep+28, entry.end);
+    let codec=null, description=null;
+    if(entry.type==='mp4a'){
+      const esds=kids.find(b=>b.type==='esds'); if(!esds) return null;
+      let q=esds.start+esds.hdr+4; // version/flags
+      if(dv.getUint8(q)!==0x03) return null;
+      let [,n]=mp4DescLen(dv,q+1); q+=1+n+2; // tag, longueur, ES_ID
+      const fl=dv.getUint8(q); q+=1;
+      if(fl&0x80) q+=2; if(fl&0x40){ q+=1+dv.getUint8(q); } if(fl&0x20) q+=2;
+      if(dv.getUint8(q)!==0x04) return null;
+      [,n]=mp4DescLen(dv,q+1); q+=1+n;
+      const oti=dv.getUint8(q); q+=13; // oti, streamType, bufferSize, maxBitrate, avgBitrate
+      if(oti===0x6B || oti===0x69){ codec='mp3'; }
+      else if(oti===0x40){
+        if(dv.getUint8(q)!==0x05) return null;
+        let len; [len,n]=mp4DescLen(dv,q+1); q+=1+n;
+        description=new Uint8Array(moovBuf.slice(q,q+len));
+        let aot=description[0]>>3; if(aot===31) aot=32+(((description[0]&7)<<3)|(description[1]>>5));
+        codec='mp4a.40.'+aot;
+      } else return null;
+    } else if(entry.type==='Opus'){
+      const dops=kids.find(b=>b.type==='dOps'); if(!dops) return null;
+      const d=dops.start+dops.hdr, ch=dv.getUint8(d+1), fam=dv.getUint8(d+10);
+      const extra = fam!==0 ? 2+ch : 0, head=new Uint8Array(19+extra), hv=new DataView(head.buffer);
+      head.set([0x4f,0x70,0x75,0x73,0x48,0x65,0x61,0x64],0); head[8]=1; head[9]=ch;
+      hv.setUint16(10, dv.getUint16(d+2), true); hv.setUint32(12, dv.getUint32(d+4), true); hv.setInt16(16, dv.getInt16(d+8), true); head[18]=fam;
+      for(let i=0;i<extra;i++) head[19+i]=dv.getUint8(d+11+i);
+      description=head; codec='opus'; channels=ch; sampleRate=48000;
+    } else return null;
+    // --- table des échantillons ---
+    const stsz=mp4Child(dv,stbl,'stsz'), stsc=mp4Child(dv,stbl,'stsc'), stts=mp4Child(dv,stbl,'stts');
+    const stco=mp4Child(dv,stbl,'stco'), co64=mp4Child(dv,stbl,'co64');
+    if(!stsz||!stsc||!stts||!(stco||co64)) return null;
+    let p=stsz.start+stsz.hdr+4; const fixedSize=dv.getUint32(p), count=dv.getUint32(p+4); p+=8;
+    const sizes=new Uint32Array(count); for(let i=0;i<count;i++) sizes[i]=fixedSize||dv.getUint32(p+4*i);
+    p=stts.start+stts.hdr+4; const nStts=dv.getUint32(p); p+=4;
+    const durs=new Uint32Array(count); let si=0;
+    for(let i=0;i<nStts && si<count;i++){ const c=dv.getUint32(p+8*i), dlt=dv.getUint32(p+8*i+4); for(let k=0;k<c&&si<count;k++) durs[si++]=dlt; }
+    p=stsc.start+stsc.hdr+4; const nStsc=dv.getUint32(p); p+=4;
+    const runs=[]; for(let i=0;i<nStsc;i++) runs.push([dv.getUint32(p+12*i), dv.getUint32(p+12*i+4)]);
+    const cbox=stco||co64, big=!stco; p=cbox.start+cbox.hdr+4; const nChunks=dv.getUint32(p); p+=4;
+    const offsets=new Float64Array(count); si=0;
+    for(let c=1;c<=nChunks && si<count;c++){
+      let per=runs[0][1]; for(let r=0;r<runs.length;r++){ if(runs[r][0]<=c) per=runs[r][1]; else break; }
+      let off = big ? Number(dv.getBigUint64(p+8*(c-1))) : dv.getUint32(p+4*(c-1));
+      for(let k=0;k<per && si<count;k++){ offsets[si]=off; off+=sizes[si]; si++; }
+    }
+    if(si!==count || !count) return null;
+    return {codec, sampleRate, channels, description, timescale, count, offsets, sizes, durs};
+  }
+  return null;
+}
+async function analyzeAudioStreaming(file, onProgress){
+  if(!file || typeof AudioDecoder==='undefined' || typeof EncodedAudioChunk==='undefined') return null;
+  let decoder=null;
   try{
-    const buf = await file.arrayBuffer();
-    const decoded = await getAudioCtx().decodeAudioData(buf.slice(0));
-    if(decoded.duration>AH_MAX_DURATION) return null;
-    return await analyzeAudioBuffer(decoded, onProgress);
-  }catch(e){ return null; }
+    // 1) repérer la boîte « moov » (au début ou à la fin du fichier) sans rien charger d'autre
+    let pos=0, moov=null;
+    for(let guard=0; pos+8<=file.size && guard<5000 && !moov; guard++){
+      const h=new DataView(await file.slice(pos,pos+16).arrayBuffer());
+      let size=h.getUint32(0), hdr=8;
+      const type=String.fromCharCode(h.getUint8(4),h.getUint8(5),h.getUint8(6),h.getUint8(7));
+      if(size===1){ if(h.byteLength<16) break; size=Number(h.getBigUint64(8)); hdr=16; } else if(size===0) size=file.size-pos;
+      if(size<hdr) break;
+      if(type==='moov') moov={start:pos,size};
+      pos+=size;
+    }
+    if(!moov || moov.size>256*1024*1024) return null;
+    const info=parseMp4Audio(await file.slice(moov.start,moov.start+moov.size).arrayBuffer());
+    if(!info) return null;
+    const cfg={codec:info.codec, sampleRate:info.sampleRate, numberOfChannels:info.channels};
+    if(info.description) cfg.description=info.description;
+    const sup=await AudioDecoder.isConfigSupported(cfg); if(!sup.supported) return null;
+    const step=FP_TICK, frames=[]; let sr=0, windowLen=0, acc=null, accN=0, totalSamples=0, failed=false;
+    let ts0=0; for(let i=0;i<info.count;i++) ts0+=info.durs[i];
+    const seconds=ts0/info.timescale, estTotal=Math.floor(seconds/step);
+    if(seconds>AH_STREAM_MAX_DURATION) return null;
+    // 2) décodage par petits morceaux ; chaque fenêtre de 0,5 s est condensée en 64 bits puis oubliée
+    decoder=new AudioDecoder({
+      output:(ad)=>{
+        try{
+          if(!sr){ sr=ad.sampleRate; windowLen=Math.round(step*sr); acc=new Float32Array(windowLen); }
+          const n=ad.numberOfFrames, ch=ad.numberOfChannels, tmp=new Float32Array(n), mono=new Float32Array(n);
+          for(let c=0;c<ch;c++){ ad.copyTo(tmp,{planeIndex:c,format:'f32-planar'}); for(let i=0;i<n;i++) mono[i]+=tmp[i]/ch; }
+          totalSamples+=n;
+          for(let i=0;i<n;){
+            const take=Math.min(windowLen-accN,n-i); acc.set(mono.subarray(i,i+take),accN); accN+=take; i+=take;
+            if(accN===windowLen){ frames.push(dHashAudioWindow(acc,sr,0,windowLen)); accN=0; }
+          }
+        }catch(e){ failed=true; }
+        finally{ ad.close(); }
+      },
+      error:()=>{ failed=true; }
+    });
+    decoder.configure(cfg);
+    // 3) lecture des échantillons audio, regroupés par blocs contigus (≤ 4 Mo par lecture)
+    let i=0, dts=0, runCount=0;
+    while(i<info.count && !failed){
+      let j=i, end=info.offsets[i]+info.sizes[i];
+      while(j+1<info.count && info.offsets[j+1]===end && (end-info.offsets[i])<4*1024*1024){ j++; end+=info.sizes[j]; }
+      const buf=new Uint8Array(await file.slice(info.offsets[i],end).arrayBuffer());
+      for(let k=i;k<=j;k++){
+        const o=info.offsets[k]-info.offsets[i];
+        decoder.decode(new EncodedAudioChunk({type:'key', timestamp:Math.round(1e6*dts/info.timescale), duration:Math.round(1e6*info.durs[k]/info.timescale), data:buf.subarray(o,o+info.sizes[k])}));
+        dts+=info.durs[k];
+      }
+      while(decoder.decodeQueueSize>64 && !failed) await new Promise(r=>setTimeout(r,4)); // contre-pression
+      if(onProgress && (runCount++&7)===0){ try{ onProgress(Math.min(frames.length,estTotal), Math.max(1,estTotal)); }catch(e){} await new Promise(r=>setTimeout(r,0)); }
+      i=j+1;
+    }
+    await decoder.flush(); decoder.close(); decoder=null;
+    if(failed || frames.length<2 || !sr) return null;
+    return {v:1, step, duration:totalSamples/sr, frames:frames.join('')};
+  }catch(e){
+    try{ if(decoder && decoder.state!=='closed') decoder.close(); }catch(_){}
+    return null;
+  }
+}
+/* Décode le fichier (musique OU piste audio d'une vidéo) et calcule son empreinte audio. Petits fichiers : décodage direct. Fichiers lourds ou
+   longs (> 150 Mo / 30 min) : lecture en flux de la piste audio (MP4 / M4A / MOV). Renvoie null s'il n'y a pas de piste audio ou si le
+   codec n'est pas reconnu par le navigateur. */
+async function analyzeAudioFile(file, onProgress){
+  if(!file) return null;
+  if(file.size<=AH_MAX_FILE){
+    try{
+      const decoded = await getAudioCtx().decodeAudioData(await file.arrayBuffer());
+      if(decoded.duration<=AH_MAX_DURATION) return await analyzeAudioBuffer(decoded, onProgress);
+    }catch(e){ /* on tente la lecture en flux */ }
+  }
+  return await analyzeAudioStreaming(file, onProgress);
 }
 function popcount32(x){
   x = x>>>0;
@@ -796,7 +978,8 @@ function popcount32(x){
 function hammingDistanceHex(a,b){
   const ha=parseInt(a.substr(0,8),16), la=parseInt(a.substr(8,8),16), hb=parseInt(b.substr(0,8),16), lb=parseInt(b.substr(8,8),16);
   return popcount32(ha^hb)+popcount32(la^lb);
-}/* Ancien comparateur (9 images, position par position) */
+}
+/* Ancien comparateur (9 images, position par position) */
 function visualSimilarity(fpA, fpB){
   if(!fpA || !fpB || fpA.length!==fpB.length || fpA.length===0) return null;
   let total=0;
@@ -835,8 +1018,7 @@ function denseMatch(A,B,frameTh,avgTh){
   const sA=sAt*FP_TICK, sB=sBt*FP_TICK;
   if(!nA||!nB) return null;
   const infoA=informativeFlags(a), infoB=informativeFlags(b);
-  const durA=A.duration||nA*sA, durB=B.duration||nB*sB;
-  const shortSec=Math.min(durA,durB);
+  const durA=A.duration||nA*sA, durB=B.duration||nB*sB;const shortSec=Math.min(durA,durB);
   const minCount=Math.max(1, Math.min(FP_MIN_COUNT, Math.floor(shortSec/Math.max(sA,sB))));
   const gapAllowed=Math.max(FP_MAX_GAP, 2.5*Math.max(sA,sB)); // films longs : images plus espacées → trou toléré plus grand
 
@@ -918,9 +1100,9 @@ function analyzeVideo(src, onProgress){
     const v=document.createElement('video');
     v.crossOrigin='anonymous'; v.muted=true; v.playsInline=true; v.preload='auto';
     v.style.cssText='position:fixed;right:0;bottom:0;width:48px;height:27px;opacity:.01;pointer-events:none;z-index:-1;'; // dans la fenêtre (le navigateur ne rend pas une vidéo hors écran) mais invisible
-    let done=false, duration=null, idx=0, total=0, step=1, frames=[], thumb=null, tainted=false, stall=null, mode='seek', height=null;
+    let done=false, duration=null, idx=0, total=0, step=1, frames=[], thumb=null, tainted=false, stall=null, mode='seek', height=null, width=null;
     const build=()=>({
-      thumb, duration, height,
+      thumb, duration, height, width,
       complete: total>0 && frames.length>=total*0.98,
       visualHash: (duration!==null && !tainted && frames.length>0) ? {v:2, step, duration:Math.round(duration*10)/10, frames:frames.join('')} : null
     });
@@ -946,8 +1128,8 @@ function analyzeVideo(src, onProgress){
     };
     v.addEventListener('loadedmetadata',()=>{
       duration=isFinite(v.duration)?v.duration:null;
-      height=v.videoHeight||null;
-      if(!duration){ finish({thumb:null,duration:null,height:null,visualHash:null}); return; }
+      height=v.videoHeight||null; width=v.videoWidth||null;
+      if(!duration){ finish({thumb:null,duration:null,height:null,width:null,visualHash:null}); return; }
       step=Math.max(1, Math.ceil(duration/FP_TICK/FP_MAX_FRAMES))*FP_TICK;
       total=Math.max(1, Math.floor((duration-FP_OFFSET-0.05)/step)+1);
       if(duration>FP_LONG_SECONDS && 'requestVideoFrameCallback' in v) startPlayback(); else seekNext();
@@ -997,7 +1179,8 @@ function analyzeVideo(src, onProgress){
         if(tm>=target){
           const h=grabFrame();
           while(idx<total && idx*step+FP_OFFSET<=tm){ if(h!==null) frames.push(h); idx++; }
-          report();}
+          report();
+        }
         if(idx>=total){ clearInterval(wd); finish(build()); return; }
         v.requestVideoFrameCallback(onFrame);
       };
@@ -1035,8 +1218,7 @@ let viewerCountry=null, viewerCountryLoading=false; // pays du visiteur : déter
 
 /* ============ COMMENTAIRES (sous-collection videos/{id}/comments) ============
    Les nouveaux commentaires vivent chacun dans leur propre document : seuls l'admin et le propriétaire de la
-   chaîne peuvent en supprimer (règle Firestore). Les anciens commentaires (tableau v.comments) restent affichés. */
-let watchComments=[], unsubComments=null;
+   chaîne peuvent en supprimer (règle Firestore). Les anciens commentaires (tableau v.comments) restent affichés. */let watchComments=[], unsubComments=null;
 function stopWatchComments(){ if(unsubComments){ unsubComments(); unsubComments=null; } watchComments=[]; }
 function startWatchComments(id){
   stopWatchComments();
@@ -1202,8 +1384,9 @@ function detachListeners(){
 }
 async function logBlock(entry){
   try{ await db.collection('blockLog').add({...entry, ts:Date.now()}); }catch(e){ console.error(e); }
-  }
-  /* ============ SIGNALEMENT PUBLIC (DMCA) ============
+}
+
+/* ============ SIGNALEMENT PUBLIC (DMCA) ============
    Formulaire accessible sans compte, depuis l'écran de connexion. Écrit directement dans Firestore
    (règle d'écriture publique sur cette collection précise, lecture réservée à l'admin). */
 function openTakedownForm(){
@@ -1232,8 +1415,7 @@ async function submitTakedown(){
   const country=val('tdCountry').trim();
   const signature=val('tdSignature').trim();
   takedownErrorMsg('');
-  if(!links){ takedownErrorMsg('Indique au moins un lien vers le contenu concerné.'); return; }
-  if(!workType){ takedownErrorMsg('Choisis le type d\'œuvre concernée.'); return; }
+  if(!links){ takedownErrorMsg('Indique au moins un lien vers le contenu concerné.'); return; }if(!workType){ takedownErrorMsg('Choisis le type d\'œuvre concernée.'); return; }
   if(!workTitle){ takedownErrorMsg('Indique le titre de l\'œuvre originale.'); return; }
   if(description.length<20){ takedownErrorMsg('Décris l\'atteinte en quelques phrases (20 caractères minimum).'); return; }
   if(!authorizedBefore){ takedownErrorMsg('Précise si tu as déjà autorisé cette utilisation.'); return; }
@@ -1366,10 +1548,12 @@ async function deleteFile(id){
 
 let currentChannelKey=null;
 function rerenderCurrentView(){
+  renderRailFriends();
   if(currentView==='home') renderHome();
   else if(currentView==='channel') openChannel(currentChannelKey);
   else if(currentView==='studio') renderStudio();
   else if(currentView==='contentid') renderContentId();
+  else if(currentView==='shorts') refreshShortsFeed();
   else if(currentView==='watch' && currentWatchId){
     const v=videos.find(x=>x.id===currentWatchId);
     if(v){
@@ -1383,7 +1567,7 @@ function rerenderCurrentView(){
 }
 function setCloudStatus(ok){
   const el=$('cloudStatus'); if(!el) return;
-  el.textContent = ok ? '☁️ Connecté à Firebase — comptes, vidéos, likes, commentaires et empreintes sont synchronisés en direct pour toute la classe.' : '⚠️ Connexion à Firebase indisponible pour le moment.';
+  el.textContent = ok ? '☁️ Connecté à Cloudinary (vidéos) et Firebase (comptes, commentaires, empreintes) — les vidéos sont visibles selon leurs règles de visibilité.' : '⚠️ Connexion à Firebase indisponible pour le moment.';
 }
 
 /* ============ VISIBILITÉ ============ */
@@ -1420,6 +1604,112 @@ function visibleTo(v){
   return true;
 }
 
+/* ============ SHORTS : fil vertical ============
+   Un Short par « page » (défilement avec accroche), lecture automatique (muette au départ, le navigateur l'exige) du Short visible,
+   pause des autres. La vue est un fil : on ne la reconstruit pas à chaque mise à jour en direct (ça ferait sauter la lecture),
+   on rafraîchit seulement les compteurs, sauf si la liste des Shorts change. */
+let shortsObserver=null, shortsMuted=true, shortsSig='', shortViewTimer=null, shortsCounted=new Set();
+function shortsList(){ return videos.filter(v=>isShort(v) && visibleTo(v) && (v.url||v.sourceType==='file')).sort((a,b)=>b.createdAt-a.createdAt); }
+function stopShortsFeed(){
+  clearTimeout(shortViewTimer);
+  if(shortsObserver){ shortsObserver.disconnect(); shortsObserver=null; }
+  const f=$('shortsFeed'); if(f){ f.querySelectorAll('video').forEach(v=>{ try{ v.pause(); }catch(e){} v.removeAttribute('src'); v.load(); }); f.innerHTML=''; }
+  shortsSig='';
+}
+function openShorts(startId){
+  switchView('shorts');
+  if(location.hash) history.replaceState(null,'',location.pathname+location.search);
+  renderShortsFeed(startId);
+  }function shortItemHtml(v){
+  const liked=(v.likedBy||[]).includes(myKey());
+  return '<div class="short-item" data-id="'+v.id+'">'
+    +'<div class="short-frame" onclick="toggleShortPlay(this)"><video loop playsinline preload="none" data-src="'+esc(v.url||'')+'" poster="'+(v.thumb||'')+'"'+(shortsMuted?' muted':'')+'></video>'
+    +'<div class="short-pause">▶</div>'
+    +'<div class="short-info"><div class="short-author" onclick="event.stopPropagation();openChannel(\''+String(v.authorId).replace(/'/g,"\\'")+'\')">@'+esc(displayNameFor(v.authorId))+'</div><div class="short-title">'+esc(v.title)+'</div></div></div>'
+    +'<div class="short-actions">'
+    +'<button class="short-act'+(liked?' active':'')+'" data-act="like" onclick="likeShort(\''+v.id+'\')" title="J\'aime">♥</button><div class="short-cnt" data-cnt="like">'+(v.likedBy||[]).length+'</div>'
+    +'<button class="short-act" onclick="openWatch(\''+v.id+'\')" title="Commentaires">💬</button><div class="short-cnt" data-cnt="com">'+commentTotal(v)+'</div>'
+    +'<button class="short-act" onclick="copyShortLink(\''+v.id+'\')" title="Copier le lien">🔗</button>'
+    +'<button class="short-act" data-act="mute" onclick="toggleShortsMute()" title="Son">'+(shortsMuted?'🔇':'🔊')+'</button>'
+    +'<div class="muted small" style="font-size:.68rem;">'+(v.views||0)+' vues</div>'
+    +'</div></div>';
+}
+function renderShortsFeed(startId){
+  stopShortsFeed();
+  const list=shortsList(), feed=$('shortsFeed'), empty=$('shortsEmpty');
+  shortsSig=list.map(v=>v.id).join(',');
+  if(!list.length){ feed.hidden=true; empty.hidden=false; return; }
+  feed.hidden=false; empty.hidden=true;
+  feed.innerHTML=list.map(shortItemHtml).join('');
+  shortsObserver=new IntersectionObserver(entries=>{
+    entries.forEach(en=>{
+      const item=en.target, vid=item.querySelector('video'), id=item.dataset.id;
+      if(en.isIntersecting && en.intersectionRatio>=0.6){
+        if(!vid.src && vid.dataset.src) vid.src=vid.dataset.src;
+        vid.muted=shortsMuted; item.querySelector('.short-frame').classList.remove('paused');
+        const p=vid.play(); if(p&&p.catch) p.catch(()=>{ item.querySelector('.short-frame').classList.add('paused'); });
+        clearTimeout(shortViewTimer);
+        shortViewTimer=setTimeout(()=>countShortView(id), 2000); // une vue = 2 s de lecture
+      } else {
+        try{ vid.pause(); }catch(e){}
+        if(!en.isIntersecting && vid.src && en.intersectionRatio===0){ try{ vid.currentTime=0; }catch(e){} }
+      }
+    });
+  },{root:feed, threshold:[0,0.6]});
+  feed.querySelectorAll('.short-item').forEach(it=>shortsObserver.observe(it));
+  // précharge le Short suivant
+  if(startId){ const t=feed.querySelector('.short-item[data-id="'+startId+'"]'); if(t) feed.scrollTop=t.offsetTop; }
+}
+/* mise à jour en direct : compteurs seulement ; reconstruction si la liste a changé (nouveau Short, retrait…) */
+function refreshShortsFeed(){
+  const list=shortsList();
+  if(list.map(v=>v.id).join(',')!==shortsSig){
+    const cur=currentShortId(); renderShortsFeed(cur&&list.some(v=>v.id===cur)?cur:null); return;
+  }
+  list.forEach(v=>{
+    const it=$('shortsFeed').querySelector('.short-item[data-id="'+v.id+'"]'); if(!it) return;
+    it.querySelector('[data-cnt="like"]').textContent=(v.likedBy||[]).length;
+    it.querySelector('[data-cnt="com"]').textContent=commentTotal(v);
+    it.querySelector('[data-act="like"]').classList.toggle('active',(v.likedBy||[]).includes(myKey()));
+  });
+}
+function currentShortId(){
+  const f=$('shortsFeed'); if(!f) return null; const items=f.querySelectorAll('.short-item'); if(!items.length) return null;
+  const i=Math.max(0,Math.min(items.length-1,Math.round(f.scrollTop/Math.max(1,f.clientHeight)))); return items[i].dataset.id;
+}
+function toggleShortPlay(frame){
+  const vid=frame.querySelector('video'); if(!vid.src) return;
+  if(vid.paused){ vid.play().catch(()=>{}); frame.classList.remove('paused'); } else { vid.pause(); frame.classList.add('paused'); }
+}
+function toggleShortsMute(){
+  shortsMuted=!shortsMuted;
+  $('shortsFeed').querySelectorAll('video').forEach(v=>{ v.muted=shortsMuted; });
+  $('shortsFeed').querySelectorAll('[data-act="mute"]').forEach(b=>{ b.textContent=shortsMuted?'🔇':'🔊'; });
+}
+function likeShort(id){
+  if(!currentUser){ openIdentityModal(); return; }
+  const v=videos.find(x=>x.id===id); if(!v) return;
+  const key=myKey(), liked=(v.likedBy||[]).includes(key);
+  db.collection('videos').doc(id).update({ likedBy: liked ? firebase.firestore.FieldValue.arrayRemove(key) : firebase.firestore.FieldValue.arrayUnion(key) }).catch(e=>console.error(e));
+  v.likedBy = liked ? (v.likedBy||[]).filter(k=>k!==key) : [...(v.likedBy||[]), key];
+  refreshShortsFeed();
+}
+function copyShortLink(id){
+  const link=videoLink(id);
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(link).then(()=>toast('Lien copié 🔗'), ()=>prompt('Copie ce lien :',link));
+  else prompt('Copie ce lien :',link);
+}
+function countShortView(id){
+  if(currentView!=='shorts' || shortsCounted.has(id)) return;
+  if(currentShortId()!==id) return;
+  shortsCounted.add(id); // une seule vue par Short et par session
+  const dayKey=new Date().toISOString().slice(0,10);
+  db.collection('videos').doc(id).update({
+    views: firebase.firestore.FieldValue.increment(1),
+    ['viewLog.'+dayKey]: firebase.firestore.FieldValue.increment(1)
+  }).catch(e=>console.error(e));
+}
+
 /* ============ ROUTING ============ */
 function switchView(name){
   currentView=name;
@@ -1430,10 +1720,13 @@ function switchView(name){
   $('viewChannel').hidden = name!=='channel';
   $('viewStudio').hidden = name!=='studio';
   $('viewContentId').hidden = name!=='contentid';
+  $('viewShorts').hidden = name!=='shorts';
+  if(name!=='shorts') stopShortsFeed();
   document.querySelectorAll('.rail-item,.rail-friend').forEach(el=>el.classList.remove('active'));
   if(name==='home') $('railHome').classList.add('active');
   if(name==='studio') $('railStudio').classList.add('active');
   if(name==='contentid') $('railContentId').classList.add('active');
+  if(name==='shorts') $('railShorts').classList.add('active');
   window.scrollTo(0,0);
   $('rail').classList.remove('open');
 }
@@ -1444,11 +1737,14 @@ function goHome(){
 
 /* ============ RAIL ============ */
 function renderRailFriends(){
-  const entries = [{key:ADMIN_NAME,name:displayNameFor(ADMIN_NAME)}, ...users.filter(u=>!u.isAdmin).map(u=>({key:u.id,name:u.name}))];
-  $('railFriends').innerHTML = entries.map(({key,name})=>
+  // Seules les chaînes auxquelles on est abonné sont listées ; les autres se trouvent avec la barre de recherche.
+  const keys = currentUser ? mySubs().filter(k=> k===ADMIN_NAME || findUserById(k)) : [];
+  $('railSubsLabel').hidden = !keys.length;
+  $('railFriends').innerHTML = keys.map(key=>
     '<button class="rail-friend" data-key="'+esc(key)+'" onclick="openChannel(\''+key.replace(/'/g,"\\'")+'\')">'
-    +avatarHtml(key,'rail-avatar')+'<span>'+esc(name)+'</span></button>'
+    +avatarHtml(key,'rail-avatar')+'<span>'+esc(displayNameFor(key))+'</span></button>'
   ).join('');
+  if(currentView==='channel') document.querySelectorAll('.rail-friend').forEach(el=>el.classList.toggle('active', el.dataset.key===currentChannelKey));
 }
 
 /* ============ HOME ============ */
@@ -1458,10 +1754,11 @@ function cardHtml(v){
     : (v.visibility==='scheduled' && new Date(v.scheduledTime).getTime()>Date.now())
       ? '<span class="card-badge scheduled">⏰ '+new Date(v.scheduledTime).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span>' : '';
   const dur = v.durationSeconds ? '<span class="duration-badge">'+formatDuration(v.durationSeconds)+'</span>' : '';
+  const shortBadge = (isShort(v) && !badge) ? '<span class="card-badge short">📱 Short</span>' : '';
   const thumbInner = v.thumb ? '<img src="'+v.thumb+'" alt="">' : '<div class="thumb-fallback">'+playIconSvg()+'</div>';
   const authorName = displayNameFor(v.authorId);
   return '<div class="card" onclick="openWatch(\''+v.id+'\')">'
-    +'<div class="card-thumb">'+thumbInner+badge+dur+'</div>'
+    +'<div class="card-thumb">'+thumbInner+badge+shortBadge+dur+'</div>'
     +'<div class="card-meta">'+avatarHtml(v.authorId,'card-avatar')
     +'<div><div class="card-title">'+esc(v.title)+'</div>'
     +'<div class="card-sub">'+esc(authorName)+' • '+(v.views||0)+' vues • '+timeAgo(v.createdAt)+'</div></div></div></div>';
@@ -1470,10 +1767,19 @@ function renderHome(){
   const term = val('searchInput').trim().toLowerCase();
   const subs = mySubs();
   const list = videos.filter(v=>visibleTo(v))
+    .filter(v=> !isShort(v) || term || homeFilter==='mine') // les Shorts ont leur propre espace
     .filter(v=> !term || ((v.title||'')+' '+(v.desc||'')+' '+displayNameFor(v.authorId)).toLowerCase().includes(term))
     .filter(v=> homeFilter==='mine' ? v.authorId===myKey() : homeFilter==='subs' ? subs.includes(v.authorId) : true)
     .sort((a,b)=> homeFilter==='popular' ? trendScore(b)-trendScore(a) : b.createdAt-a.createdAt);
   const grid=$('homeGrid'), empty=$('homeEmpty');
+  // chaînes dont le nom correspond à la recherche (on ne liste jamais toutes les chaînes : il faut les chercher)
+  const chEl=$('homeChannels');
+  const chans = term ? [ADMIN_NAME, ...users.filter(u=>!u.isAdmin).map(u=>u.id)].filter(k=>displayNameFor(k).toLowerCase().includes(term)).slice(0,8) : [];
+  chEl.innerHTML = chans.length ? '<div style="margin-bottom:16px;"><div class="muted small" style="margin-bottom:6px;">Chaînes</div>'
+    + chans.map(k=>{ const n=subscriberCount(k); return '<div class="own-row" style="display:flex;align-items:center;gap:10px;padding:8px 4px;cursor:pointer;" onclick="openChannel(\''+String(k).replace(/'/g,"\\'")+'\')">'
+      +avatarHtml(k,'card-avatar')+'<div style="flex:1;min-width:0;"><div style="font-weight:600;">'+esc(displayNameFor(k))+'</div><div class="muted small">'+n+' abonné'+(n>1?'s':'')+'</div></div>'+subscribeBtnHtml(k)+'</div>'; }).join('')
+    + '</div>' : '';
+  if(list.length===0 && chans.length){ grid.innerHTML=''; grid.hidden=true; empty.hidden=true; return; }
   if(list.length===0){
     grid.innerHTML=''; grid.hidden=true; empty.hidden=false;
     empty.textContent = term ? 'Aucune vidéo ne correspond à « '+term+' ».'
@@ -1514,8 +1820,8 @@ function embedUrlFor(url){
   m = url.match(/drive\.google\.com\/file\/d\/([\w-]+)/);
   if(m) return 'https://drive.google.com/file/d/'+m[1]+'/preview';
   return null;
-}
-function youtubeIdFor(url){
+  }
+ function youtubeIdFor(url){
   const m = (url||'').match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/|youtube\.com\/embed\/)([\w-]{6,})/);
   return m ? m[1] : null;
 }
@@ -1539,7 +1845,7 @@ async function openWatch(id){
       const blob = await getFile(id);
       if(!blob){
         player.removeAttribute('src'); player.load();
-        showWatchNotice('📵 Cette vidéo a été publiée par fichier avant la mise en place du stockage en ligne, depuis un autre appareil — seul cet appareil peut la lire. Demande à '+displayNameFor(v.authorId)+' de la republier pour qu\'elle soit visible par toute la classe.');
+        showWatchNotice('📵 Cette vidéo a été publiée par fichier avant la mise en place du stockage en ligne, depuis un autre appareil — seul cet appareil peut la lire. Demande à '+displayNameFor(v.authorId)+' de la republier pour qu\'elle soit visible par tous les membres.');
         return;
       }
       if(currentWatchId!==id) return;
@@ -1611,6 +1917,7 @@ function renderWatchSkeleton(v){
   $('watchMeta').textContent=(v.views||0)+' vues • '+timeAgo(v.createdAt)+(v.qualityLabel?' • '+v.qualityLabel:'');
   $('watchDesc').textContent=v.desc||'Aucune description.';
   $('playerVideo').poster=v.thumb||'';
+  document.querySelector('.player').classList.toggle('short', isShort(v));
   updateLikeButton(v);
   renderComments(v);
   renderCopyrightInfo(v);
@@ -1726,9 +2033,7 @@ async function deleteCurrentVideo(){
   const id=currentWatchId;
   const ok = await deleteVideo(id);
   if(ok){ toast('Vidéo supprimée.'); goHome(); }
-}
-
-/* ============ BOUCLIER COPYRIGHT — vérification ============ */
+  } /* ============ BOUCLIER COPYRIGHT — vérification ============ */
 /* Une chaîne est autorisée pour une œuvre si c'est la chaîne de l'ayant droit lui-même (rightsHolderChannelId),
    ou si elle figure dans la liste des chaînes autorisées à publier cette œuvre précise. */
 function isAuthorizedFor(fp){
@@ -1805,7 +2110,9 @@ function checkCopyright({url,title,desc,fileHash,visualHash,audioHash}){
   };
 
   const kw = fingerprints.find(fp=>fp.type==='keyword' && text.includes(fp.value));
-  if(kw) return mk(kw.worktype||'video','Correspondance mot-clé / lien', kw, null);if(fileHash){
+  if(kw) return mk(kw.worktype||'video','Correspondance mot-clé / lien', kw, null);
+
+  if(fileHash){
     const hm = fingerprints.find(fp=>fp.type==='file' && fp.exactHash && fp.exactHash===fileHash);
     if(hm) return mk(hm.worktype||'video','Empreinte de fichier identique — copie complète', hm, null);
   }
@@ -1897,17 +2204,41 @@ function copyrightInfoList(v){
   return Array.isArray(v.copyrightInfo) ? v.copyrightInfo : [v.copyrightInfo];
 }
 
+/* ============ SHORTS : règles ============ */
+const SHORT_MAX_SECONDS = 120;           // 2 minutes
+const SHORT_RATIO_MIN = 0.40, SHORT_RATIO_MAX = 0.65; // largeur/hauteur : 9:16 = 0,5625 (tolère les écrans de téléphone plus allongés)
+function isShort(v){ return !!(v && v.isShort); }
+/* Lit seulement les métadonnées (durée + dimensions) : instantané, sans analyser toute la vidéo. */
+function probeVideoMeta(src){
+  return new Promise(resolve=>{
+    const v=document.createElement('video'); v.preload='metadata'; v.muted=true; v.crossOrigin='anonymous';
+    let end=false; const fin=r=>{ if(end) return; end=true; clearTimeout(t); v.removeAttribute('src'); v.load(); resolve(r); };
+    const t=setTimeout(()=>fin(null),15000);
+    v.onloadedmetadata=()=>fin({duration:isFinite(v.duration)?v.duration:null, width:v.videoWidth||null, height:v.videoHeight||null});
+    v.onerror=()=>fin(null);
+    v.src=src;
+  });
+}
+/* Renvoie un message d'erreur si la vidéo n'est pas un Short valable, sinon null. */
+function shortProblem(meta){
+  if(!meta || !meta.duration || !meta.width || !meta.height) return "Impossible de vérifier la durée et le format de cette vidéo : essaie avec un autre fichier vidéo.";
+  if(meta.duration > SHORT_MAX_SECONDS+0.5) return 'Cette vidéo dure '+formatDuration(meta.duration)+' : un Short fait 2 minutes maximum. Coupe-la, ou publie-la comme vidéo normale.';
+  const r=meta.width/meta.height;
+  if(r<SHORT_RATIO_MIN || r>SHORT_RATIO_MAX) return 'Cette vidéo est en '+meta.width+'×'+meta.height+' : un Short doit être vertical au format 9:16 (ex. 1080×1920). Recadre-la, ou publie-la comme vidéo normale.';
+  return null;
+}
+function updateKindHint(){ $('kindHint').hidden = val('uploadKind')!=='short'; }
+
 /* ============ UPLOAD ============ */
 let pendingUpload = null; // { title, desc, visibility, scheduledTime, url, file, fileHash, visualHash, audioHash, thumb, durationSeconds, tempUrl, check }
 
 function openUploadModal(){
   if(!currentUser){ openIdentityModal(); return; }
-  $('uploadTitle').value=''; $('uploadDesc').value=''; $('uploadUrl').value=''; $('uploadFile').value='';
+  $('uploadTitle').value=''; $('uploadDesc').value=''; $('uploadFile').value='';
   $('uploadVisibility').value='public'; $('scheduleRow').hidden=true; $('uploadSchedule').value='';
   $('fileNameHint').textContent='';
+  $('uploadKind').value='video'; updateKindHint();
   $('uploadAsLabel').textContent=currentUser;
-  $('overrideRow').hidden = !isAdminAuthed();
-  $('chkOverride').checked=false;
   pendingUpload=null;
   hideUploadError();
   setSubmitting(false);
@@ -1924,21 +2255,29 @@ async function handleUpload(){
   const desc = val('uploadDesc').trim();
   const visibility = val('uploadVisibility');
   const scheduledTime = val('uploadSchedule');
-  const url = val('uploadUrl').trim();
+  const url = ''; // publication par lien supprimée : seuls les fichiers envoyés (hébergés sur Cloudinary) sont acceptés
   const file = $('uploadFile').files[0] || null;
-  const override = $('chkOverride').checked && isAdminAuthed();
+  const override = false; // la dérogation « ignorer le Bouclier » n'existe plus : tout le monde passe par la détection
+  const kind = val('uploadKind')==='short' ? 'short' : 'video';
 
-  if(!file && !url){ showUploadError('Ajoute un fichier vidéo ou un lien.'); return; }
+  if(!file && !url){ showUploadError('Ajoute un fichier vidéo.'); return; }
   if(visibility==='scheduled' && !scheduledTime){ showUploadError('Choisis une date de publication.'); return; }
 
   setSubmitting(true, 'Analyse de la vidéo…');
   let tempUrl=null;
   try{
-    let fileHash=null, thumb=null, durationSeconds=null, visualHash=null, audioHash=null, height=null;
+    let fileHash=null, thumb=null, durationSeconds=null, visualHash=null, audioHash=null, height=null, width=null;
+    if(kind==='short' && (file || !embedUrlFor(url))){
+      // contrôle rapide AVANT l'analyse complète : inutile d'analyser un film de 1 h refusé comme Short
+      let probeSrc=url;
+      if(file){ tempUrl = URL.createObjectURL(file); probeSrc=tempUrl; }
+      const problem = shortProblem(await probeVideoMeta(probeSrc));
+      if(problem){ if(tempUrl){ URL.revokeObjectURL(tempUrl); tempUrl=null; } showUploadError(problem); setSubmitting(false); return; }
+    }
     if(file){
-      fileHash = await hashFile(file); tempUrl = URL.createObjectURL(file);
+      fileHash = await hashFile(file); if(!tempUrl) tempUrl = URL.createObjectURL(file);
       const analysis = await analyzeVideo(tempUrl, (i,n,m,eta)=>setSubmitting(true,'Analyse de la vidéo… '+Math.round(i/n*100)+' %'+progressSuffix(m,eta)));
-      thumb=analysis.thumb; durationSeconds=analysis.duration; visualHash=analysis.visualHash; height=analysis.height;
+      thumb=analysis.thumb; durationSeconds=analysis.duration; visualHash=analysis.visualHash; height=analysis.height; width=analysis.width;
       setSubmitting(true,'Analyse de la bande sonore…');
       audioHash = await analyzeAudioFile(file);
     } else if(embedUrlFor(url)){
@@ -1949,12 +2288,12 @@ async function handleUpload(){
     } else {
       // Lien direct vers un fichier vidéo (.mp4…) : on peut tenter la même analyse qu'un fichier.
       const analysis = await analyzeVideo(url, (i,n,m,eta)=>setSubmitting(true,'Analyse de la vidéo… '+Math.round(i/n*100)+' %'+progressSuffix(m,eta)));
-      thumb=analysis.thumb; durationSeconds=analysis.duration; visualHash=analysis.visualHash; height=analysis.height;
+      thumb=analysis.thumb; durationSeconds=analysis.duration; visualHash=analysis.visualHash; height=analysis.height; width=analysis.width;
     }
 
     const check = checkCopyright({url, title, desc, fileHash, visualHash, audioHash});
     const copyrightInfo = copyrightInfoFromCheck(check);
-    const ctx = {title, desc, visibility, scheduledTime, url, file, fileHash, visualHash, audioHash, thumb, durationSeconds, height, tempUrl, copyrightInfo};
+    const ctx = {title, desc, visibility, scheduledTime, url, file, fileHash, visualHash, audioHash, thumb, durationSeconds, height, width, kind, tempUrl, copyrightInfo};
 
     if(!override){
       if(check.blocked){
@@ -1973,8 +2312,7 @@ async function handleUpload(){
   }catch(e){
     console.error(e);
     if(tempUrl) URL.revokeObjectURL(tempUrl);
-    const hint = file ? ' (essaie avec un fichier plus léger, ou publie via un lien)' : ' (vérifie ta connexion internet)';
-    showUploadError('Une erreur est survenue pendant la publication.'+hint);
+    showUploadError(e && /Cloudinary/.test(e.message||'') ? e.message : 'Une erreur est survenue pendant la publication (essaie avec un fichier plus léger).');
     setSubmitting(false);
   }
 }
@@ -2005,7 +2343,8 @@ function renderBlockPanel(check){
     + ' <button type="button" onclick="toggleBlockDetails()" style="background:none;border:none;color:inherit;text-decoration:underline;cursor:pointer;padding:0;font:inherit;">ℹ️ En savoir plus</button>'
     + timelineHtml(dur, cut)
     + details + actions;
-  e.hidden=false;}
+  e.hidden=false;
+}
 /* Frise de la vidéo testée : la zone reconnue comme protégée est surlignée en rouge (début → fin). */
 function timelineHtml(dur, cut){
   if(!dur || !cut || !(cut.end>cut.start)) return '';
@@ -2041,7 +2380,7 @@ function uploadToCloudinary(file, onProgress){
 async function proceedPublish(ctx, opts, note){
   opts = opts||{};
   setSubmitting(true, 'Publication…');
-  const {title, desc, visibility, scheduledTime, url, file, fileHash, thumb, durationSeconds, height, tempUrl, copyrightInfo} = ctx;
+  const {title, desc, visibility, scheduledTime, url, file, fileHash, thumb, durationSeconds, height, width, kind, tempUrl, copyrightInfo} = ctx;
   const id = newId();
   let sourceType, finalUrl=null, cloudPublicId=null, localOnly=false;
   if(file){
@@ -2051,10 +2390,8 @@ async function proceedPublish(ctx, opts, note){
       finalUrl = up.secure_url; cloudPublicId = up.public_id;
     }catch(e){
       console.error(e);
-      // Cloudinary injoignable (réseau, préréglage mal configuré…) : on garde quand même une copie
-      // locale plutôt que de bloquer complètement la publication — visible seulement sur cet appareil.
-      await putFile(id, file);
-      localOnly=true;
+      // Cloudinary injoignable (réseau, préréglage mal configuré…) : on ne publie rien (une vidéo visible sur un seul appareil n'aurait pas de sens).
+      throw new Error("L'envoi de la vidéo vers Cloudinary a échoué — vérifie ta connexion et réessaie.");
     }
     if(tempUrl) URL.revokeObjectURL(tempUrl);
   } else {
@@ -2064,14 +2401,14 @@ async function proceedPublish(ctx, opts, note){
     title, desc, authorId: myKey(), visibility,
     scheduledTime: visibility==='scheduled'?scheduledTime:null,
     sourceType, url:finalUrl, cloudPublicId, fileName:file?file.name:null, fileHash:fileHash||null,
-    thumb:thumb||null, durationSeconds:durationSeconds||null, heightPx:height||null, qualityLabel:qualityLabelFor(height),
+    thumb:thumb||null, durationSeconds:durationSeconds||null, heightPx:height||null, widthPx:width||null, isShort:kind==='short', qualityLabel:qualityLabelFor(height),
     views:0, likedBy:[], comments:[], viewLog:{}, copyrightInfo:copyrightInfo||null,
     createdAt:Date.now(), overrideUsed:!!opts.overrideUsed, fairUseClaimed:!!opts.fairUseClaimed, cutApplied:!!opts.cutApplied
   });
   pendingUpload=null;
   closeUpload();
-  goHome();
-  toast(note || (opts.overrideUsed ? 'Publié avec dérogation admin ✅' : (localOnly ? "⚠️ Publié, mais l'envoi vers Cloudinary a échoué — visible seulement sur cet appareil pour l'instant." : 'Vidéo publiée ✅')));
+  if(kind==='short'){ openShorts(id); } else goHome();
+  toast(note || (opts.overrideUsed ? 'Publié avec dérogation admin ✅' : 'Vidéo publiée ✅'));
   setSubmitting(false);
 }
 
@@ -2104,7 +2441,7 @@ async function cutAndRetryUpload(){
     const newAudioHash = await analyzeAudioFile(newFile);
 
     const recheck = checkCopyright({url:'', title:pendingUpload.title, desc:pendingUpload.desc, fileHash:newFileHash, visualHash:analysis.visualHash, audioHash:newAudioHash});
-    const newCtx = {...pendingUpload, file:newFile, fileHash:newFileHash, visualHash:analysis.visualHash, audioHash:newAudioHash, thumb:analysis.thumb, durationSeconds:analysis.duration, height:analysis.height, tempUrl:newTempUrl, copyrightInfo:copyrightInfoFromCheck(recheck)};
+    const newCtx = {...pendingUpload, file:newFile, fileHash:newFileHash, visualHash:analysis.visualHash, audioHash:newAudioHash, thumb:analysis.thumb, durationSeconds:analysis.duration, height:analysis.height, width:analysis.width||pendingUpload.width, tempUrl:newTempUrl, copyrightInfo:copyrightInfoFromCheck(recheck)};
     if(recheck.blocked){
       pendingUpload = {...newCtx, check:recheck};
       renderBlockPanel(recheck);
@@ -2201,13 +2538,12 @@ function muteAudioSegment(file, muteStart, muteEnd, onProgress){
     v.addEventListener('error',()=>{ if(!done){ done=true; cleanup(); reject(new Error('lecture impossible')); } });
     v.src=url;
   });
-}
-
+  }
 $('uploadFile').addEventListener('change', ()=>{
   const f=$('uploadFile').files[0];
-  if(f){ $('uploadUrl').value=''; $('fileNameHint').textContent=f.name; }else $('fileNameHint').textContent='';
+  if(f){ $('fileNameHint').textContent=f.name; }
+  else $('fileNameHint').textContent='';
 });
-$('uploadUrl').addEventListener('input', ()=>{ if(val('uploadUrl')){ $('uploadFile').value=''; $('fileNameHint').textContent=''; } });
 $('uploadVisibility').addEventListener('change', ()=>{ $('scheduleRow').hidden = val('uploadVisibility')!=='scheduled'; });
 
 /* ============ BOUCLIER — panneau admin ============ */
@@ -2226,7 +2562,7 @@ function shieldErrorMsg(msg){ const e=$('shieldErr'); if(e){ e.textContent=msg; 
 function renderShieldContent(){
   const body=$('shieldBody');
   body.innerHTML =
-    '<p class="muted small">Empreintes et journal synchronisés en direct via Firebase, visibles par toute la classe (écriture réservée à l\'admin). Compte admin : '+esc(ADMIN_EMAIL)+'.</p>'
+    '<p class="muted small">Empreintes et journal synchronisés en direct via Firebase, visibles par tous les membres (écriture réservée à l\'admin). Compte admin : '+esc(ADMIN_EMAIL)+'.</p>'
     +'<label>Type d\'œuvre</label>'
     +'<div class="checkbox-row" style="gap:16px;">'
     +'<label style="margin:0;display:flex;align-items:center;gap:6px;"><input type="radio" name="fpType" id="fpTypeVideo" checked onchange="onFpTypeChange()"> 🎬 Audiovisuel (vidéo, film…)</label>'
@@ -2405,11 +2741,11 @@ async function addFingerprint(){
   const enforcement=val('fpEnforcement')||'bloquant';
   const exemptRanges = enforcement==='partiel' ? collectExemptRanges() : [];
   const protectedRanges = enforcement==='partiel-zones' ? collectExemptRanges() : [];
-  if(enforcement==='partiel' && !exemptRanges.length){ shieldErrorMsg('Ajoute au moins une plage épargnée valide (ou choisis un autre mode).'); return; }  if(enforcement==='partiel-zones' && !protectedRanges.length){ shieldErrorMsg('Ajoute au moins une plage à bloquer valide (ou choisis un autre mode).'); return; }
+  if(enforcement==='partiel' && !exemptRanges.length){ shieldErrorMsg('Ajoute au moins une plage épargnée valide (ou choisis un autre mode).'); return; }
+  if(enforcement==='partiel-zones' && !protectedRanges.length){ shieldErrorMsg('Ajoute au moins une plage à bloquer valide (ou choisis un autre mode).'); return; }
   const originalLink=val('fpOriginalLink').trim();
   const geoCountries=parseCountries(val('fpGeoCountries'));
-  if(originalLink && !isHttpUrl(originalLink)){ shieldErrorMsg('Le lien de l\'œuvre originale doit commencer par http:// ou https://.'); return; }
-  if(enforcement==='geo' && !geoCountries.length){ shieldErrorMsg('Indique au moins un pays (code à 2 lettres) pour le blocage par pays.'); return; }
+  if(originalLink && !isHttpUrl(originalLink)){ shieldErrorMsg('Le lien de l\'œuvre originale doit commencer par http:// ou https://.'); return; }if(enforcement==='geo' && !geoCountries.length){ shieldErrorMsg('Indique au moins un pays (code à 2 lettres) pour le blocage par pays.'); return; }
   const extra={originalLink:originalLink||null, geoCountries};
   const kw=val('fpKeyword').trim().toLowerCase();
   const file = worktype==='audio' ? ($('fpAudioFile')&&$('fpAudioFile').files[0]) : $('fpFile').files[0];
@@ -2565,7 +2901,7 @@ function exportData(){
   const blob=new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download='neuf-sauvegarde-'+Date.now()+'.json';
+  a.download='dhadyutube-sauvegarde-'+Date.now()+'.json';
   a.click();
   URL.revokeObjectURL(a.href);
   toast('Sauvegarde exportée ✅');
@@ -2606,8 +2942,9 @@ function firebaseAuthErrorMsg(e){
     'auth/network-request-failed':'Impossible de contacter Firebase — vérifie ta connexion internet.',
     'auth/too-many-requests':'Trop de tentatives — réessaie dans quelques minutes.',
     'timeout':'La connexion à Firebase met trop de temps à répondre — vérifie ta connexion et réessaie.',
-  };  return map[e.code] || ('Erreur : '+(e.message||e.code||'inconnue'));
-}
+  };
+  return map[e.code] || ('Erreur : '+(e.message||e.code||'inconnue'));
+  }
 /* Évite qu'un bouton reste bloqué en silence sur une connexion lente/coupée : au-delà de ce délai,
    on abandonne et on affiche un message clair plutôt que d'attendre indéfiniment. */
 function withTimeout(promise, ms){
@@ -2639,11 +2976,11 @@ async function doSignup(){
   const btn=$('signupSubmitBtn');
   if(btn){ btn.disabled=true; btn.textContent='Création en cours…'; }
   try{
+    const cred = await withTimeout(auth.createUserWithEmailAndPassword(email, pw), 30000);
     try{
       const dup = await withTimeout(db.collection('users').where('name','==',name).limit(1).get(), 12000);
-      if(!dup.empty){ signupErrorMsg('Ce nom de chaîne est déjà pris — choisis-en un autre.'); return; }
+      if(!dup.empty){ try{ await cred.user.delete(); }catch(e2){ console.error(e2); } signupErrorMsg('Ce nom de chaîne est déjà pris — choisis-en un autre.'); return; }
     }catch(e){ console.error(e); } // vérification facultative : on continue même si elle échoue ou traîne
-    const cred = await withTimeout(auth.createUserWithEmailAndPassword(email, pw), 30000);
     await withTimeout(db.collection('users').doc(cred.user.uid).set({ name, pic:null, createdAt:Date.now() }), 30000);
     toast('Bienvenue '+name+' 👋 Ta chaîne est créée.');
   }catch(e){
@@ -2775,9 +3112,44 @@ function renderStudio(){
       +'<div class="studio-title">'+esc(v.title)+copyrightMark+modMark+'</div>'
       +'<div class="studio-nums">'+(v.views||0)+' vues • '+((v.likedBy||[]).length)+' j\'aime • '+commentTotal(v)+' commentaires • '+timeAgo(v.createdAt)+'</div>'
       +'</div>'+contestBtn
+      +(removed ? '' : '<button class="btn btn-ghost" style="padding:6px 10px;font-size:.74rem;" title="Choisir une miniature (image)" onclick="event.stopPropagation();studioPickThumb(\''+v.id+'\')">🖼️ Miniature</button>')
       +'<button class="icon-btn danger" title="Supprimer cette vidéo" onclick="event.stopPropagation();studioDeleteVideo(\''+v.id+'\')">🗑️</button>'
       +'</div>';
   }).join('');
+}
+/* Miniature personnalisée : image choisie, recadrée au format de la vidéo (16:9, ou 9:16 pour un Short), enregistrée avec la vidéo. */
+let thumbTargetId=null;
+function studioPickThumb(id){
+  thumbTargetId=id;
+  let inp=$('thumbFileInput');
+  if(!inp){
+    inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.id='thumbFileInput'; inp.hidden=true;
+    inp.addEventListener('change', ()=>{ const f=inp.files[0]; inp.value=''; if(f) applyCustomThumb(thumbTargetId,f); });
+    document.body.appendChild(inp);
+  }
+  inp.click();
+}
+function cropImageToDataUrl(file,w,h){
+  return new Promise((resolve,reject)=>{
+    const u=URL.createObjectURL(file), img=new Image();
+    img.onload=()=>{
+      const c=document.createElement('canvas'); c.width=w; c.height=h; const g=c.getContext('2d');
+      const sc=Math.max(w/img.width,h/img.height), dw=img.width*sc, dh=img.height*sc; // remplit le cadre, centré (« cover »)
+      g.drawImage(img,(w-dw)/2,(h-dh)/2,dw,dh);
+      URL.revokeObjectURL(u); resolve(c.toDataURL('image/jpeg',0.82));
+    };
+    img.onerror=()=>{ URL.revokeObjectURL(u); reject(new Error('image invalide')); };
+    img.src=u;
+  });
+}
+async function applyCustomThumb(id,file){
+  const v=videos.find(x=>x.id===id); if(!v||!isVideoOwner(v)) return;
+  if(!/^image\//.test(file.type)){ toast('Choisis un fichier image (JPG, PNG…).'); return; }
+  try{const data=await cropImageToDataUrl(file, isShort(v)?270:480, isShort(v)?480:270);
+    await db.collection('videos').doc(id).update({thumb:data, customThumb:true});
+    v.thumb=data; v.customThumb=true;
+    renderStudio(); toast('Miniature mise à jour 🖼️');
+  }catch(e){ console.error(e); toast("Impossible de changer la miniature (image invalide, ou droits insuffisants)."); }
 }
 async function studioDeleteVideo(id){
   const ok = await deleteVideo(id);
@@ -2808,7 +3180,8 @@ function renderModerationBanner(v){
     else if(cn.status==='rejected') body+='<div style="margin-top:8px;">❌ Contestation rejetée'+(cn.adminNote?' : '+esc(cn.adminNote):'')+'.</div>';
   } else if(isAdminAuthed() && cn){
     body+='<div class="muted small" style="margin-top:8px;">⚖️ Contestation de l\'auteur : '+(cn.status==='pending'?'à traiter':cn.status)+' — voir le Bouclier.</div>';
-  }  el.innerHTML='<div class="mod-banner">'+body+'</div>';
+  }
+  el.innerHTML='<div class="mod-banner">'+body+'</div>';
 }
 let cnVideoId=null;
 function cnErr(msg){ const e=$('cnErr'); if(e){ e.textContent=msg; e.hidden=!msg; } }
@@ -2906,7 +3279,7 @@ function renderContentId(force){
   if(state==='holder') renderOwnWorks();
 }
 function contentIdIntro(){
-  return '<p class="muted small" style="max-width:640px;line-height:1.55;margin-bottom:14px;">Content ID protège tes œuvres sur NEUF : tu déposes ton œuvre originale, le site en calcule une <strong>empreinte</strong> (image et son) <strong>sur ton appareil</strong>, et les vidéos publiées qui la reprennent sont détectées automatiquement. '
+  return '<p class="muted small" style="max-width:640px;line-height:1.55;margin-bottom:14px;">Content ID protège tes œuvres sur Dhadyutube : tu déposes ton œuvre originale, le site en calcule une <strong>empreinte</strong> (image et son) <strong>sur ton appareil</strong>, et les vidéos publiées qui la reprennent sont détectées automatiquement. '
     +'Ton fichier n\'est ni envoyé, ni publié — seule l\'empreinte est enregistrée. L\'accès est validé par l\'administrateur.</p>';
 }
 function contentIdHtml(state){
@@ -2971,8 +3344,7 @@ async function addOwnWork(){
   if(!myHolder || !currentAccountId) return;
   const workTitle=val('ownTitle').trim(), label=val('ownLabel').trim()||workTitle;
   const enforcement=val('ownEnforcement')||'bloquant';
-  const originalLink=val('ownOriginal').trim();
-  const geoCountries=parseCountries(val('ownCountries'));
+  const originalLink=val('ownOriginal').trim();const geoCountries=parseCountries(val('ownCountries'));
   const file=$('ownFile').files[0]||null;
   const authorizedChannels=Array.from(document.querySelectorAll('.own-auth-chk:checked')).map(c=>c.value);
   ownMsg('',true);
@@ -3009,7 +3381,8 @@ async function addOwnWork(){
     toast('Œuvre protégée 🛡️'+(worktype==='video'&&!audioHash?' (image seulement — son non analysé)':''));
   }catch(e){ console.error(e); ownMsg('Impossible d\'enregistrer : '+e.message,true); }
   finally{ if(btn) btn.disabled=false; }
-  }function ownWorkRowHtml(fp){
+}
+function ownWorkRowHtml(fp){
   const pol=fp.enforcement||'bloquant';
   const opts=[['bloquant','🛡️ Bloquer (monde)'],['geo','🌍 Bloquer par pays'],['credit','🔗 Autoriser + crédit'],['signalement','⚠️ Surveiller']]
     .map(([v,l])=>'<option value="'+v+'"'+(pol===v?' selected':'')+'>'+l+'</option>').join('');
@@ -3119,7 +3492,7 @@ async function revokeRhRequest(uid){
 
 /* ============ PAGES LÉGALES (confidentialité, conditions & propriété intellectuelle, droits d'auteur, contact) ============ */
 const CONTACT_EMAIL='unitedstudioci@gmail.com';
-const LEGAL_UPDATED="4 novembre 2026";
+const LEGAL_UPDATED="7 novembre 2026";
 const LEGAL_TABS=[['privacy','Confidentialité'],['terms','Conditions & propriété intellectuelle'],['copyright','Droits d\'auteur'],['contact','Contact']];
 function legalContent(tab){
   const mail='<a href="mailto:'+CONTACT_EMAIL+'">'+CONTACT_EMAIL+'</a>';
@@ -3127,7 +3500,7 @@ function legalContent(tab){
     <h3>Politique de confidentialité</h3>
     <p class="legal-updated">Dernière mise à jour : ${LEGAL_UPDATED}</p>
     <h4>1. Qui est responsable ?</h4>
-    <p>NEUF est une plateforme de partage de vidéos entre membres. UNITED STUDIO CI, éditeur du site NEUF, est responsable du traitement des données décrit ici. Contact : ${mail}.</p>
+    <p>Dhadyutube est une plateforme de partage de vidéos entre membres. UNITED STUDIO CI, éditeur du site Dhadyutube, est responsable du traitement des données décrit ici. Contact : ${mail}.</p>
     <h4>2. Données que nous collectons</h4>
     <ul>
       <li><strong>Compte :</strong> adresse email et mot de passe (gérés par Firebase Authentication — le mot de passe n'est jamais lisible par UNITED STUDIO CI), nom de chaîne, photo de profil facultative.</li>
@@ -3136,7 +3509,7 @@ function legalContent(tab){
       <li><strong>Modération :</strong> un journal des blocages et suppressions (titre, auteur, motif), visible uniquement de l'administrateur.</li>
       <li><strong>Content ID (ayants droit) :</strong> si tu demandes l'accès, le nom de l'ayant droit, la description de tes œuvres et ton lien de preuve ; une fois accepté, les empreintes (image et son) des œuvres que tu déposes. Les fichiers originaux sont analysés sur ton appareil et ne sont jamais envoyés.</li>
       <li><strong>Contestations :</strong> le motif, l'explication, le lien de preuve et la signature que tu fournis pour contester le retrait d'une vidéo. Avec ton nom de chaîne, ils peuvent être transmis à la personne qui a effectué le signalement.</li>
-      <li><strong>Restrictions géographiques :</strong> uniquement lorsqu'une vidéo contient une œuvre dont l'ayant droit a demandé un blocage par pays, ton navigateur interroge le service api.country.is, qui déduit ton pays de ton adresse IP. NEUF ne conserve pas ton adresse IP.</li>
+      <li><strong>Restrictions géographiques :</strong> uniquement lorsqu'une vidéo contient une œuvre dont l'ayant droit a demandé un blocage par pays, ton navigateur interroge le service api.country.is, qui déduit ton pays de ton adresse IP. Dhadyutube ne conserve pas ton adresse IP.</li>
       <li><strong>Analyse anti-contrefaçon :</strong> à la publication d'une vidéo, ton navigateur l'analyse (images et son) pour la comparer à des œuvres protégées. L'analyse se fait sur ton appareil ; seuls l'empreinte exacte du fichier et le résultat de détection sont enregistrés avec la vidéo.</li>
     </ul>
     <h4>3. Pourquoi ?</h4>
@@ -3146,14 +3519,13 @@ function legalContent(tab){
     <h4>5. Services tiers</h4>
     <ul>
       <li><strong>Google Firebase</strong> (authentification et base de données Firestore) ;</li>
-      <li><strong>Cloudinary</strong> (hébergement des fichiers vidéo publiés) ;</li>
+      <li><strong>Cloudinary</strong> (hébergement des fichiers vidéo publiés : une vidéo est visible par les autres membres selon sa règle de visibilité — publique, privée ou programmée) ;</li>
       <li><strong>Google Fonts</strong> (polices) ;</li>
-      <li><strong>YouTube / Google Drive</strong> lorsque tu publies un lien intégré : leur lecteur applique ses propres règles.</li>
       <li><strong>api.country.is</strong> (détermination du pays, seulement en cas de restriction géographique, voir ci-dessus).</li>
     </ul>
     <p>Ces services peuvent traiter des données hors de ton pays. Leurs politiques de confidentialité s'appliquent en plus de celle-ci.</p>
     <h4>6. Stockage sur ton appareil</h4>
-    <p>Le site utilise le stockage du navigateur (session de connexion, copie locale de secours d'une vidéo si l'envoi en ligne échoue, préférences de l'administrateur). Aucun cookie publicitaire ni traceur marketing n'est utilisé.</p>
+    <p>Le site utilise le stockage du navigateur (session de connexion, préférences de l'administrateur). Aucun cookie publicitaire ni traceur marketing n'est utilisé.</p>
     <h4>7. Durée de conservation</h4>
     <p>Tes données sont conservées tant que ton compte existe. Une vidéo supprimée est retirée du site (ses commentaires aussi). Les signalements de droits d'auteur et le journal de modération sont conservés le temps nécessaire à leur traitement et à la défense des droits de chacun.</p>
     <h4>8. Tes droits</h4>
@@ -3168,15 +3540,14 @@ function legalContent(tab){
     <h3>Conditions d'utilisation et propriété intellectuelle</h3>
     <p class="legal-updated">Dernière mise à jour : ${LEGAL_UPDATED}</p>
     <h4>1. Acceptation</h4>
-    <p>En créant un compte ou en utilisant NEUF, tu acceptes ces conditions. Si tu n'es pas d'accord, n'utilise pas le site.</p>
+    <p>En créant un compte ou en utilisant Dhadyutube, tu acceptes ces conditions. Si tu n'es pas d'accord, n'utilise pas le site.</p>
     <h4>2. Ton compte</h4>
     <ul>
-      <li>Donne des informations exactes et garde ton mot de passe secret.</li>
-      <li>Tu es responsable de ce qui est fait avec ton compte.</li>
+      <li>Donne des informations exactes et garde ton mot de passe secret.</li>      <li>Tu es responsable de ce qui est fait avec ton compte.</li>
       <li>Ne te fais pas passer pour quelqu'un d'autre.</li>
     </ul>
     <h4>3. Tes contenus</h4>
-    <p>Tu restes propriétaire de tes vidéos, textes et images. En les publiant, tu déclares avoir le droit de le faire (c'est ton œuvre, ou tu as l'autorisation de l'ayant droit) et tu accordes à NEUF une licence gratuite, non exclusive, limitée au fonctionnement du site, pour les héberger, les afficher et les reproduire techniquement tant qu'ils sont en ligne. Cette licence prend fin quand tu supprimes le contenu.</p>
+    <p>Tu restes propriétaire de tes vidéos, textes et images. En les publiant, tu déclares avoir le droit de le faire (c'est ton œuvre, ou tu as l'autorisation de l'ayant droit) et tu accordes à Dhadyutube une licence gratuite, non exclusive, limitée au fonctionnement du site, pour les héberger, les afficher et les reproduire techniquement tant qu'ils sont en ligne. Cette licence prend fin quand tu supprimes le contenu.</p>
     <h4>4. Contenus interdits</h4>
     <ul>
       <li>Contenus illégaux, haineux, violents, pornographiques ou qui harcèlent, menacent ou humilient quelqu'un ;</li>
@@ -3184,16 +3555,16 @@ function legalContent(tab){
       <li>œuvres de tiers (films, musiques, séries, images…) publiées sans autorisation de l'ayant droit ;</li>
       <li>virus, tentatives de piratage, spam, détournement du site.</li>
     </ul>
-    <h4>5. Propriété intellectuelle de NEUF</h4>
+    <h4>5. Propriété intellectuelle de Dhadyutube</h4>
     <p>Le site, son code source, son design, son nom, son logo et ses textes sont la propriété exclusive de UNITED STUDIO CI et protégés par le droit d'auteur. Tous droits réservés. Il est interdit de copier, modifier, redistribuer, héberger ailleurs, extraire ou réutiliser tout ou partie du site, de son code ou de son design, ou de s'en servir pour entraîner des modèles d'IA, sans autorisation écrite préalable. Voir le fichier LICENSE du projet.</p>
     <h4>6. Bouclier Copyright</h4>
-    <p>NEUF analyse automatiquement les vidéos publiées pour détecter des contenus protégés enregistrés par l'administrateur. Selon le cas, la publication peut être bloquée, signalée ou autorisée (par exemple si tu es l'ayant droit ou si l'ayant droit t'a autorisé). Ce système peut se tromper. Si tu choisis de « publier quand même (fair use) », tu agis sous ta seule responsabilité et ce choix est enregistré. Un contenu protégé publié sans autorisation peut être supprimé.</p>
+    <p>Dhadyutube analyse automatiquement les vidéos publiées pour détecter des contenus protégés enregistrés par l'administrateur. Selon le cas, la publication peut être bloquée, signalée ou autorisée (par exemple si tu es l'ayant droit ou si l'ayant droit t'a autorisé). Ce système peut se tromper. Si tu choisis de « publier quand même (fair use) », tu agis sous ta seule responsabilité et ce choix est enregistré. Un contenu protégé publié sans autorisation peut être supprimé.</p>
     <h4>7. Modération</h4>
     <p>L'administrateur peut retirer ou supprimer tout contenu qui enfreint ces conditions ou la loi, et suspendre un compte en cas d'infractions graves ou répétées. Une vidéo retirée à la suite d'un signalement de droits d'auteur n'est pas effacée : elle devient invisible pour les autres membres, son auteur en est informé et peut contester le retrait (voir « Droits d'auteur »). Le créateur d'une chaîne peut supprimer sa propre vidéo ainsi que les commentaires sous ses vidéos.</p>
     <h4>7 bis. Content ID (ayants droit)</h4>
     <p>Tout membre peut demander l'accès à l'espace Content ID pour protéger ses œuvres. L'accès est validé par l'administrateur et peut être retiré en cas de fausse déclaration ou d'abus (par exemple protéger une œuvre dont on n'est pas l'ayant droit). L'ayant droit choisit lui-même la réaction du site lorsqu'une vidéo reprend son œuvre : blocage à la publication, blocage dans certains pays, autorisation avec crédit (lien vers l'œuvre originale affiché sous la vidéo), ou simple veille. Il peut autoriser des chaînes partenaires. Le détecteur automatique peut se tromper : c'est pourquoi chaque retrait peut être contesté.</p>
     <h4>8. Responsabilité</h4>
-    <p>NEUF est fourni « en l'état », sans garantie de disponibilité continue. UNITED STUDIO CI n'est pas responsable des contenus publiés par les utilisateurs mais s'engage à retirer rapidement tout contenu manifestement illicite qui lui est signalé. Chaque utilisateur est responsable de ce qu'il publie.</p>
+    <p>Dhadyutube est fourni « en l'état », sans garantie de disponibilité continue. UNITED STUDIO CI n'est pas responsable des contenus publiés par les utilisateurs mais s'engage à retirer rapidement tout contenu manifestement illicite qui lui est signalé. Chaque utilisateur est responsable de ce qu'il publie.</p>
     <h4>9. Modifications et droit applicable</h4>
     <p>Ces conditions peuvent évoluer ; l'utilisation continue du site vaut acceptation. Elles sont régies par le droit applicable dans le pays où UNITED STUDIO CI est établi, sans préjudice des droits impératifs dont tu bénéficies.</p>
     <h4>10. Contact</h4>
@@ -3203,9 +3574,16 @@ function legalContent(tab){
     <p class="legal-updated">Dernière mise à jour : ${LEGAL_UPDATED}</p>
     <h4>Nous respectons les droits des créateurs</h4>
     <p>Les utilisateurs ne doivent publier que des contenus dont ils sont les auteurs ou pour lesquels ils ont l'autorisation de l'ayant droit.</p>
+    <h4>Comment fonctionne la détection (Bouclier Copyright)</h4>
+    <ul>
+      <li><strong>Pour l'audio :</strong> le système analyse les fréquences, le rythme et l'amplitude du son pour créer une « carte d'identité sonore » unique de l'œuvre. Elle reste reconnaissable même si le fichier est recompressé, et même si seul un extrait est repris.</li>
+      <li><strong>Pour l'audiovisuel :</strong> le système découpe la vidéo en images clés et analyse la disposition des pixels (luminosité, contours et formes) de chacune pour créer une « carte d'identité visuelle ». Une vidéo réencodée, redimensionnée ou raccourcie reste reconnaissable.</li>
+    </ul>
+    <p>Seules ces empreintes sont conservées pour comparer les contenus ; elles ne permettent pas de reconstituer l'œuvre. Une correspondance déclenche l'action choisie par l'ayant droit et peut être contestée (voir ci-dessous).</p>
     <h4>Signaler un contenu</h4>
     <p>Si tu es ayant droit (ou son représentant) et que ton œuvre est publiée sans autorisation, utilise le formulaire de signalement — il est ouvert à tous, sans compte. Indique :</p>
-    <ul>      <li>le ou les liens du contenu concerné ;</li>
+    <ul>
+      <li>le ou les liens du contenu concerné ;</li>
       <li>l'œuvre originale (titre, type, lien ou preuve de propriété) ;</li>
       <li>le passage concerné et une description de l'atteinte ;</li>
       <li>tes coordonnées (nom, email, pays) ;</li>
@@ -3271,5 +3649,5 @@ auth.onAuthStateChanged(async (user)=>{
 });
 </script>
 </body>
-  </html>
+</html>
   
