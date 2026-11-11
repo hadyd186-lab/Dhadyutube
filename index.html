@@ -2,8 +2,16 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dhadyutube</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, viewport-fit=cover">
+<title>Dhadyutube — vidéos, Shorts et chaînes</title>
+<meta name="description" content="Dhadyutube : publie et regarde des vidéos et des Shorts, abonne-toi à des chaînes. Les contenus protégés par le droit d'auteur sont respectés grâce au Bouclier Copyright.">
+<link rel="canonical" href="https://hadyd186-lab.github.io/Dhadyutube/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Dhadyutube">
+<meta property="og:title" content="Dhadyutube — vidéos, Shorts et chaînes">
+<meta property="og:description" content="Publie et regarde des vidéos et des Shorts, abonne-toi à des chaînes.">
+<meta property="og:url" content="https://hadyd186-lab.github.io/Dhadyutube/">
+<meta name="theme-color" content="#0b0d12">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -207,7 +215,7 @@
   .own-form label{font-size:.78rem; color:var(--text-muted); margin-top:4px;}
   .own-form input,.own-form select,.own-form textarea{width:100%; padding:9px 11px; border-radius:8px; border:1px solid var(--border); background:var(--bg); outline:none;}
   .own-form input[type=checkbox],.own-form input[type=radio]{width:auto;}
-  .own-form input:focus,.own-form select:focus,.own-form textarea:focus{border-color:var(--accent);}
+    .own-form input:focus,.own-form select:focus,.own-form textarea:focus{border-color:var(--accent);}
   .own-row{display:flex; gap:12px; align-items:center; padding:12px 8px; border-bottom:1px solid var(--border); flex-wrap:wrap;}
   .own-row select{background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:6px 8px; font-size:.78rem;}
 
@@ -215,20 +223,45 @@
   .site-footer{border-top:1px solid var(--border); padding:18px 20px 26px; text-align:center; font-size:.76rem; color:var(--text-muted);}
   .site-footer button{background:none; border:none; color:var(--text-muted); font-size:.76rem; cursor:pointer; text-decoration:underline; padding:2px 6px;}
   .site-footer button:hover{color:var(--text);}
-  .legal-body h4{font-size:.88rem; margin:16px 0 4px; font-family:'Space Grotesk',sans-ser .legal-body a{color:var(--accent);}
+  .legal-body h4{font-size:.88rem; margin:16px 0 4px; font-family:'Space Grotesk',sans-serif;}
+  .legal-body p,.legal-body li{font-size:.82rem; color:var(--text-muted); line-height:1.55;}
+  .legal-body ul{padding-left:18px; margin:4px 0;}
+  .legal-body a{color:var(--accent);}
   .legal-updated{font-size:.72rem; color:var(--text-muted);}
 
   /* TOAST */
   #toast{position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--surface-2); border:1px solid var(--border); padding:11px 18px; border-radius:999px; font-size:.84rem; opacity:0; pointer-events:none; transition:all .25s; z-index:80; max-width:90vw; text-align:center;}
   #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
-  @media (max-width:900px){
+  html,body{max-width:100%; overflow-x:hidden;}
+  input,select,textarea{max-width:100%;}
+  .comment-input-row input, .link-row input{min-width:0;}
+  /* MOBILE : téléphones (écran étroit) et aussi « version ordinateur » du navigateur sur un écran tactile */
+  @media (max-width:900px), (pointer:coarse) and (max-width:1400px){
     .btnMenu{display:inline-flex; align-items:center;}
-    .rail{position:fixed; left:0; top:64px; bottom:0; background:var(--bg); transform:translateX(-100%); transition:transform .25s ease; z-index:40; width:230px;}
+    .body{display:block;}
+    .rail{position:fixed; left:0; top:0; bottom:0; padding-top:76px; background:var(--bg); transform:translateX(-100%); transition:transform .25s ease; z-index:40; width:240px; height:auto;}
     .rail.open{transform:translateX(0); box-shadow:20px 0 40px rgba(0,0,0,.5);}
-    .topbar{flex-wrap:wrap; height:auto; padding:10px 14px; row-gap:8px;}
-    .searchbar{order:3; width:100%; max-width:none; margin:0;}
-    main{padding:16px;}
+    .topbar{flex-wrap:wrap; height:auto; padding:8px 12px; gap:8px; row-gap:8px;}
+    .brand-word{font-size:1.05rem;}
+    .topbar-actions{flex-shrink:1; flex-wrap:wrap; gap:6px; margin-left:auto;}
+    .topbar-actions .btn{padding:7px 11px; font-size:.78rem;}
+    .searchbar{order:3; flex:1 1 100%; width:100%; max-width:none; margin:0;}
+    main{width:100%; max-width:100%; padding:12px 12px 70px;}
+    .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:18px 10px;}
+    /* page d'une vidéo : lecteur pleine largeur, puis infos, puis « À suivre » */
+    .watch-wrap{display:block;}
+    .watch-main,.watch-side{width:100%; flex:none;}
+    .watch-side{margin-top:22px;}
+    .player{border-radius:0; margin:0 -12px; width:calc(100% + 24px);}
+    .player.short{width:auto; max-width:100%; margin:0 auto; border-radius:var(--r-l);}
+    .watch-title{font-size:1.05rem;}
+    .watch-actions{flex-wrap:wrap;}
+    .link-row{flex-wrap:wrap;}
+    .link-row input{flex:1 1 100%;}
+    .comment-input-row{display:flex; gap:8px;}
+    .comment-input-row input{flex:1 1 auto; min-width:0;}
+    .comment-input-row .btn{flex:0 0 auto;}
   }
 </style>
 </head>
@@ -377,9 +410,7 @@
 <footer class="site-footer">
   © 2026 Dhadyutube · UNITED STUDIO CI — Tous droits réservés<br>
   <button onclick="openLegal('privacy')">Confidentialité</button>·<button onclick="openLegal('terms')">Conditions &amp; propriété intellectuelle</button>·<button onclick="openLegal('copyright')">Droits d'auteur</button>·<button onclick="openLegal('contact')">Contact</button>
-</footer>
-
-<!-- IDENTITY MODAL -->
+</footer><!-- IDENTITY MODAL -->
 <div class="overlay" id="identityModal">
   <div class="modal-box">
     <h2>Connexion</h2>
@@ -415,7 +446,8 @@
 <!-- TAKEDOWN MODAL -->
 <div class="overlay" id="takedownModal">
   <div class="modal-box">
-    <h2>🚩 Signaler une atteinte au droit d'auteur</h2><p class="muted small">Ouvert à tous, sans compte — pour signaler un contenu publié sur ce site sans autorisation de l'ayant droit.</p>
+    <h2>🚩 Signaler une atteinte au droit d'auteur</h2>
+    <p class="muted small">Ouvert à tous, sans compte — pour signaler un contenu publié sur ce site sans autorisation de l'ayant droit.</p>
     <h3 class="shield-h3">1. Contenu signalé</h3>
     <label>Lien(s) du contenu concerné *</label>
     <textarea id="tdLink" rows="2" placeholder="https://… (un lien par ligne)"></textarea>
@@ -575,8 +607,7 @@
     <textarea id="cnExplanation" rows="4" placeholder="Ex : j'utilise 20 secondes pour critiquer le passage, avec mon propre commentaire par-dessus…"></textarea>
     <label>Lien ou preuve (autorisation, œuvre originale…) — facultatif</label>
     <input type="url" id="cnEvidence" placeholder="https://…">
-    <div class="checkbox-row"><input type="checkbox" id="cnGoodFaith"><label style="margin:0;">Je déclare de bonne foi que cette vidéo a été retirée par erreur ou que mon usage est légitime. *</label></div>
-    <div class="checkbox-row"><input type="checkbox" id="cnConsent"><label style="margin:0;">J'accepte que mon nom de chaîne et cette contestation soient transmis à la personne qui a signalé la vidéo. *</label></div>
+    <div class="checkbox-row"><input type="checkbox" id="cnGoodFaith"><label style="margin:0;">Je déclare de bonne foi que cette vidéo a été retirée par erreur ou que mon usage est légitime. *</label></div><div class="checkbox-row"><input type="checkbox" id="cnConsent"><label style="margin:0;">J'accepte que mon nom de chaîne et cette contestation soient transmis à la personne qui a signalé la vidéo. *</label></div>
     <label>Signature (retape ton nom de chaîne) *</label>
     <input type="text" id="cnSignature">
     <div class="form-error" id="cnErr" hidden></div>
@@ -613,8 +644,9 @@
       <button class="btn btn-ghost" onclick="closeSync()">Fermer</button>
     </div>
   </div>
-      </div>
-        <!-- LEGAL MODAL -->
+</div>
+
+<!-- LEGAL MODAL -->
 <div class="overlay" id="legalModal">
   <div class="modal-box" style="max-width:640px;">
     <div class="tab-row" id="legalTabs" style="flex-wrap:wrap;"></div>
@@ -775,8 +807,7 @@ function goertzelEnergy(samples, start, len, freq, sr){
   const w=2*Math.PI*freq/sr, cw=Math.cos(w), c=2*cw;
   let s0=0,s1=0,s2=0;
   const end=Math.min(samples.length, start+len);
-  for(let i=Math.max(0,start); i<end; i++){ s0=samples[i]+c*s1-s2; s2=s1; s1=s0; }
-  return (s1*s1+s2*s2-c*s1*s2)/Math.max(1,len);
+  for(let i=Math.max(0,start); i<end; i++){ s0=samples[i]+c*s1-s2; s2=s1; s1=s0; }return (s1*s1+s2*s2-c*s1*s2)/Math.max(1,len);
 }
 function dHashAudioWindow(samples, sr, startSample, windowLen){
   const w=AH_BANDS.length, h=8, grid=new Array(w*h);
@@ -818,7 +849,8 @@ function mp4Boxes(dv, start, end){
     out.push({type, start:p, hdr, end:p+size}); p+=size;
   }
   return out;
-}function mp4Child(dv, box, type){ return mp4Boxes(dv, box.start+box.hdr, box.end).find(b=>b.type===type)||null; }
+}
+function mp4Child(dv, box, type){ return mp4Boxes(dv, box.start+box.hdr, box.end).find(b=>b.type===type)||null; }
 function mp4DescLen(dv, p){ let len=0, n=0, b; do{ b=dv.getUint8(p+n); len=(len<<7)|(b&0x7f); n++; }while((b&0x80) && n<4); return [len,n]; }
 /* Lit la première piste audio d'un « moov » : codec, fréquence, canaux, description du décodeur et table des échantillons (position, taille, temps). */
 function parseMp4Audio(moovBuf){
@@ -975,8 +1007,7 @@ function popcount32(x){
   x = (x & 0x33333333) + ((x>>>2) & 0x33333333);
   return Math.imul((x + (x>>>4)) & 0x0F0F0F0F, 0x01010101) >>> 24;
 }
-function hammingDistanceHex(a,b){
-  const ha=parseInt(a.substr(0,8),16), la=parseInt(a.substr(8,8),16), hb=parseInt(b.substr(0,8),16), lb=parseInt(b.substr(8,8),16);
+function hammingDistanceHex(a,b){const ha=parseInt(a.substr(0,8),16), la=parseInt(a.substr(8,8),16), hb=parseInt(b.substr(0,8),16), lb=parseInt(b.substr(8,8),16);
   return popcount32(ha^hb)+popcount32(la^lb);
 }
 /* Ancien comparateur (9 images, position par position) */
@@ -1018,7 +1049,8 @@ function denseMatch(A,B,frameTh,avgTh){
   const sA=sAt*FP_TICK, sB=sBt*FP_TICK;
   if(!nA||!nB) return null;
   const infoA=informativeFlags(a), infoB=informativeFlags(b);
-  const durA=A.duration||nA*sA, durB=B.duration||nB*sB;const shortSec=Math.min(durA,durB);
+  const durA=A.duration||nA*sA, durB=B.duration||nB*sB;
+  const shortSec=Math.min(durA,durB);
   const minCount=Math.max(1, Math.min(FP_MIN_COUNT, Math.floor(shortSec/Math.max(sA,sB))));
   const gapAllowed=Math.max(FP_MAX_GAP, 2.5*Math.max(sA,sB)); // films longs : images plus espacées → trou toléré plus grand
 
@@ -1175,8 +1207,7 @@ function analyzeVideo(src, onProgress){
             try{ v.currentTime=Math.max(0,target-0.5); }catch(e){}
           }
           v.requestVideoFrameCallback(onFrame); return;
-        }
-        if(tm>=target){
+  }if(tm>=target){
           const h=grabFrame();
           while(idx<total && idx*step+FP_OFFSET<=tm){ if(h!==null) frames.push(h); idx++; }
           report();
@@ -1218,7 +1249,8 @@ let viewerCountry=null, viewerCountryLoading=false; // pays du visiteur : déter
 
 /* ============ COMMENTAIRES (sous-collection videos/{id}/comments) ============
    Les nouveaux commentaires vivent chacun dans leur propre document : seuls l'admin et le propriétaire de la
-   chaîne peuvent en supprimer (règle Firestore). Les anciens commentaires (tableau v.comments) restent affichés. */let watchComments=[], unsubComments=null;
+   chaîne peuvent en supprimer (règle Firestore). Les anciens commentaires (tableau v.comments) restent affichés. */
+let watchComments=[], unsubComments=null;
 function stopWatchComments(){ if(unsubComments){ unsubComments(); unsubComments=null; } watchComments=[]; }
 function startWatchComments(id){
   stopWatchComments();
@@ -1375,8 +1407,7 @@ function attachListeners(){
       myHolder = d.exists ? {id:d.id, ...d.data()} : null; updateAuthUI(); rerenderCurrentView();
     }, err=>console.error(err));
   }
-}
-function detachListeners(){
+  }function detachListeners(){
   [unsubVideos,unsubUsers,unsubFingerprints,unsubBlockLog,unsubTakedowns,unsubCounter,unsubRhReq,unsubHolder].forEach(u=>{ if(u) u(); });
   unsubVideos=unsubUsers=unsubFingerprints=unsubBlockLog=unsubTakedowns=unsubCounter=unsubRhReq=unsubHolder=null;
   stopWatchComments();
@@ -1415,7 +1446,8 @@ async function submitTakedown(){
   const country=val('tdCountry').trim();
   const signature=val('tdSignature').trim();
   takedownErrorMsg('');
-  if(!links){ takedownErrorMsg('Indique au moins un lien vers le contenu concerné.'); return; }if(!workType){ takedownErrorMsg('Choisis le type d\'œuvre concernée.'); return; }
+  if(!links){ takedownErrorMsg('Indique au moins un lien vers le contenu concerné.'); return; }
+  if(!workType){ takedownErrorMsg('Choisis le type d\'œuvre concernée.'); return; }
   if(!workTitle){ takedownErrorMsg('Indique le titre de l\'œuvre originale.'); return; }
   if(description.length<20){ takedownErrorMsg('Décris l\'atteinte en quelques phrases (20 caractères minimum).'); return; }
   if(!authorizedBefore){ takedownErrorMsg('Précise si tu as déjà autorisé cette utilisation.'); return; }
@@ -1575,8 +1607,7 @@ function setCloudStatus(ok){
 function geoRestrictionFor(v){
   const list=copyrightInfoList(v); if(!list) return null;
   const set=new Set();
-  list.forEach(ci=>{ if(ci.policy==='geo' && !ci.authorized && !ci.exempt && Array.isArray(ci.geoCountries)) ci.geoCountries.forEach(c=>set.add(String(c).toUpperCase())); });
-  return set.size ? Array.from(set) : null;
+  list.forEach(ci=>{ if(ci.policy==='geo' && !ci.authorized && !ci.exempt && Array.isArray(ci.geoCountries)) ci.geoCountries.forEach(c=>set.add(String(c).toUpperCase())); });return set.size ? Array.from(set) : null;
 }
 /* Le pays n'est demandé (service api.country.is, à partir de l'adresse IP) que s'il existe au moins une vidéo à restriction
    géographique. Tant qu'il est inconnu — ou si le service est injoignable — la vidéo reste visible. */
@@ -1620,7 +1651,8 @@ function openShorts(startId){
   switchView('shorts');
   if(location.hash) history.replaceState(null,'',location.pathname+location.search);
   renderShortsFeed(startId);
-  }function shortItemHtml(v){
+}
+function shortItemHtml(v){
   const liked=(v.likedBy||[]).includes(myKey());
   return '<div class="short-item" data-id="'+v.id+'">'
     +'<div class="short-frame" onclick="toggleShortPlay(this)"><video loop playsinline preload="none" data-src="'+esc(v.url||'')+'" poster="'+(v.thumb||'')+'"'+(shortsMuted?' muted':'')+'></video>'
@@ -1775,8 +1807,7 @@ function renderHome(){
   // chaînes dont le nom correspond à la recherche (on ne liste jamais toutes les chaînes : il faut les chercher)
   const chEl=$('homeChannels');
   const chans = term ? [ADMIN_NAME, ...users.filter(u=>!u.isAdmin).map(u=>u.id)].filter(k=>displayNameFor(k).toLowerCase().includes(term)).slice(0,8) : [];
-  chEl.innerHTML = chans.length ? '<div style="margin-bottom:16px;"><div class="muted small" style="margin-bottom:6px;">Chaînes</div>'
-    + chans.map(k=>{ const n=subscriberCount(k); return '<div class="own-row" style="display:flex;align-items:center;gap:10px;padding:8px 4px;cursor:pointer;" onclick="openChannel(\''+String(k).replace(/'/g,"\\'")+'\')">'
+  chEl.innerHTML = chans.length ? '<div style="margin-bottom:16px;"><div class="muted small" style="margin-bottom:6px;">Chaînes</div>'    + chans.map(k=>{ const n=subscriberCount(k); return '<div class="own-row" style="display:flex;align-items:center;gap:10px;padding:8px 4px;cursor:pointer;" onclick="openChannel(\''+String(k).replace(/'/g,"\\'")+'\')">'
       +avatarHtml(k,'card-avatar')+'<div style="flex:1;min-width:0;"><div style="font-weight:600;">'+esc(displayNameFor(k))+'</div><div class="muted small">'+n+' abonné'+(n>1?'s':'')+'</div></div>'+subscribeBtnHtml(k)+'</div>'; }).join('')
     + '</div>' : '';
   if(list.length===0 && chans.length){ grid.innerHTML=''; grid.hidden=true; empty.hidden=true; return; }
@@ -1820,8 +1851,8 @@ function embedUrlFor(url){
   m = url.match(/drive\.google\.com\/file\/d\/([\w-]+)/);
   if(m) return 'https://drive.google.com/file/d/'+m[1]+'/preview';
   return null;
-  }
- function youtubeIdFor(url){
+}
+function youtubeIdFor(url){
   const m = (url||'').match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/|youtube\.com\/embed\/)([\w-]{6,})/);
   return m ? m[1] : null;
 }
@@ -1976,8 +2007,7 @@ function sendComment(){
   const v=videos.find(x=>x.id===currentWatchId); if(!v) return;
   input.value='';
   if(!currentUser){ openIdentityModal(); return; }
-  const cid=newId();
-  const batch=db.batch();
+  const cid=newId();const batch=db.batch();
   batch.set(db.collection('videos').doc(v.id).collection('comments').doc(cid), {authorId:myKey(), text, ts:Date.now()});
   batch.update(db.collection('videos').doc(v.id), {commentCount: firebase.firestore.FieldValue.increment(1)});
   batch.commit().catch(e=>{ console.error(e); toast('Erreur : commentaire non envoyé ('+e.message+')'); });
@@ -2033,7 +2063,9 @@ async function deleteCurrentVideo(){
   const id=currentWatchId;
   const ok = await deleteVideo(id);
   if(ok){ toast('Vidéo supprimée.'); goHome(); }
-  } /* ============ BOUCLIER COPYRIGHT — vérification ============ */
+}
+
+/* ============ BOUCLIER COPYRIGHT — vérification ============ */
 /* Une chaîne est autorisée pour une œuvre si c'est la chaîne de l'ayant droit lui-même (rightsHolderChannelId),
    ou si elle figure dans la liste des chaînes autorisées à publier cette œuvre précise. */
 function isAuthorizedFor(fp){
@@ -2175,8 +2207,7 @@ function checkCopyright({url,title,desc,fileHash,visualHash,audioHash}){
     const res = mk('audio', label+' : ~'+formatDuration(m.span)+' ('+pct+' % de la bande sonore de cette vidéo, vers '+formatDuration(m.testStart)+', à '+formatDuration(m.refStart)+' dans l\'original)', fp, {start:m.testStart, end:m.testStart+m.span, coveragePct:pct}, {start:m.refStart, end:m.refStart+m.span});
     if(res.exempt) res.reason += ' — plage épargnée par l\'ayant droit';
     return res;
-  }
-  return {blocked:false};
+  }return {blocked:false};
 }
 function fpLabelSafe(fp){ return (fp&&fp.label)||''; }
 /* Résumé exploitable par l'onglet infos de la vidéo : une entrée par œuvre distincte détectée (une
@@ -2374,9 +2405,8 @@ function uploadToCloudinary(file, onProgress){
     fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
     xhr.send(fd);
   });
-}
-
-/* Publie la vidéo (utilisé par le flux normal, la découpe réussie et le fair use). */
+  }
+  /* Publie la vidéo (utilisé par le flux normal, la découpe réussie et le fair use). */
 async function proceedPublish(ctx, opts, note){
   opts = opts||{};
   setSubmitting(true, 'Publication…');
@@ -2538,7 +2568,8 @@ function muteAudioSegment(file, muteStart, muteEnd, onProgress){
     v.addEventListener('error',()=>{ if(!done){ done=true; cleanup(); reject(new Error('lecture impossible')); } });
     v.src=url;
   });
-  }
+}
+
 $('uploadFile').addEventListener('change', ()=>{
   const f=$('uploadFile').files[0];
   if(f){ $('fileNameHint').textContent=f.name; }
@@ -2575,8 +2606,7 @@ function renderShieldContent(){
     +'<select id="fpRightsHolderChannel" onchange="onFpRightsHolderChannelChange()"><option value="">— Aucune / externe —</option>'+channelOptionsHtml()+'</select>'
     +'<label>Chaînes autorisées à publier cette œuvre (en plus de l\'ayant droit ci-dessus)</label>'
     +'<div class="checkbox-row" id="fpAuthorizedChannels" style="flex-wrap:wrap;">'+channelCheckboxesHtml()+'</div>'
-    +'<label>Mode</label><select id="fpEnforcement" onchange="onFpEnforcementChange()">'
-      +'<option value="bloquant">🛡️ Bloquant — bloque la publication</option>'
+    +'<label>Mode</label><select id="fpEnforcement" onchange="onFpEnforcementChange()">'      +'<option value="bloquant">🛡️ Bloquant — bloque la publication</option>'
       +'<option value="signalement">⚠️ Signalement seulement — publication autorisée, juste notée dans le journal</option>'
       +'<option value="credit">🔗 Crédit — publication autorisée, lien vers l\'œuvre originale affiché sous la vidéo</option>'
       +'<option value="geo">🌍 Blocage par pays — publiée, mais invisible dans les pays indiqués</option>'
@@ -2745,7 +2775,8 @@ async function addFingerprint(){
   if(enforcement==='partiel-zones' && !protectedRanges.length){ shieldErrorMsg('Ajoute au moins une plage à bloquer valide (ou choisis un autre mode).'); return; }
   const originalLink=val('fpOriginalLink').trim();
   const geoCountries=parseCountries(val('fpGeoCountries'));
-  if(originalLink && !isHttpUrl(originalLink)){ shieldErrorMsg('Le lien de l\'œuvre originale doit commencer par http:// ou https://.'); return; }if(enforcement==='geo' && !geoCountries.length){ shieldErrorMsg('Indique au moins un pays (code à 2 lettres) pour le blocage par pays.'); return; }
+  if(originalLink && !isHttpUrl(originalLink)){ shieldErrorMsg('Le lien de l\'œuvre originale doit commencer par http:// ou https://.'); return; }
+  if(enforcement==='geo' && !geoCountries.length){ shieldErrorMsg('Indique au moins un pays (code à 2 lettres) pour le blocage par pays.'); return; }
   const extra={originalLink:originalLink||null, geoCountries};
   const kw=val('fpKeyword').trim().toLowerCase();
   const file = worktype==='audio' ? ($('fpAudioFile')&&$('fpAudioFile').files[0]) : $('fpFile').files[0];
@@ -2775,8 +2806,7 @@ async function addFingerprint(){
         const audioHash = await analyzeAudioFile(file, (i,n)=>shieldErrorMsg('Analyse du son… '+Math.round(i/n*100)+' %'));
         batch.push({type:'file', worktype, label, workTitle, rightsHolder, rightsHolderChannelId, authorizedChannels, enforcement, exemptRanges, protectedRanges, ...extra, cover, exactHash, visualHash: analysis.visualHash||null, audioHash: audioHash||null, partial: !!analysis.visualHash && !analysis.complete, addedAt:now});
         if(!audioHash) toast("⚠️ Empreinte image enregistrée, mais pas de son détecté/analysé pour cette vidéo (pas de bande son, codec non reconnu, ou fichier trop long) — la musique/les dialogues de cette œuvre ne seront pas reconnus séparément de l'image.");
-      }
-    }
+  }    }
     for(const fp of batch){ await db.collection('fingerprints').doc(newId()).set(fp); }
     $('shieldErr').hidden=true;
     $('fpLabel').value=''; $('fpWorkTitle').value=''; $('fpRightsHolder').value=''; if($('fpRightsHolderChannel')) $('fpRightsHolderChannel').value=''; $('fpKeyword').value=''; $('fpFile').value=''; if($('fpOriginalLink')) $('fpOriginalLink').value=''; if($('fpGeoCountries')) $('fpGeoCountries').value='';
@@ -2944,7 +2974,7 @@ function firebaseAuthErrorMsg(e){
     'timeout':'La connexion à Firebase met trop de temps à répondre — vérifie ta connexion et réessaie.',
   };
   return map[e.code] || ('Erreur : '+(e.message||e.code||'inconnue'));
-  }
+}
 /* Évite qu'un bouton reste bloqué en silence sur une connexion lente/coupée : au-delà de ce délai,
    on abandonne et on affiche un message clair plutôt que d'attendre indéfiniment. */
 function withTimeout(promise, ms){
@@ -2976,8 +3006,7 @@ async function doSignup(){
   const btn=$('signupSubmitBtn');
   if(btn){ btn.disabled=true; btn.textContent='Création en cours…'; }
   try{
-    const cred = await withTimeout(auth.createUserWithEmailAndPassword(email, pw), 30000);
-    try{
+    const cred = await withTimeout(auth.createUserWithEmailAndPassword(email, pw), 30000);    try{
       const dup = await withTimeout(db.collection('users').where('name','==',name).limit(1).get(), 12000);
       if(!dup.empty){ try{ await cred.user.delete(); }catch(e2){ console.error(e2); } signupErrorMsg('Ce nom de chaîne est déjà pris — choisis-en un autre.'); return; }
     }catch(e){ console.error(e); } // vérification facultative : on continue même si elle échoue ou traîne
@@ -3145,7 +3174,8 @@ function cropImageToDataUrl(file,w,h){
 async function applyCustomThumb(id,file){
   const v=videos.find(x=>x.id===id); if(!v||!isVideoOwner(v)) return;
   if(!/^image\//.test(file.type)){ toast('Choisis un fichier image (JPG, PNG…).'); return; }
-  try{const data=await cropImageToDataUrl(file, isShort(v)?270:480, isShort(v)?480:270);
+  try{
+    const data=await cropImageToDataUrl(file, isShort(v)?270:480, isShort(v)?480:270);
     await db.collection('videos').doc(id).update({thumb:data, customThumb:true});
     v.thumb=data; v.customThumb=true;
     renderStudio(); toast('Miniature mise à jour 🖼️');
@@ -3176,8 +3206,7 @@ function renderModerationBanner(v){
   let body='<strong>⛔ Cette vidéo a été retirée</strong> — '+esc(v.moderation.reason||'signalement de droits d\'auteur')+'. Les autres membres ne peuvent plus la voir.';
   if(isVideoOwner(v)){
     if(!cn) body+='<div style="margin-top:8px;">Tu penses que c\'est une erreur, ou que ton usage est légitime (critique, parodie, enseignement, œuvre à toi, autorisation…) ? <button class="btn btn-accent" style="margin-top:6px;" onclick="openCounterNotice(\''+v.id+'\')">⚖️ Contester le signalement</button></div>';
-    else if(cn.status==='pending') body+='<div class="muted small" style="margin-top:8px;">⏳ Contestation envoyée le '+new Date(cn.createdAt).toLocaleDateString('fr-FR')+' — elle est en cours d\'examen.</div>';
-    else if(cn.status==='rejected') body+='<div style="margin-top:8px;">❌ Contestation rejetée'+(cn.adminNote?' : '+esc(cn.adminNote):'')+'.</div>';
+    else if(cn.status==='pending') body+='<div class="muted small" style="margin-top:8px;">⏳ Contestation envoyée le '+new Date(cn.createdAt).toLocaleDateString('fr-FR')+' — elle est en cours d\'examen.</div>';else if(cn.status==='rejected') body+='<div style="margin-top:8px;">❌ Contestation rejetée'+(cn.adminNote?' : '+esc(cn.adminNote):'')+'.</div>';
   } else if(isAdminAuthed() && cn){
     body+='<div class="muted small" style="margin-top:8px;">⚖️ Contestation de l\'auteur : '+(cn.status==='pending'?'à traiter':cn.status)+' — voir le Bouclier.</div>';
   }
@@ -3344,7 +3373,8 @@ async function addOwnWork(){
   if(!myHolder || !currentAccountId) return;
   const workTitle=val('ownTitle').trim(), label=val('ownLabel').trim()||workTitle;
   const enforcement=val('ownEnforcement')||'bloquant';
-  const originalLink=val('ownOriginal').trim();const geoCountries=parseCountries(val('ownCountries'));
+  const originalLink=val('ownOriginal').trim();
+  const geoCountries=parseCountries(val('ownCountries'));
   const file=$('ownFile').files[0]||null;
   const authorizedChannels=Array.from(document.querySelectorAll('.own-auth-chk:checked')).map(c=>c.value);
   ownMsg('',true);
@@ -3376,8 +3406,7 @@ async function addOwnWork(){
     };
     await db.collection('fingerprints').doc(newId()).set(doc);
     ['ownTitle','ownLabel','ownFile','ownOriginal','ownCountries'].forEach(id=>{ $(id).value=''; });
-    document.querySelectorAll('.own-auth-chk:checked').forEach(c=>c.checked=false);
-    ownMsg('');
+    document.querySelectorAll('.own-auth-chk:checked').forEach(c=>c.checked=false);ownMsg('');
     toast('Œuvre protégée 🛡️'+(worktype==='video'&&!audioHash?' (image seulement — son non analysé)':''));
   }catch(e){ console.error(e); ownMsg('Impossible d\'enregistrer : '+e.message,true); }
   finally{ if(btn) btn.disabled=false; }
@@ -3543,7 +3572,8 @@ function legalContent(tab){
     <p>En créant un compte ou en utilisant Dhadyutube, tu acceptes ces conditions. Si tu n'es pas d'accord, n'utilise pas le site.</p>
     <h4>2. Ton compte</h4>
     <ul>
-      <li>Donne des informations exactes et garde ton mot de passe secret.</li>      <li>Tu es responsable de ce qui est fait avec ton compte.</li>
+      <li>Donne des informations exactes et garde ton mot de passe secret.</li>
+      <li>Tu es responsable de ce qui est fait avec ton compte.</li>
       <li>Ne te fais pas passer pour quelqu'un d'autre.</li>
     </ul>
     <h4>3. Tes contenus</h4>
@@ -3575,8 +3605,7 @@ function legalContent(tab){
     <h4>Nous respectons les droits des créateurs</h4>
     <p>Les utilisateurs ne doivent publier que des contenus dont ils sont les auteurs ou pour lesquels ils ont l'autorisation de l'ayant droit.</p>
     <h4>Comment fonctionne la détection (Bouclier Copyright)</h4>
-    <ul>
-      <li><strong>Pour l'audio :</strong> le système analyse les fréquences, le rythme et l'amplitude du son pour créer une « carte d'identité sonore » unique de l'œuvre. Elle reste reconnaissable même si le fichier est recompressé, et même si seul un extrait est repris.</li>
+    <ul> <li><strong>Pour l'audio :</strong> le système analyse les fréquences, le rythme et l'amplitude du son pour créer une « carte d'identité sonore » unique de l'œuvre. Elle reste reconnaissable même si le fichier est recompressé, et même si seul un extrait est repris.</li>
       <li><strong>Pour l'audiovisuel :</strong> le système découpe la vidéo en images clés et analyse la disposition des pixels (luminosité, contours et formes) de chacune pour créer une « carte d'identité visuelle ». Une vidéo réencodée, redimensionnée ou raccourcie reste reconnaissable.</li>
     </ul>
     <p>Seules ces empreintes sont conservées pour comparer les contenus ; elles ne permettent pas de reconstituer l'œuvre. Une correspondance déclenche l'action choisie par l'ayant droit et peut être contestée (voir ci-dessous).</p>
@@ -3617,6 +3646,8 @@ function closeLegal(){ $('legalModal').classList.remove('open'); }
 
 /* ============ WIRING GÉNÉRAL ============ */
 $('btnMenu').addEventListener('click', ()=>$('rail').classList.toggle('open'));
+$('rail').addEventListener('click', e=>{ if(e.target.closest('button')) $('rail').classList.remove('open'); }); // choisir une entrée referme le menu
+document.addEventListener('click', e=>{ const r=$('rail'); if(r.classList.contains('open') && !r.contains(e.target) && !e.target.closest('#btnMenu')) r.classList.remove('open'); }); // toucher ailleurs aussi
 $('btnUpload').addEventListener('click', openUploadModal);
 $('btnShield').addEventListener('click', openShield);
 document.querySelectorAll('.overlay').forEach(ov=>{
